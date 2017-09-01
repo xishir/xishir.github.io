@@ -166,11 +166,11 @@
 </a>
         
 		
-		<span class="archive-article-data">
-		阅读数:<span id="/2017/09/01/hello-world/" class="leancloud_visitors" data-flag-title="Hello World"></span>
+		
+		<span id="busuanzi_container_page_pv" class="archive-article-data">
+		  阅读量:<span id="busuanzi_value_page_pv"></span>
 		</span>
 		
-
       </header>
     
 			
@@ -327,48 +327,6 @@
 
   
 
-
-  <script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
-<script src="//cdn1.lncld.net/static/js/2.5.0/av-min.js"></script>
-<script>
-    var APP_ID = 'yCywzuhyDhK9nPKOtKIbaizb-9Nh9j0Va';
-    var APP_KEY = 'nKClK7wjlOAkpoYsFPqtkdFp';
-    AV.init({
-        appId: APP_ID,
-        appKey: APP_KEY
-    });
-    // 显示次数
-    function showTime(Counter) {
-        var query = new AV.Query("Counter");
-        if($(".leancloud_visitors").length > 0){
-            var url = $(".leancloud_visitors").attr('id').trim();
-            // where field
-            query.equalTo("words", url);
-            // count 
-            query.count().then(function (number) {
-                // There are number instances of MyClass where words equals url.
-                $(document.getElementById(url)).text(number?  number : '--');
-            }, function (error) {
-                // error is an instance of AVError.
-            });
-        }
-    }
-   // 追加pv
-    function addCount(Counter) {
-        var url = $(".leancloud_visitors").length > 0 ? $(".leancloud_visitors").attr('id').trim() : 'icafebolger.com';
-        var Counter = AV.Object.extend("Counter");
-        var query = new Counter;
-        query.save({
-            words: url
-        }).then(function (object) {
-        })
-    }
-    $(function () {
-        var Counter = AV.Object.extend("Counter");
-        addCount(Counter);
-        showTime(Counter);
-    });
-</script>
 
           </div>
         </div>
@@ -544,7 +502,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
     
     	<section class="tools-section tools-section-me" q-show="aboutme">
   	  	
-  	  		<div class="aboutme-wrap" id="js-aboutme">一只不爱打代码的怪兽&lt;br&gt;谢谢大家的支持</div>
+  	  		<div class="aboutme-wrap" id="js-aboutme">一只不爱打代码的怪兽</div>
   	  	
     	</section>
     
