@@ -163,14 +163,11 @@
   	<time datetime="2017-09-01T18:05:02.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-09-02</time>
 </a>
         
-		阅读数:
-			<span id="/2017/09/02/test/" class="leancloud_visitors" data-flag-title="test"></span>次
 		
+
       </header>
     
-	<!-- 目录内容 -->
 			
-	<!-- 目录内容结束 -->
     <div class="article-entry" itemprop="articleBody">
       
         <h1 id="test-markdown"><a href="#test-markdown" class="headerlink" title="test markdown"></a>test markdown</h1><h2 id="test-second"><a href="#test-second" class="headerlink" title="test second"></a>test second</h2><p>hello </p>
@@ -233,14 +230,11 @@
   	<time datetime="2017-09-01T12:17:31.961Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-09-01</time>
 </a>
         
-		阅读数:
-			<span id="/2017/09/01/hello-world/" class="leancloud_visitors" data-flag-title="Hello World"></span>次
 		
+
       </header>
     
-	<!-- 目录内容 -->
 			
-	<!-- 目录内容结束 -->
     <div class="article-entry" itemprop="articleBody">
       
         <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
@@ -305,55 +299,18 @@
     <div id="footer-info">
     	<div class="footer-left">
     		&copy; 2017 CodeMonster
+			<span id="busuanzi_container_site_uv">
+			  你是本站第<span id="busuanzi_value_site_uv"></span>位访客
+			</span>
     	</div>
       	<div class="footer-right">
-      		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
+      		<!--a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten-->
+			<a href="http://www.miitbeian.gov.cn/" target="_blank">闽ICP备17015557号</a>
       	</div>
     </div>
   </div>
 </footer>
-
-  <script src="//cdn1.lncld.net/static/js/2.5.0/av-min.js"></script>
-<script>
-    var APP_ID = 'yCywzuhyDhK9nPKOtKIbaizb-9Nh9j0Va';
-    var APP_KEY = 'nKClK7wjlOAkpoYsFPqtkdFp';
-    AV.init({
-        appId: APP_ID,
-        appKey: APP_KEY
-    });
-    // 显示次数
-    function showTime(Counter) {
-        var query = new AV.Query("Counter");
-        if($(".leancloud_visitors").length > 0){
-            var url = $(".leancloud_visitors").attr('id').trim();
-            // where field
-            query.equalTo("words", url);
-            // count
-            query.count().then(function (number) {
-                // There are number instances of MyClass where words equals url.
-                $(document.getElementById(url)).text(number?  number : '--');
-            }, function (error) {
-                // error is an instance of AVError.
-            });
-        }
-    }
-    // 追加pv
-    function addCount(Counter) {
-        var url = $(".leancloud_visitors").length > 0 ? $(".leancloud_visitors").attr('id').trim() : 'icafebolger.com';
-        var Counter = AV.Object.extend("Counter");
-        var query = new Counter;
-        query.save({
-            words: url
-        }).then(function (object) {
-        })
-    }
-    $(function () {
-        var Counter = AV.Object.extend("Counter");
-        addCount(Counter);
-        showTime(Counter);
-    });
-</script>
-
+<script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
     </div>
     <script>
 	var yiliaConfig = {
