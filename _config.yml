@@ -109,3 +109,6 @@ jsonContent:
     excerpt: false
     categories: false
     tags: true
+
+#busuanzi count
+busuanzi_count: false

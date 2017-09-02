@@ -45,9 +45,18 @@
 <div class="page-modal wx-share js-wx-box">
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="<%- 'qrcode' in locals ? qrcode(sUrl) : 'http://s.jiathis.com/qrcode.php?url=' + sUrl  %>" alt="微信分享二维码">
+    <div class="wx-qrcode" id="wx-qrcode">
+      <% if('qrcode' in locals){%>
+      <img src="<%- qrcode(sUrl) %>" alt="微信分享二维码">
+      <% }else{%>
+      <script type="text/javascript" src="/qrcode.js"></script>
+      <script>
+      var qrcode = new QRCode(document.getElementById("wx-qrcode"), {});
+      qrcode.makeCode("<%- sUrl %>");
+      </script>
+      <% }%>
     </div>
 </div>
+
 
 <div class="mask js-mask"></div>

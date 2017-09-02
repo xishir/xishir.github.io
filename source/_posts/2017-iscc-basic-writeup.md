@@ -62,7 +62,7 @@ for k in range(26):
 ```
 运行后找到最像flag的一条，flag为 `FIREINTHEHOLE`
 
-![](http://ovm02pvss.bkt.clouddn.com/2017iscc1.jpg)
+![](/img/2017iscc1.jpg)
 
 ## Basic 2 你猜猜。。 （100）
 
@@ -98,6 +98,6 @@ aircrack-ng wifi.cap -w dic.txt
 ```
 其中dic.txt是字典，wifi.cap就是那个cap文件
 
-![](http://ovm02pvss.bkt.clouddn.com/2017iscc2.jpg)
+![](/img/2017iscc2.jpg)
 
 爆破出路由器密码，所以flag为 `ISCC16BA`

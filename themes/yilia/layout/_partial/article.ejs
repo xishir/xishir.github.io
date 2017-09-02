@@ -11,7 +11,7 @@
 		  阅读量:<span id="<%= url_for(post.path) %>" class="leancloud_visitors" data-flag-title="<%- post.title %>"></span>
 		</span>
 		<% } %>
-		<% if (theme.busuanzi_count && !index){ %>
+		<% if (config.busuanzi_count && !index){ %>
 		<span id="busuanzi_container_page_pv" class="archive-article-data">
 		  阅读量:<span id="busuanzi_value_page_pv"></span>
 		</span>

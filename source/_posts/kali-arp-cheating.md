@@ -50,4 +50,4 @@ date: 2017-04-08 20:43:04
 
 `driftnet -i eth0`
 
-![](http://ovm02pvss.bkt.clouddn.com/kaliarp.png)
+![](/img/kaliarp.png)

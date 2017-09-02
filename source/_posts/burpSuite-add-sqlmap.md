@@ -25,4 +25,4 @@ github: https://github.com/difcareer/sqlmap4burp
 加入配置中写：`"--level 3"`,真实执行时是：`sqlmap.py -r $file --level 3`
 回到burpsuite主页面，在任何请求连接上右键，会看到新增`"send to Sqlmap"`，点击后会开启cmd窗口，针对此请求进行sql注入检测
 
-![](http://ovm02pvss.bkt.clouddn.com/burp+sqlmap.png)
+![](/img/burp+sqlmap.png)

@@ -193,4 +193,4 @@ title=aa&email_s=a&email_m=a&type=a&users=aaaa%27%7Caaa&role%5B%5D=abdc%7D%27+un
 
 整个比赛难度中等，基本都是在找现成exp，我们队除了MD5那题其他都是我A的，中间一度霸占榜一，但是最终排名第九，要反思的还是很多的。
 放个图纪念曾经的榜一。
-![](http://ovm02pvss.bkt.clouddn.com/2017xnuca1.jpg)
+![](/img/2017xnuca1.jpg)

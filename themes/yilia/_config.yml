@@ -49,9 +49,9 @@ reward_type: 2
 # 打赏wording
 reward_wording: '谢谢你请我吃糖果'
 # 支付宝二维码图片地址，跟你设置头像的方式一样。比如：/assets/img/alipay.jpg
-alipay: http://ovm02pvss.bkt.clouddn.com/alipay.png
+alipay: /img/alipay.png
 # 微信二维码图片地址
-weixin: http://ovm02pvss.bkt.clouddn.com/weixin.png
+weixin: /img/weixin.png
 
 # 目录
 # 目录设定：0-不显示目录； 1-文章对应的md文件里有toc:true属性，才有目录； 2-所有文章均显示目录
@@ -67,10 +67,10 @@ top: true
 # Miscellaneous
 baidu_analytics: ''
 google_analytics: ''
-favicon: http://ovm02pvss.bkt.clouddn.com/favicon.png
+favicon: /img/favicon.png
 
 #你的头像url
-avatar: http://ovm02pvss.bkt.clouddn.com/codemonster.jpg
+avatar: /img/codemonster.jpg
 
 #是否开启分享
 share_jia: true
@@ -92,8 +92,6 @@ changyan_conf: 'prod_bc3a17ee08a3aa3dab4d478a72fc4906'
 disqus: false
 
 # add post views
-busuanzi_count: true
-
 leancloud_visitors:
   enable: false
   app_id: 'yCywzuhyDhK9nPKOtKIbaizb-9Nh9j0Va'

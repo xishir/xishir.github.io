@@ -61,7 +61,7 @@ tags:
 ```
 然后提交一个base64的图片，这个图片和原图的所有像素点通道值的差的平均值小于等于2，并且图片分类不为daisy，就可以得到flag，这是我最终拿下flag的图
 
-![](http://ovm02pvss.bkt.clouddn.com/2017bctf1.jpg)
+![](/img/2017bctf1.jpg)
 ```bash
 [*]I think this is pinwheel.
 [*]What? This is daisy?

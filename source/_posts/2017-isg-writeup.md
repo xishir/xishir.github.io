@@ -29,7 +29,7 @@ u3-&gt;u4   把u3的ISG币刷到40000000，人名币为负数，u4则相反
 
 一买一卖u1就挣到了足够的钱
 
-![](http://ovm02pvss.bkt.clouddn.com/2017isg1.png) 
+![](/img/2017isg1.png) 
 
 ## Remix
 
@@ -71,4 +71,4 @@ $dbh = new PDO($dsn, $username, $password, $options);
 
 这个比赛难度中上，参赛对象为各大企业安全团队，看到了许多大佬，膜
 
-![](http://ovm02pvss.bkt.clouddn.com/2017isg2.png)
+![](/img/2017isg2.png)
