@@ -12,7 +12,7 @@ timezone:
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://www.codemonster.cn
+url: https://www.codemonster.cn
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
@@ -111,4 +111,10 @@ jsonContent:
     tags: true
 
 #busuanzi count
-busuanzi_count: false
+busuanzi_count: true
+
+# sitemap
+sitemap:
+  path: sitemap.xml
+baidusitemap:
+  path: baidusitemap.xml
