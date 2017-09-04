@@ -19,3 +19,8 @@
 <% if(config.busuanzi_count){%>
 <script async src="/busuanzi.pure.mini.js"></script>
 <% } %>
+<% if(config.music!=false){%>
+<audio autoplay="autoplay">
+    <source src="<%- config.music%>" type="audio/mp3">
+</audio>
+<% } %>

@@ -113,6 +113,9 @@ jsonContent:
 #busuanzi count
 busuanzi_count: true
 
+#background music
+music: /img/song.mp3
+
 # sitemap
 sitemap:
   path: sitemap.xml
