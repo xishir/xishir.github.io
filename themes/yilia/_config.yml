@@ -3,7 +3,7 @@
 menu:
   主页: /
   #所有文章: /archives
-  MOCTF: http://ctf.codemonster.cn/
+  #MOCTF: http://ctf.codemonster.cn/
   WriteUp: /tags/WriteUp/
 
 # SubNav
@@ -122,7 +122,7 @@ smart_menu:
 
 friends:
   MOCTF: http://ctf.codemonster.cn/
-  友情链接2: /
+  XMUTISC: http://isc.codemonster.cn/
   友情链接3: /
   友情链接4: /
   友情链接5: /
