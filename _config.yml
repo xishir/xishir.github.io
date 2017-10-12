@@ -114,7 +114,8 @@ jsonContent:
 busuanzi_count: true
 
 #background music
-music: /img/song.mp3
+#music: /img/song.mp3
+music: false
 
 # sitemap
 sitemap:
