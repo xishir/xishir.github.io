@@ -4,8 +4,6 @@ date: 2017-06-26 13:29:39
 tags:
   - CTF
   - WriteUp
-  - 网络安全
-  - kali
   - MISC
 ---
 

@@ -121,11 +121,13 @@ smart_menu:
   aboutme: '关于我'
 
 friends:
-  MOCTF: http://ctf.codemonster.cn/
-  XMUTISC: http://isc.codemonster.cn/
-  友情链接3: /
-  友情链接4: /
-  友情链接5: /
+  ChaMd5: http://www.chamd5.org/
+  pcat: http://www.cnblogs.com/pcat/
+  MOCTF: http://www.moctf.com/
+  XMUTSEC: http://www.xmutsec.com/
+  H4ck2fun: http://h4ck2fun.github.io/
+  C-soul: http://c-soul.cn/blog/
+  Hsingyin: http://www.hsingyin.site/
   友情链接6: /
 
 aboutme: 一只不爱打代码的怪兽

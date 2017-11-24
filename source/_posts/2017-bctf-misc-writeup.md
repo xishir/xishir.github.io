@@ -3,7 +3,6 @@ title: 2017 BCTF MISC WriteUp
 date: 2017-04-17 21:19:52
 tags:
   - CTF
-  - python
   - WriteUp
   - MISC
 ---
