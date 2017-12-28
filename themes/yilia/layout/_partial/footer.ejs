@@ -17,7 +17,16 @@
   </div>
 </footer>
 <% if(config.busuanzi_count){%>
-<script async src="/busuanzi.pure.mini.js"></script>
+<!--script async src="/busuanzi.pure.mini.js"></script-->
+<script type="text/javascript">
+	var _hmt = _hmt || [];
+    (function() {
+        var hm = document.createElement("script");
+        hm.src = "/busuanzi.pure.mini.js";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
 <% } %>
 <% if(config.music!=false){%>
 <audio autoplay="autoplay">
