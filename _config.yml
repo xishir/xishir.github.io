@@ -87,7 +87,7 @@ feed:
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repo: https://github.com/xishir/xishir.github.io.git
+  repo: git@github.com:xishir/xishir.github.io.git
   branch: master
 
 # jsonContent
