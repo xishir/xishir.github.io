@@ -6,14 +6,24 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://www.codemonster.cn">
-  <title>打代码的怪兽 CodeMonster</title>
+  <title>2018 信息安全铁人三项赛第七(福建)赛区 WriteUp | 打代码的怪兽 CodeMonster</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="打代码的怪兽 CodeMonster">
-<meta property="og:url" content="https://www.codemonster.cn/page/3/index.html">
+  <meta name="description" content="前言时隔一年再次参加铁三，今年的赛制有点改动，企业赛个人赛和数据赛三场在同一天进行，在队友们的带领下混了个赛区第二名，成功晋级决赛。本次比赛中我主要负责的是企业赛部分，也就是对给定目标进行渗透测试，然后中间穿插着做了几道数据赛的题，这里记录一下。（因为比赛过程中没怎么截图，师傅们别打我）">
+<meta name="keywords" content="渗透,WriteUp,流量分析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2018 信息安全铁人三项赛第七(福建)赛区 WriteUp">
+<meta property="og:url" content="https://www.codemonster.cn/2018/05/17/2018-t3sec-fujian-writeup/index.html">
 <meta property="og:site_name" content="打代码的怪兽 CodeMonster">
+<meta property="og:description" content="前言时隔一年再次参加铁三，今年的赛制有点改动，企业赛个人赛和数据赛三场在同一天进行，在队友们的带领下混了个赛区第二名，成功晋级决赛。本次比赛中我主要负责的是企业赛部分，也就是对给定目标进行渗透测试，然后中间穿插着做了几道数据赛的题，这里记录一下。（因为比赛过程中没怎么截图，师傅们别打我）">
+<meta property="og:image" content="https://www.codemonster.cn/img/2018-t3sec-1.png">
+<meta property="og:image" content="https://www.codemonster.cn/img/2018-t3sec-2.png">
+<meta property="og:image" content="https://www.codemonster.cn/img/2018-t3sec-3.png">
+<meta property="og:image" content="https://www.codemonster.cn/img/2018-t3sec-4.png">
+<meta property="og:updated_time" content="2018-05-17T13:43:35.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="打代码的怪兽 CodeMonster">
+<meta name="twitter:title" content="2018 信息安全铁人三项赛第七(福建)赛区 WriteUp">
+<meta name="twitter:description" content="前言时隔一年再次参加铁三，今年的赛制有点改动，企业赛个人赛和数据赛三场在同一天进行，在队友们的带领下混了个赛区第二名，成功晋级决赛。本次比赛中我主要负责的是企业赛部分，也就是对给定目标进行渗透测试，然后中间穿插着做了几道数据赛的题，这里记录一下。（因为比赛过程中没怎么截图，师傅们别打我）">
+<meta name="twitter:image" content="https://www.codemonster.cn/img/2018-t3sec-1.png">
   
     <link rel="alternative" href="/atom.xml" title="打代码的怪兽 CodeMonster" type="application/atom+xml">
   
@@ -145,37 +155,106 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-    <article id="post-2017-t3sec-enterprise-writeup" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+            <article id="post-2018-t3sec-fujian-writeup" class="article article-type-post " itemscope itemprop="blogPost">
   <div class="article-inner">
     
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/04/23/2017-t3sec-enterprise-writeup/">2017 信息安全铁人三项赛企业赛华南赛区 WriteUp</a>
+    <h1 class="article-title" itemprop="name">
+      2018 信息安全铁人三项赛第七(福建)赛区 WriteUp
     </h1>
   
 
         
-        <a href="/2017/04/23/2017-t3sec-enterprise-writeup/" class="archive-article-date">
-  	<time datetime="2017-04-23T12:42:59.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-04-23</time>
+        <a href="/2018/05/17/2018-t3sec-fujian-writeup/" class="archive-article-date">
+  	<time datetime="2018-05-17T06:42:59.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-05-17</time>
 </a>
         
 		
 		
+		<span id="busuanzi_container_page_pv" class="archive-article-data">
+		  阅读量:<span id="busuanzi_value_page_pv"></span>
+		</span>
+		
       </header>
     
-			
+	
+		<p class="show-toc-btn" id="show-toc-btn" onclick="showToc();" style="display:none">
+	<span class="btn-bg"></span>
+	<span class="btn-text">文章导航</span>
+</p>
+<div id="toc-article" class="toc-article">
+	<span id="toc-close" class="toc-close" title="隐藏导航" onclick="showBtn();">×</span>
+	<strong class="toc-title">文章目录</strong>
+	<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x00-企业赛，启动"><span class="toc-number">2.</span> <span class="toc-text">0x00 企业赛，启动</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-拿下服务器"><span class="toc-number">3.</span> <span class="toc-text">0x01 拿下服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x02-内网渗透"><span class="toc-number">4.</span> <span class="toc-text">0x02 内网渗透</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x03-渗透服务器"><span class="toc-number">5.</span> <span class="toc-text">0x03 渗透服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x04-数据分析"><span class="toc-number">6.</span> <span class="toc-text">0x04 数据分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x05-个人赛"><span class="toc-number">7.</span> <span class="toc-text">0x05 个人赛</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">8.</span> <span class="toc-text">总结</span></a></li></ol>
+</div>
+<script type="text/javascript">
+	function showToc(){
+		var toc_article = document.getElementById("toc-article");
+		var show_toc_btn = document.getElementById("show-toc-btn");
+		toc_article.setAttribute("style","display:block");
+		show_toc_btn.setAttribute("style","display:none");
+		};
+	function showBtn(){
+		var toc_article = document.getElementById("toc-article");
+		var show_toc_btn = document.getElementById("show-toc-btn");
+		toc_article.setAttribute("style","display:none");
+		show_toc_btn.setAttribute("style","display:block");
+	};
+</script>
+    		
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="“企业夺旗”模式"><a href="#“企业夺旗”模式" class="headerlink" title="“企业夺旗”模式"></a>“企业夺旗”模式</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">web1：192.168.5.11 wordpress</div></pre></td></tr></table></figure>
-        
-          <a class="article-more-a" href="/2017/04/23/2017-t3sec-enterprise-writeup/#more">more >></a>
-        
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>时隔一年再次参加铁三，今年的赛制有点改动，企业赛个人赛和数据赛三场在同一天进行，在队友们的带领下混了个赛区第二名，成功晋级决赛。本次比赛中我主要负责的是企业赛部分，也就是对给定目标进行渗透测试，然后中间穿插着做了几道数据赛的题，这里记录一下。（因为比赛过程中没怎么截图，师傅们别打我）</p>
+<a id="more"></a>
+<h2 id="0x00-企业赛，启动"><a href="#0x00-企业赛，启动" class="headerlink" title="0x00 企业赛，启动"></a>0x00 企业赛，启动</h2><p>比赛开始，从平台里可以看到给了两个ip<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">202.1.2.50</div><div class="line">202.1.2.60</div></pre></td></tr></table></figure></p>
+<p>先从50这台下手，nmap扫描得到几个端口：80,137,3389等<br>这里基本可以知道是台windows服务器了（可能有ms系列漏洞或者可以3389爆破一波），<br>打开浏览器直接访问发现是个php页面，存在文件包含漏洞，源代码提示包含Tips.php，直接用<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">?file=php://filter/read=convert.base64-encode/resource=Tips.php</div><div class="line">?file=php://filter/read=convert.base64-encode/resource=index.php</div></pre></td></tr></table></figure></p>
+<p>读一下源码，得到提示：<code>Have you ever heard of SNMP information trasures??</code><br>先不管提示，fuzz读取了一下<code>flag.php</code>，直接读取到flag5，拿下100分，这里开了个脑洞，c盘根目录会不会也有个flag呢？<br>于是尝试读取<code>c:\\flag.txt</code>，果然，读到了flag4，又拿下100分。（这里工作人员过来问我是不是拿到了服务器权限，怎么这么快，只能告诉他我是靠意识猜的flag）  </p>
+<h2 id="0x01-拿下服务器"><a href="#0x01-拿下服务器" class="headerlink" title="0x01 拿下服务器"></a>0x01 拿下服务器</h2><p>再回到提示，通过搜索引擎，找到了这篇文章：<a href="http://www.freebuf.com/column/144144.html" target="_blank" rel="noopener">一次对SNMP服务的渗透测试</a><br>文中给出了多种方法对SNMP服务进行渗透测试，这里我采用了<code>metasploit</code>的<code>auxiliary/scanner/snmp/snmp_login</code>，设置一下参数然后运行，跑出SNMP存在弱密码，可以直接读取系统的敏感信息，使用如下命令查看一波<br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">snmpwalk -v1 -c admin <span class="number">202</span>.<span class="number">1</span>.<span class="number">2</span>.<span class="number">50</span></div></pre></td></tr></table></figure></p>
+<p>然后返回了一大堆系统敏感，有用户列表，ip信息等等，在用户列表那里发现了一个名为<code>libai</code>的用户，随手<code>mstsc</code>连接3389测试一下弱口令，果不其然，<code>libai</code>用户的密码为<code>admin</code>，查看一下还有管理员权限，这里就算是彻底拿下50这台服务器了<br>在服务器里探索一波，发现http服务是用<code>phpstudy</code>搭建的，用phpstudy连接进mysql数据库，在test数据库里找到flag6<br>然后全局搜索文件，搜索到两个名字带有flag的图片文件，让队友去做了，不过也没做出啥  </p>
+<h2 id="0x02-内网渗透"><a href="#0x02-内网渗透" class="headerlink" title="0x02 内网渗透"></a>0x02 内网渗透</h2><p>服务器翻得差不多了，内网探测一波，发现如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">192.168.1.2 开启80，53端口</div><div class="line">192.168.1.43 8080端口存在一个dotcms</div></pre></td></tr></table></figure></p>
+<p>.2这台感觉是台dns服务器，不过没有什么思路，先从dot开始吧，这里因为dot在50的内网，拷工具进去渗透很不方便，在50上用ew跑了个socks5代理，把50当作跳板<br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ew_for_Win.exe -s ssocksd -l <span class="number">1080</span></div></pre></td></tr></table></figure></p>
+<p>然后本地配个代理就能直接访问了，搜索引擎查到该版本的dotcms存在一个sql注入和一个后台getshell漏洞，但是注入还是盲注，好麻烦<br>后台测了一波弱口令，未果，突然发现在普通用户登录界面有个邮箱和密码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">bill@xxxxx.com (具体的我忘了！)</div><div class="line">bill</div></pre></td></tr></table></figure></p>
+<p>猜测它也是后台管理员帐号，直接登陆，果然成功了，然后用后台getshell漏洞来getshell<br>参考地址:<a href="http://seclists.org/fulldisclosure/2017/Jul/33" target="_blank" rel="noopener">http://seclists.org/fulldisclosure/2017/Jul/33</a><br>参考文章，找到上传点，这里我用firefox的修改数据包功能构造了<code>任意文件上传</code>的包，传了个jsp网马，这里因为后台有waf的原因，还是上了个不死马，总之拿到了shell<br><img src="/img/2018-t3sec-1.png" alt=""><br>因为是<code>jsp网站</code>的原因，直接就是<code>administrator</code>权限了，在c盘发现了flag2，当时时间有限而且这台服务器没有开启3389，没有继续深入挖掘，后来听说dot的前端页面也有个flag，然后还有个flag在回收站里，脑洞果然够大，附上cmd查看回收站命令：<br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">cd</span> $recycle.bin</div></pre></td></tr></table></figure></p>
+<h2 id="0x03-渗透服务器"><a href="#0x03-渗透服务器" class="headerlink" title="0x03 渗透服务器"></a>0x03 渗透服务器</h2><p>接着对60服务器进行渗透测试，nmap扫描，发现开启了21，22，445，有个ftp服务，当时查了一下ftp版本，没啥漏洞，然后用<code>hydra</code>爆破一波，也没爆出来东西，赛后得知是linux的永恒之蓝漏洞，这里记录一下，参考：<a href="https://bbs.ichunqiu.com/thread-23281-1-1.html" target="_blank" rel="noopener">https://bbs.ichunqiu.com/thread-23281-1-1.html</a><br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">use exploit/linux/samba/is_known_pipename</div><div class="line"><span class="built_in">set</span> RHOST <span class="number">202</span>.<span class="number">1</span>.<span class="number">2</span>.<span class="number">60</span></div><div class="line">run</div></pre></td></tr></table></figure></p>
+<h2 id="0x04-数据分析"><a href="#0x04-数据分析" class="headerlink" title="0x04 数据分析"></a>0x04 数据分析</h2><p>先贴一下最终答案截图（队友余老师截的图）<br><img src="/img/2018-t3sec-2.png" alt=""><br><img src="/img/2018-t3sec-3.png" alt=""><br>其中大部分题目只要对渗透测试有一定的了解，会使用wireshark之类的流量分析工具，都能解出，我就不详细说了，<br>讲一下卡了特别久的两道题（中间差点跳过那种，还好没跳过，最后全部做出加了100多分），一个是第9题，图片木马的密码是什么，这里其实只要找到对应的位置，将图片文件下载下来，然后cat一下就能发现php一句话了（我也不知道为什么卡了那么久）<br>还有一个是第12题，找黑客往FTP上传的文件名，因为挂了个reGeorg代理，ftp协议变得很奇怪，这里我也找了好久，以为后面还有很多题，想当然地以为这题一定在第8个数据包里，结果只找到了FTP密码，然后想了想去看看第9个包吧，进去搜索一下FTP协议上传文件的命令<code>STOR</code>，直接就找到了</p>
+<h2 id="0x05-个人赛"><a href="#0x05-个人赛" class="headerlink" title="0x05 个人赛"></a>0x05 个人赛</h2><p>队友jaken拿了个一血，web狗表示膜拜</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>今年分区赛因为和Defcon China撞车的原因，几个强队好像都不是主力来打，没有被吊打的很严重，不过还是看到了自己的很多不足，内网渗透做做的还不是特别好，对很多漏洞没有敏感的嗅觉，对几个工具的使用也不是特别熟练，数据分析卡题严重<br>不过结果还是好的，拿了个亚军，成功晋级决赛，不知道有没有机会打～，附上最后排行图<br><img src="/img/2018-t3sec-4.png" alt=""><br>（最后弱弱地吐槽一下，今年亚军的奖金比去年1/3场分区赛的季军奖金还少！）</p>
+
       
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/alipay.png">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/weixin.png">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
       
     </div>
     <div class="article-info article-info-index">
@@ -186,7 +265,7 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">CTF</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">渗透</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
@@ -194,19 +273,7 @@
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">审计</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">Web</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">上传</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">加固</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">流量分析</a>
         		</li>
       		
 		</ul>
@@ -215,16 +282,82 @@
       
 
       
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/04/23/2017-t3sec-enterprise-writeup/">展开全文 >></a>
-        </p>
-      
 
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode" id="wx-qrcode">
+      
+      <script type="text/javascript" src="/qrcode.js"></script>
+      <script>
+      var qrcode = new QRCode(document.getElementById("wx-qrcode"), {});
+      qrcode.makeCode("https://www.codemonster.cn/2018/05/17/2018-t3sec-fujian-writeup/");
+      </script>
+      
+    </div>
+</div>
+
+
+<div class="mask js-mask"></div>
       
       <div class="clearfix"></div>
     </div>
   </div>
 </article>
+
+  
+<nav id="article-nav">
+  
+  
+    <a href="/2018/03/28/2018-struts2-001/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">Struts2Vuls之S2-001漏洞复现与简要分析</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
 
 <aside class="wrap-side-operation">
     <div class="mod-side-operation">
@@ -239,270 +372,39 @@
         </div>
         
         
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-2017-bctf-misc-writeup" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/04/17/2017-bctf-misc-writeup/">2017 BCTF MISC WriteUp</a>
-    </h1>
-  
-
-        
-        <a href="/2017/04/17/2017-bctf-misc-writeup/" class="archive-article-date">
-  	<time datetime="2017-04-17T13:19:52.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-04-17</time>
-</a>
-        
-		
-		
-      </header>
-    
-			
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="Check-in"><a href="#Check-in" class="headerlink" title="Check in"></a>Check in</h2><p>签到题，nc连接，输入比赛界面的token即可获得flag<br>
-        
-          <a class="article-more-a" href="/2017/04/17/2017-bctf-misc-writeup/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">CTF</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">WriteUp</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">MISC</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/04/17/2017-bctf-misc-writeup/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x00-企业赛，启动"><span class="toc-number">2.</span> <span class="toc-text">0x00 企业赛，启动</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-拿下服务器"><span class="toc-number">3.</span> <span class="toc-text">0x01 拿下服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x02-内网渗透"><span class="toc-number">4.</span> <span class="toc-text">0x02 内网渗透</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x03-渗透服务器"><span class="toc-number">5.</span> <span class="toc-text">0x03 渗透服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x04-数据分析"><span class="toc-number">6.</span> <span class="toc-text">0x04 数据分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x05-个人赛"><span class="toc-number">7.</span> <span class="toc-text">0x05 个人赛</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">8.</span> <span class="toc-text">总结</span></a></li></ol>
+                    </div>
+                </span>
             </div>
         </div>
         
-        
     </div>
 </aside>
 
 
 
-
-  
-    <article id="post-change-to-https" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/04/11/change-to-https/">升级博客为https</a>
-    </h1>
-  
-
-        
-        <a href="/2017/04/11/change-to-https/" class="archive-article-date">
-  	<time datetime="2017-04-11T12:38:42.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-04-11</time>
-</a>
-        
-		
-		
-      </header>
-    
-			
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="博客环境"><a href="#博客环境" class="headerlink" title="博客环境"></a>博客环境</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Centos6.5</div><div class="line">Apache httpd</div><div class="line">Wordpress</div></pre></td></tr></table></figure>
-        
-          <a class="article-more-a" href="/2017/04/11/change-to-https/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">apache</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">https</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/04/11/change-to-https/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-kali-arp-cheating" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/04/08/kali-arp-cheating/">Kali中利用ARP欺骗拦截图片</a>
-    </h1>
-  
-
-        
-        <a href="/2017/04/08/kali-arp-cheating/" class="archive-article-date">
-  	<time datetime="2017-04-08T12:43:04.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-04-08</time>
-</a>
-        
-		
-		
-      </header>
-    
-			
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="攻击环境"><a href="#攻击环境" class="headerlink" title="攻击环境"></a>攻击环境</h2><h4 id="网关："><a href="#网关：" class="headerlink" title="网关："></a>网关：</h4><p><code>192.168.155.1</code><br>
-        
-          <a class="article-more-a" href="/2017/04/08/kali-arp-cheating/#more">more >></a>
-        
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">Arp欺骗</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">kali</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2017/04/08/kali-arp-cheating/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
   
   
-    <nav id="page-nav">
-      <a class="extend prev" rel="prev" href="/page/2/">&laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
-    </nav>
+  
+
+  
+  <div id="SOHUCS" sid="2018-t3sec-fujian-writeup" style="padding: 0px 30px 0px 46px;"></div> 
+<script type="text/javascript"> 
+(function(){ 
+var appid = "cytc4BpeT"; 
+var conf = "prod_bc3a17ee08a3aa3dab4d478a72fc4906"; 
+var width = window.innerWidth || document.documentElement.clientWidth; 
+if (width < 960) { 
+window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="//changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("//changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})}); } })(); </script>
+  
+
   
 
 
@@ -544,8 +446,8 @@
     <script>
 	var yiliaConfig = {
 		mathjax: false,
-		isHome: true,
-		isPost: false,
+		isHome: false,
+		isPost: true,
 		isArchive: false,
 		isTag: false,
 		isCategory: false,

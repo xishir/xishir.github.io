@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.codemonster.cn/"/>
-  <updated>2018-05-17T12:01:43.000Z</updated>
+  <updated>2018-05-17T13:43:35.000Z</updated>
   <id>https://www.codemonster.cn/</id>
   
   <author>
@@ -17,10 +17,10 @@
   
   <entry>
     <title>2018 信息安全铁人三项赛第七(福建)赛区 WriteUp</title>
-    <link href="https://www.codemonster.cn/2018/05/16/2018-t3sec-fujian-writeup/"/>
-    <id>https://www.codemonster.cn/2018/05/16/2018-t3sec-fujian-writeup/</id>
-    <published>2018-05-16T06:42:59.000Z</published>
-    <updated>2018-05-17T12:01:43.000Z</updated>
+    <link href="https://www.codemonster.cn/2018/05/17/2018-t3sec-fujian-writeup/"/>
+    <id>https://www.codemonster.cn/2018/05/17/2018-t3sec-fujian-writeup/</id>
+    <published>2018-05-17T06:42:59.000Z</published>
+    <updated>2018-05-17T13:43:35.000Z</updated>
     
     <content type="html"><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>时隔一年再次参加铁三，今年的赛制有点改动，企业赛个人赛和数据赛三场在同一天进行，在队友们的带领下混了个赛区第二名，成功晋级决赛。本次比赛中我主要负责的是企业赛部分，也就是对给定目标进行渗透测试，然后中间穿插着做了几道数据赛的题，这里记录一下。（因为比赛过程中没怎么截图，师傅们别打我）</p>
 <a id="more"></a>
@@ -36,7 +36,7 @@
 <h2 id="0x03-渗透服务器"><a href="#0x03-渗透服务器" class="headerlink" title="0x03 渗透服务器"></a>0x03 渗透服务器</h2><p>接着对60服务器进行渗透测试，nmap扫描，发现开启了21，22，445，有个ftp服务，当时查了一下ftp版本，没啥漏洞，然后用<code>hydra</code>爆破一波，也没爆出来东西，赛后得知是linux的永恒之蓝漏洞，这里记录一下，参考：<a href="https://bbs.ichunqiu.com/thread-23281-1-1.html" target="_blank" rel="noopener">https://bbs.ichunqiu.com/thread-23281-1-1.html</a><br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">use exploit/linux/samba/is_known_pipename</div><div class="line"><span class="built_in">set</span> RHOST <span class="number">202</span>.<span class="number">1</span>.<span class="number">2</span>.<span class="number">60</span></div><div class="line">run</div></pre></td></tr></table></figure></p>
 <h2 id="0x04-数据分析"><a href="#0x04-数据分析" class="headerlink" title="0x04 数据分析"></a>0x04 数据分析</h2><p>先贴一下最终答案截图（队友余老师截的图）<br><img src="/img/2018-t3sec-2.png" alt=""><br><img src="/img/2018-t3sec-3.png" alt=""><br>其中大部分题目只要对渗透测试有一定的了解，会使用wireshark之类的流量分析工具，都能解出，我就不详细说了，<br>讲一下卡了特别久的两道题（中间差点跳过那种，还好没跳过，最后全部做出加了100多分），一个是第9题，图片木马的密码是什么，这里其实只要找到对应的位置，将图片文件下载下来，然后cat一下就能发现php一句话了（我也不知道为什么卡了那么久）<br>还有一个是第12题，找黑客往FTP上传的文件名，因为挂了个reGeorg代理，ftp协议变得很奇怪，这里我也找了好久，以为后面还有很多题，想当然地以为这题一定在第8个数据包里，结果只找到了FTP密码，然后想了想去看看第9个包吧，进去搜索一下FTP协议上传文件的命令<code>STOR</code>，直接就找到了</p>
 <h2 id="0x05-个人赛"><a href="#0x05-个人赛" class="headerlink" title="0x05 个人赛"></a>0x05 个人赛</h2><p>队友jaken拿了个一血，web狗表示膜拜</p>
-<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>今年分区赛因为和Defcon China撞车的原因，几个强队好像都不是主力来打，没有被吊打的很严重，不过还是看到了自己的很多不足，内网渗透做做的还不是特别好，对很多漏洞没有敏感的嗅觉，对几个工具的使用也不是特别熟练，数据分析卡题严重<br>不过结果还是好的，拿了个亚军，成功晋级决赛，不知道有没有机会打～，附上最后排行图<br><img src="/img/2018-t3sec-4.png" alt=""><br>（最后弱弱地吐槽一下，今年亚军的奖金比去年1/3场分区赛的季军奖金还少！）</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>今年分区赛因为和Defcon China撞车的原因，几个强队好像都不是主力来打，没有被吊打的很严重，不过还是看到了自己的很多不足，内网渗透做做的还不是特别好，对很多漏洞没有敏感的嗅觉，对几个工具的使用也不是特别熟练，数据分析卡题严重<br>不过结果还是好的，拿了个亚军，成功晋级决赛，不知道有没有机会打～，附上最后排行图<br><img src="/img/2018-t3sec-4.png" alt=""><br>（最后弱弱地吐槽一下，今年亚军的奖金比去年1/3场分区赛的季军奖金还少！）</p>
 ]]></content>
     
     <summary type="html">
@@ -299,9 +299,9 @@
     
       <category term="注入" scheme="https://www.codemonster.cn/tags/%E6%B3%A8%E5%85%A5/"/>
     
-      <category term="Web" scheme="https://www.codemonster.cn/tags/Web/"/>
-    
       <category term="Misc" scheme="https://www.codemonster.cn/tags/Misc/"/>
+    
+      <category term="Web" scheme="https://www.codemonster.cn/tags/Web/"/>
     
       <category term="CBC字节翻转攻击" scheme="https://www.codemonster.cn/tags/CBC%E5%AD%97%E8%8A%82%E7%BF%BB%E8%BD%AC%E6%94%BB%E5%87%BB/"/>
     
@@ -742,9 +742,9 @@
     
       <category term="文件包含" scheme="https://www.codemonster.cn/tags/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/"/>
     
-      <category term="上传" scheme="https://www.codemonster.cn/tags/%E4%B8%8A%E4%BC%A0/"/>
-    
       <category term="SQL注入" scheme="https://www.codemonster.cn/tags/SQL%E6%B3%A8%E5%85%A5/"/>
+    
+      <category term="上传" scheme="https://www.codemonster.cn/tags/%E4%B8%8A%E4%BC%A0/"/>
     
       <category term="反序列化" scheme="https://www.codemonster.cn/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"/>
     
@@ -941,11 +941,11 @@
     
       <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
     
+      <category term="Misc" scheme="https://www.codemonster.cn/tags/Misc/"/>
+    
       <category term="Web" scheme="https://www.codemonster.cn/tags/Web/"/>
     
       <category term="Crypto" scheme="https://www.codemonster.cn/tags/Crypto/"/>
-    
-      <category term="Misc" scheme="https://www.codemonster.cn/tags/Misc/"/>
     
   </entry>
   
