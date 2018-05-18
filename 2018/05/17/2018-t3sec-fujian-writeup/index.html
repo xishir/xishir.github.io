@@ -19,7 +19,7 @@
 <meta property="og:image" content="https://www.codemonster.cn/img/2018-t3sec-2.png">
 <meta property="og:image" content="https://www.codemonster.cn/img/2018-t3sec-3.png">
 <meta property="og:image" content="https://www.codemonster.cn/img/2018-t3sec-4.png">
-<meta property="og:updated_time" content="2018-05-18T02:40:32.000Z">
+<meta property="og:updated_time" content="2018-05-18T02:42:11.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="2018 信息安全铁人三项赛第七(福建)赛区 WriteUp">
 <meta name="twitter:description" content="前言时隔一年再次参加铁三，今年的赛制有点改动，企业赛个人赛和数据赛三场在同一天进行，在队友们的带领下混了个赛区第二名，成功晋级决赛。本次比赛中我主要负责的是企业赛部分，也就是对给定目标进行渗透测试，然后中间穿插着做了几道数据赛的题，这里记录一下。（因为比赛过程中没怎么截图，师傅们别打我）">
@@ -187,7 +187,7 @@
 <div id="toc-article" class="toc-article">
 	<span id="toc-close" class="toc-close" title="隐藏导航" onclick="showBtn();">×</span>
 	<strong class="toc-title">文章目录</strong>
-	<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x00-企业赛，启动"><span class="toc-number">2.</span> <span class="toc-text">0x00 企业赛，启动</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-拿下服务器"><span class="toc-number">3.</span> <span class="toc-text">0x01 拿下服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x02-内网渗透"><span class="toc-number">4.</span> <span class="toc-text">0x02 内网渗透</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x03-FTP服务器"><span class="toc-number">5.</span> <span class="toc-text">0x03 FTP服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x04-数据分析"><span class="toc-number">6.</span> <span class="toc-text">0x04 数据分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x05-个人赛"><span class="toc-number">7.</span> <span class="toc-text">0x05 个人赛</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">8.</span> <span class="toc-text">总结</span></a></li></ol>
+	<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x00-企业赛，启动"><span class="toc-number">2.</span> <span class="toc-text">0x00 企业赛，启动</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-拿下服务器"><span class="toc-number">3.</span> <span class="toc-text">0x01 拿下服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x02-内网渗透"><span class="toc-number">4.</span> <span class="toc-text">0x02 内网渗透</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x03-FTP服务器"><span class="toc-number">5.</span> <span class="toc-text">0x03 FTP服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x04-数据赛"><span class="toc-number">6.</span> <span class="toc-text">0x04 数据赛</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x05-个人赛"><span class="toc-number">7.</span> <span class="toc-text">0x05 个人赛</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">8.</span> <span class="toc-text">总结</span></a></li></ol>
 </div>
 <script type="text/javascript">
 	function showToc(){
@@ -218,7 +218,7 @@
 <p>然后本地配个代理就能直接访问了，搜索引擎查到该版本的dotcms存在一个sql注入和一个后台getshell漏洞，但是注入还是盲注，好麻烦<br>后台测了一波弱口令，未果，突然发现在普通用户登录界面有个邮箱和密码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">bill@xxxxx.com (具体的我忘了！)</div><div class="line">bill</div></pre></td></tr></table></figure></p>
 <p>猜测它也是后台管理员帐号，直接登陆，果然成功了，然后用后台getshell漏洞来getshell<br>参考地址:<a href="http://seclists.org/fulldisclosure/2017/Jul/33" target="_blank" rel="noopener">http://seclists.org/fulldisclosure/2017/Jul/33</a><br>参考文章，找到上传点，这里我用firefox的修改数据包功能构造了<code>任意文件上传</code>的包，传了个jsp网马，这里因为后台有waf的原因，还是上了个免杀马才成功的，总之拿到了shell<br><img src="/img/2018-t3sec-1.png" alt=""><br>因为是<code>jsp网站</code>的原因，直接就是<code>administrator</code>权限了，在c盘发现了flag2，当时时间有限而且这台服务器没有开启3389，没有继续深入挖掘，后来听说dot的前端页面也有个flag，然后还有个flag在回收站里，脑洞果然够大，附上cmd查看回收站命令：<br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">cd</span> $recycle.bin</div></pre></td></tr></table></figure></p>
 <h2 id="0x03-FTP服务器"><a href="#0x03-FTP服务器" class="headerlink" title="0x03 FTP服务器"></a>0x03 FTP服务器</h2><p>接着对60服务器进行渗透测试，nmap扫描，发现开启了21，22，445，有个ftp服务，当时查了一下ftp版本，没啥漏洞，然后用<code>hydra</code>爆破一波，也没爆出来东西，赛后得知是linux的永恒之蓝漏洞，这里记录一下，参考：<a href="https://bbs.ichunqiu.com/thread-23281-1-1.html" target="_blank" rel="noopener">https://bbs.ichunqiu.com/thread-23281-1-1.html</a><br><figure class="highlight cmd"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">use exploit/linux/samba/is_known_pipename</div><div class="line"><span class="built_in">set</span> RHOST <span class="number">202</span>.<span class="number">1</span>.<span class="number">2</span>.<span class="number">60</span></div><div class="line">run</div></pre></td></tr></table></figure></p>
-<h2 id="0x04-数据分析"><a href="#0x04-数据分析" class="headerlink" title="0x04 数据分析"></a>0x04 数据分析</h2><p>先贴一下最终答案截图（队友余老师截的图）<br><img src="/img/2018-t3sec-2.png" alt=""><br><img src="/img/2018-t3sec-3.png" alt=""><br>其中大部分题目只要对渗透测试有一定的了解，会使用wireshark之类的流量分析工具，都能解出，我就不详细说了，<br>讲一下卡了特别久的两道题（中间差点跳过那种，还好没跳过，最后全部做出加了100多分），一个是第9题，图片木马的密码是什么，这里其实只要找到对应的位置，将图片文件下载下来，然后cat一下就能发现php一句话了（我也不知道为什么卡了那么久）<br>还有一个是第12题，找黑客往FTP上传的文件名，因为挂了个reGeorg代理，ftp协议变得很奇怪，这里我也找了好久，以为后面还有很多题，想当然地以为这题一定在第8个数据包里，结果只找到了FTP密码，然后想了想去看看第9个包吧，进去搜索一下FTP协议上传文件的命令<code>STOR</code>，直接就找到了</p>
+<h2 id="0x04-数据赛"><a href="#0x04-数据赛" class="headerlink" title="0x04 数据赛"></a>0x04 数据赛</h2><p>先贴一下最终答案截图（队友余老师截的图）<br><img src="/img/2018-t3sec-2.png" alt=""><br><img src="/img/2018-t3sec-3.png" alt=""><br>其中大部分题目只要对渗透测试有一定的了解，会使用wireshark之类的流量分析工具，都能解出，我就不详细说了，<br>讲一下卡了特别久的两道题（中间差点跳过那种，还好没跳过，最后全部做出加了100多分），一个是第9题，图片木马的密码是什么，这里其实只要找到对应的位置，将图片文件下载下来，然后cat一下就能发现php一句话了（我也不知道为什么卡了那么久）<br>还有一个是第12题，找黑客往FTP上传的文件名，因为挂了个reGeorg代理，ftp协议变得很奇怪，这里我也找了好久，以为后面还有很多题，想当然地以为这题一定在第8个数据包里，结果只找到了FTP密码，然后想了想去看看第9个包吧，进去搜索一下FTP协议上传文件的命令<code>STOR</code>，直接就找到了</p>
 <h2 id="0x05-个人赛"><a href="#0x05-个人赛" class="headerlink" title="0x05 个人赛"></a>0x05 个人赛</h2><p>队友jaken拿了个一血，web狗表示膜拜</p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>今年分区赛因为和Defcon China撞车的原因，几个强队好像都不是主力来打，没有被吊打的很严重，不过还是看到了自己的很多不足，内网渗透做做的还不是特别好，对很多漏洞没有敏感的嗅觉，对几个工具的使用也不是特别熟练，数据分析卡题严重<br>不过结果还是好的，拿了个亚军，成功晋级决赛，不知道有没有机会打～，附上最后排行图<br><img src="/img/2018-t3sec-4.png" alt=""><br>（最后弱弱地吐槽一下，今年亚军的奖金比去年1/3场分区赛的季军奖金还少！）</p>
 
@@ -379,7 +379,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x00-企业赛，启动"><span class="toc-number">2.</span> <span class="toc-text">0x00 企业赛，启动</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-拿下服务器"><span class="toc-number">3.</span> <span class="toc-text">0x01 拿下服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x02-内网渗透"><span class="toc-number">4.</span> <span class="toc-text">0x02 内网渗透</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x03-FTP服务器"><span class="toc-number">5.</span> <span class="toc-text">0x03 FTP服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x04-数据分析"><span class="toc-number">6.</span> <span class="toc-text">0x04 数据分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x05-个人赛"><span class="toc-number">7.</span> <span class="toc-text">0x05 个人赛</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">8.</span> <span class="toc-text">总结</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x00-企业赛，启动"><span class="toc-number">2.</span> <span class="toc-text">0x00 企业赛，启动</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x01-拿下服务器"><span class="toc-number">3.</span> <span class="toc-text">0x01 拿下服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x02-内网渗透"><span class="toc-number">4.</span> <span class="toc-text">0x02 内网渗透</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x03-FTP服务器"><span class="toc-number">5.</span> <span class="toc-text">0x03 FTP服务器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x04-数据赛"><span class="toc-number">6.</span> <span class="toc-text">0x04 数据赛</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#0x05-个人赛"><span class="toc-number">7.</span> <span class="toc-text">0x05 个人赛</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">8.</span> <span class="toc-text">总结</span></a></li></ol>
                     </div>
                 </span>
             </div>
@@ -569,15 +569,27 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Misc</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Web</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">CBC字节翻转攻击</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Padding oracle攻击</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">编辑器泄露</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Web</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -601,14 +613,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Crypto</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Misc</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">CMS</a>
               </li>
              
@@ -618,6 +622,22 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">getshell</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Crypto</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">Struts2</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">apache</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">https</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -637,22 +657,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Struts2</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">apache</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">https</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">流量分析</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">CVE</a>
               </li>
              
@@ -661,19 +665,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">运维</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">LAMP</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">Arp欺骗</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">kali</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">运维</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">LAMP</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -689,11 +693,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CBC字节翻转攻击</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Padding oracle攻击</a>
+                <a href="javascript:void(0)" class="js-tag color5">流量分析</a>
               </li>
             
             <div class="clearfix"></div>
