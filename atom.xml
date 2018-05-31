@@ -740,9 +740,9 @@
     
       <category term="文件包含" scheme="https://www.codemonster.cn/tags/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/"/>
     
-      <category term="SQL注入" scheme="https://www.codemonster.cn/tags/SQL%E6%B3%A8%E5%85%A5/"/>
-    
       <category term="上传" scheme="https://www.codemonster.cn/tags/%E4%B8%8A%E4%BC%A0/"/>
+    
+      <category term="SQL注入" scheme="https://www.codemonster.cn/tags/SQL%E6%B3%A8%E5%85%A5/"/>
     
       <category term="反序列化" scheme="https://www.codemonster.cn/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"/>
     
