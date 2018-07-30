@@ -10,7 +10,6 @@ tags:
   - WriteUp
 date: 2017-11-19 23:55:00
 toc: true
-talk: true
 ---
 
 周末刚刚结束的LCTF，我们队一共做出了4道web，一道misc还有一道问卷调查（好气啊没抢到一血换pwnhub邀请码），感谢`吃饭去`大佬带飞~
@@ -89,7 +88,7 @@ function test_identity(){
             }
         }else{
             die("Error!");
-        } 
+        }
     }
     return 0;
 }
@@ -207,7 +206,7 @@ function test_identity(){
             }
         }else{
             die("Error!");
-        } 
+        }
     }
     return 0;
 }
@@ -389,7 +388,7 @@ bash bb index.html(题目自带) z.php
 访问z.php后，相当于执行了`bash bb index.php z.php`
 所以我们只需要通过修改bb来执行7个字符以内的命令
 bb的内容分别为`ls /`和`cat /3*`
-![](/img/2017lctf1.png) 
+![](/img/2017lctf1.png)
 
 
 # 萌萌哒报名系统
@@ -399,7 +398,7 @@ http://123.206.120.239/
 ## 0x00下载源码
 提示了IDE开发  
 扫到了`http://123.206.120.239/.idea/workspace.xml`
-![](/img/2017lctf5.png) 
+![](/img/2017lctf5.png)
 下载到了源码
 login.php
 ```php
@@ -452,7 +451,7 @@ member.php
 
     $_SESSION['is_logined'] = true;
 	if (isset($_SESSION['is_logined']) === false || isset($_SESSION['is_guest']) === true) {
-        
+
     }else{
 		if(isset($_GET['file'])===false)
 			echo "None";
@@ -543,7 +542,7 @@ else
 ?file=./x/../config.php
 ```
 因为x文件夹不存在，所以就能绕过`is_file()`读取到`config.php`，flag就在里面
-![](/img/2017lctf6.png) 
+![](/img/2017lctf6.png)
 
 # 签到题
 这是一个拼手速抢邀请码的题
@@ -556,7 +555,7 @@ hint: 本地
 ?site=file://www.baidu.com/etc/passwd%23
 ```
 成功读取`/etc/passwd`，发现lctf用户，再用相同方法读取`/home/lctf/flag`得到flag
-![](/img/2017lctf3.png) 
- 
+![](/img/2017lctf3.png)
+
 # 总结
 周末打了两天还是学到了很多骚操作，但是没有逆向和pwn的分数所以分数差很多，最后还是膜一下各位大佬们~

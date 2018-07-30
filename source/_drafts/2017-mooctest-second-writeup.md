@@ -3,6 +3,7 @@ title: 2017 全国大学生软件测试大赛web安全赛分区决赛 WriteUp
 tags:
   - CTF
   - WriteUp
+talk: true
 date: 2017-10-24 13:40:13
 ---
 
@@ -92,3 +93,7 @@ keyname=1&name=name` union select 1,2,flag from flag %23
 
 ## 10.thinkphp5
 无
+
+
+
+

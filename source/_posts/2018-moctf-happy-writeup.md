@@ -4,7 +4,6 @@ tags:
   - CTF
   - WriteUp
 date: 2018-02-13 22:11:58
-talk: true
 ---
 
 从放假到现在筹办准备了接近两个星期的MOCTF新春欢乐赛终于落幕啦，这次比赛我一共出了1签到+1MISC+3WEB，下面先放官方WriteUp（哇终于能当一回官方了）
@@ -214,7 +213,7 @@ import random
 import itertools as its
 import hashlib
 
-r=req.session() 
+r=req.session()
 url="http://120.78.57.208:6005/"
 
 
@@ -257,7 +256,7 @@ def get_salt(l):
         salt+=chr(r+ord('a')-1)
         #print salt
     return salt
-    
+
 def get_flag(salt):
     s=hashlib.sha1('119.23.73.3').hexdigest()
     url1=url+'/uploads/'+s+'/'+'moctf'+salt+'.php'
@@ -349,7 +348,3 @@ MOCTF平台是CodeMonster和Mokirin这两支CTF战队所搭建的一个CTF在线
 
 最后祝大家新年快乐！
 ![](/img/2018moctf6.png)
-
-
-
-
