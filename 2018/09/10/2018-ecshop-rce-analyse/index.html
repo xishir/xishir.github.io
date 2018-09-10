@@ -21,7 +21,7 @@
 <meta property="og:image" content="https://www.codemonster.cn/img/2018-ecshop-rce-4.png">
 <meta property="og:image" content="https://www.codemonster.cn/img/2018-ecshop-rce-5.png">
 <meta property="og:image" content="https://www.codemonster.cn/img/2018-ecshop-rce-5.gif">
-<meta property="og:updated_time" content="2018-09-10T11:50:06.037Z">
+<meta property="og:updated_time" content="2018-09-10T12:06:49.828Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ECShop前台RCE漏洞分析">
 <meta name="twitter:description" content="0x00前言前几天出了个ECShop&amp;lt;= 2.7.x/3.6.x前台RCE，实训太无聊了来分析一波">
@@ -245,7 +245,7 @@
 <li><a href="https://xz.aliyun.com/t/2689" target="_blank" rel="noopener">ECShop全系列版本远程代码执行高危漏洞分析</a></li>
 <li><a href="www.lmxspace.com/2018/09/02/ECShop-sqli-and-rce/">ECShop sqli and rce</a></li>
 </ul>
-<h2 id="0x05后话"><a href="#0x05后话" class="headerlink" title="0x05后话"></a>0x05后话</h2><p>ECShop3.*中只是加了一些防护，核心漏洞点换汤不换药，有兴趣的师傅自行研究8</p>
+<h2 id="0x05后话"><a href="#0x05后话" class="headerlink" title="0x05后话"></a>0x05后话</h2><p>ECShop3.*中只是加了一些防护，核心漏洞点换汤不换药，有兴趣的师傅自行研究8<br>ECShop4.0的修复方案是把插入sql的num和id强转为int，但是前面还有个动态函数调用和反序列化还是有风险的感觉，等一个师傅来解答。</p>
 <p>有趣的是昨天分析下载代码的时候注册了一下ECShop官方的账号，今天就有小改改打电话问我是不是搞电商的，和她说我只是下载代码来学习研究的，她还推荐我去分析最新的4.*版本，好的我一定分析，咕咕咕</p>
 
       
@@ -582,6 +582,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">编辑器泄露</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Misc</a>
               </li>
              
@@ -598,19 +606,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">编辑器泄露</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">SQL注入</a>
+                <a href="javascript:void(0)" class="js-tag color3">加固</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">上传</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">SQL注入</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -622,11 +626,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">加固</a>
+                <a href="javascript:void(0)" class="js-tag color2">Crypto</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Crypto</a>
+                <a href="javascript:void(0)" class="js-tag color4">SQL</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -658,10 +662,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Struts2</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">apache</a>
               </li>
              
@@ -670,19 +670,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">运维</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">LAMP</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Arp欺骗</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">kali</a>
+                <a href="javascript:void(0)" class="js-tag color4">WEB</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -694,7 +682,27 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Arp欺骗</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">kali</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">流量分析</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">运维</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">LAMP</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">excel</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -706,15 +714,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">WEB</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">excel</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">SQL</a>
+                <a href="javascript:void(0)" class="js-tag color3">Struts2</a>
               </li>
             
             <div class="clearfix"></div>
