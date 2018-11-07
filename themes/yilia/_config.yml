@@ -30,7 +30,7 @@ rss: /atom.xml
 # 是否需要修改 root 路径
 # 如果您的网站存放在子目录中，例如 http://yoursite.com/blog，
 # 请将您的 url 设为 http://yoursite.com/blog 并把 root 设为 /blog/。
-root: 
+root:
 
 # Content
 
@@ -122,18 +122,21 @@ smart_menu:
 
 friends:
   MOCTF: http://www.moctf.com/
+  De1ta: http://de1ta-team.github.io/
   ChaMd5: http://www.chamd5.org/
   XMUTSEC: http://www.xmutsec.com/
+  she1don: http://www.she1don.cn/
   pcat: http://www.cnblogs.com/pcat/
+  l1nk3r: http://www.lmxspace.com/
   H4ck2fun: http://h4ck2fun.github.io/
   C-soul: http://c-soul.cn/blog/
   Hsingyin: http://www.hsingyin.site/
   Pr0ph3t: https://www.jianshu.com/u/3e298f54f660
   SouthSeast: https://southseast.cc/
-  空白: https://white.xmutsec.com/
+  white: https://white.xmutsec.com/
   Ju5tw4nty0u: http://ju5tw4nty0u.top/
   Cosmos: http://blog.thecosmos.cn/
   Cytosine: http://cyto.top/
-  P0desta: http://p0desta.top/
+  P0desta: http://p0desta.com/
 
 aboutme: 一只不爱打代码的怪兽
