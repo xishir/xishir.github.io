@@ -26,7 +26,7 @@
 <meta property="og:image" content="https://www.codemonster.cn/img/2018-hctf-2.png">
 <meta property="og:image" content="https://www.codemonster.cn/img/2018-hctf-3.png">
 <meta property="og:image" content="https://www.codemonster.cn/img/2018-hctf-4.png">
-<meta property="og:updated_time" content="2018-11-12T05:04:02.935Z">
+<meta property="og:updated_time" content="2018-11-12T05:09:02.813Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="2018 HCTF web WriteUp">
 <meta name="twitter:description" content="前言周末肝了两题HCTF，感谢队友们带飞，这里记录一下做的WEB题顺便打个小广告：De1ta长期招 逆向/pwn/密码学/硬件/取证/杂项/etc. 选手，急招二进制和密码选手,有意向的大佬请联系ZGUxdGFAcHJvdG9ubWFpbC5jb20=">
@@ -215,7 +215,8 @@
       
         <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>周末肝了两题HCTF，感谢队友们带飞，这里记录一下做的WEB题<br>顺便打个小广告：De1ta长期招 逆向/pwn/密码学/硬件/取证/杂项/etc. 选手，急招二进制和密码选手,有意向的大佬请联系ZGUxdGFAcHJvdG9ubWFpbC5jb20=</p>
 <a id="more"></a>
-<h2 id="kzone"><a href="#kzone" class="headerlink" title="kzone"></a>kzone</h2><p>打开发现是一个QQ钓鱼站，主页会跳转到空间<br><a href="http://kzone.2018.hctf.io/www.zip" target="_blank" rel="noopener">http://kzone.2018.hctf.io/www.zip</a> 可以下载到源码<br>install.sql 文件中有admin密码，admn。<br>INSERT INTO <code>fish_admin</code> (<code>id</code>, <code>username</code>, <code>password</code>, <code>name</code>, <code>qq</code>, <code>per</code>) VALUES<br>(1, ‘admin’, ‘21232f297a57a5a743894a0e4a801fc3’, ‘小杰’, ‘1503816935’, 1);<br>不过登陆不上去，密码被改了</p>
+<h2 id="kzone"><a href="#kzone" class="headerlink" title="kzone"></a>kzone</h2><p>打开发现是一个QQ钓鱼站，主页会跳转到空间<br><a href="http://kzone.2018.hctf.io/www.zip" target="_blank" rel="noopener">http://kzone.2018.hctf.io/www.zip</a> 可以下载到源码<br>install.sql 文件中有admin密码，admin。<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`fish_admin`</span> (<span class="string">`id`</span>, <span class="string">`username`</span>, <span class="string">`password`</span>, <span class="string">`name`</span>, <span class="string">`qq`</span>, <span class="string">`per`</span>) <span class="keyword">VALUES</span></div><div class="line">(<span class="number">1</span>, <span class="string">'admin'</span>, <span class="string">'21232f297a57a5a743894a0e4a801fc3'</span>, <span class="string">'小杰'</span>, <span class="string">'1503816935'</span>, <span class="number">1</span>);</div></pre></td></tr></table></figure></p>
+<p>不过登陆不上去，密码被改了</p>
 <p>审计源码翻到了member.php，发现这边没有addslashes，并且无需登录也可访问</p>
 <p><img src="/img/2018-hctf-5.png" alt=""></p>
 <p>可以看到这段代码从cookie获取了登陆信息，如果符合几个if，就能登陆<br>想到通过注入 ，union select 替换掉admin_user和admin_pass<br>尝试构造弱类型绕过：<br>Cookie: PHPSESSID=s33h9c1u8bq5t0r8s4dura0c76; islogin=1; login_data={“admin_user”:”admin’||’1”,”admin_pass”:65}<br>（一开始没构造出来，然后就转思路去bypass waf了</p>
@@ -567,6 +568,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">AWD</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">mysql字符截断</a>
               </li>
              
@@ -591,11 +596,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">MISC</a>
+                <a href="javascript:void(0)" class="js-tag color3">审计</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">AWD</a>
+                <a href="javascript:void(0)" class="js-tag color3">注入</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">MISC</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -607,11 +616,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">审计</a>
+                <a href="javascript:void(0)" class="js-tag color5">Misc</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">注入</a>
+                <a href="javascript:void(0)" class="js-tag color4">Web</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">CBC字节翻转攻击</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Padding oracle攻击</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -631,10 +648,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Web</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">加固</a>
               </li>
              
@@ -643,7 +656,7 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">Misc</a>
+                <a href="javascript:void(0)" class="js-tag color4">WEB</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -659,11 +672,59 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">Struts2</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">SQL</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">WEB</a>
+                <a href="javascript:void(0)" class="js-tag color2">apache</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">https</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">流量分析</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Arp欺骗</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">kali</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">运维</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">LAMP</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">CVE</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">WordPress</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">excel</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">算法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">递归</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -680,70 +741,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">工具</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Struts2</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">流量分析</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">apache</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">https</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Arp欺骗</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">kali</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">CVE</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">WordPress</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">运维</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">LAMP</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">excel</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">算法</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">递归</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">CBC字节翻转攻击</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Padding oracle攻击</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">web</a>
               </li>
             
             <div class="clearfix"></div>
