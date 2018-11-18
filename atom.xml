@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.codemonster.cn/"/>
-  <updated>2018-11-12T05:11:40.211Z</updated>
+  <updated>2018-11-18T14:21:53.668Z</updated>
   <id>https://www.codemonster.cn/</id>
   
   <author>
@@ -17,12 +17,12 @@
   
   <entry>
     <title>2018 HCTF web WriteUp</title>
-    <link href="https://www.codemonster.cn/2018/11/13/2018-hctf-web-writeup/"/>
-    <id>https://www.codemonster.cn/2018/11/13/2018-hctf-web-writeup/</id>
-    <published>2018-11-13T06:42:59.000Z</published>
-    <updated>2018-11-12T05:11:40.211Z</updated>
+    <link href="https://www.codemonster.cn/2018/11/12/2018-hctf-web-writeup/"/>
+    <id>https://www.codemonster.cn/2018/11/12/2018-hctf-web-writeup/</id>
+    <published>2018-11-12T06:42:59.000Z</published>
+    <updated>2018-11-18T14:21:53.668Z</updated>
     
-    <content type="html"><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>周末肝了两题HCTF，感谢队友们带飞，这里记录一下做的WEB题<br>顺便打个小广告：De1ta长期招 逆向/pwn/密码学/硬件/取证/杂项/etc. 选手，急招二进制和密码选手,有意向的大佬请联系ZGUxdGFAcHJvdG9ubWFpbC5jb20=</p>
+    <content type="html"><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>周末肝了两天HCTF，感谢队友们带飞，这里记录一下做的WEB题<br>顺便打个小广告：De1ta长期招 逆向/pwn/密码学/硬件/取证/杂项/etc. 选手，急招二进制和密码选手,有意向的大佬请联系ZGUxdGFAcHJvdG9ubWFpbC5jb20=</p>
 <a id="more"></a>
 <h2 id="kzone"><a href="#kzone" class="headerlink" title="kzone"></a>kzone</h2><p>打开发现是一个QQ钓鱼站，主页会跳转到空间<br><a href="http://kzone.2018.hctf.io/www.zip" target="_blank" rel="noopener">http://kzone.2018.hctf.io/www.zip</a> 可以下载到源码<br>install.sql 文件中有admin密码，admin。<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`fish_admin`</span> (<span class="string">`id`</span>, <span class="string">`username`</span>, <span class="string">`password`</span>, <span class="string">`name`</span>, <span class="string">`qq`</span>, <span class="string">`per`</span>) <span class="keyword">VALUES</span></div><div class="line">(<span class="number">1</span>, <span class="string">'admin'</span>, <span class="string">'21232f297a57a5a743894a0e4a801fc3'</span>, <span class="string">'小杰'</span>, <span class="string">'1503816935'</span>, <span class="number">1</span>);</div></pre></td></tr></table></figure></p>
 <p>不过登陆不上去，密码被改了</p>
@@ -88,7 +88,7 @@
     
     <summary type="html">
     
-      &lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;周末肝了两题HCTF，感谢队友们带飞，这里记录一下做的WEB题&lt;br&gt;顺便打个小广告：De1ta长期招 逆向/pwn/密码学/硬件/取证/杂项/etc. 选手，急招二进制和密码选手,有意向的大佬请联系ZGUxdGFAcHJvdG9ubWFpbC5jb20=&lt;/p&gt;
+      &lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;周末肝了两天HCTF，感谢队友们带飞，这里记录一下做的WEB题&lt;br&gt;顺便打个小广告：De1ta长期招 逆向/pwn/密码学/硬件/取证/杂项/etc. 选手，急招二进制和密码选手,有意向的大佬请联系ZGUxdGFAcHJvdG9ubWFpbC5jb20=&lt;/p&gt;
     
     </summary>
     
@@ -249,9 +249,9 @@
     </summary>
     
     
-      <category term="渗透" scheme="https://www.codemonster.cn/tags/%E6%B8%97%E9%80%8F/"/>
-    
       <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
+    
+      <category term="渗透" scheme="https://www.codemonster.cn/tags/%E6%B8%97%E9%80%8F/"/>
     
       <category term="流量分析" scheme="https://www.codemonster.cn/tags/%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90/"/>
     
@@ -945,9 +945,9 @@
     
       <category term="文件包含" scheme="https://www.codemonster.cn/tags/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/"/>
     
-      <category term="上传" scheme="https://www.codemonster.cn/tags/%E4%B8%8A%E4%BC%A0/"/>
-    
       <category term="SQL注入" scheme="https://www.codemonster.cn/tags/SQL%E6%B3%A8%E5%85%A5/"/>
+    
+      <category term="上传" scheme="https://www.codemonster.cn/tags/%E4%B8%8A%E4%BC%A0/"/>
     
       <category term="反序列化" scheme="https://www.codemonster.cn/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"/>
     
