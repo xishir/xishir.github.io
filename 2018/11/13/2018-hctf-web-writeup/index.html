@@ -8,13 +8,13 @@
   <link rel="dns-prefetch" href="https://www.codemonster.cn">
   <title>2018 HCTF web WriteUp | 打代码的怪兽 CodeMonster</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="前言周末肝了两题HCTF，感谢队友们带飞，这里记录一下做的WEB题顺便打个小广告：De1ta长期招 逆向/pwn/密码学/硬件/取证/杂项/etc. 选手，急招二进制和密码选手,有意向的大佬请联系ZGUxdGFAcHJvdG9ubWFpbC5jb20=">
+  <meta name="description" content="前言周末肝了两天HCTF，感谢队友们带飞，这里记录一下做的WEB题顺便打个小广告：De1ta长期招 逆向/pwn/密码学/硬件/取证/杂项/etc. 选手，急招二进制和密码选手,有意向的大佬请联系ZGUxdGFAcHJvdG9ubWFpbC5jb20=">
 <meta name="keywords" content="CTF,WriteUp,WEB">
 <meta property="og:type" content="article">
 <meta property="og:title" content="2018 HCTF web WriteUp">
 <meta property="og:url" content="https://www.codemonster.cn/2018/11/13/2018-hctf-web-writeup/index.html">
 <meta property="og:site_name" content="打代码的怪兽 CodeMonster">
-<meta property="og:description" content="前言周末肝了两题HCTF，感谢队友们带飞，这里记录一下做的WEB题顺便打个小广告：De1ta长期招 逆向/pwn/密码学/硬件/取证/杂项/etc. 选手，急招二进制和密码选手,有意向的大佬请联系ZGUxdGFAcHJvdG9ubWFpbC5jb20=">
+<meta property="og:description" content="前言周末肝了两天HCTF，感谢队友们带飞，这里记录一下做的WEB题顺便打个小广告：De1ta长期招 逆向/pwn/密码学/硬件/取证/杂项/etc. 选手，急招二进制和密码选手,有意向的大佬请联系ZGUxdGFAcHJvdG9ubWFpbC5jb20=">
 <meta property="og:image" content="https://www.codemonster.cn/img/2018-hctf-5.png">
 <meta property="og:image" content="https://www.codemonster.cn/img/2018-hctf-6.png">
 <meta property="og:image" content="https://www.codemonster.cn/img/2018-hctf-7.png">
@@ -26,10 +26,10 @@
 <meta property="og:image" content="https://www.codemonster.cn/img/2018-hctf-2.png">
 <meta property="og:image" content="https://www.codemonster.cn/img/2018-hctf-3.png">
 <meta property="og:image" content="https://www.codemonster.cn/img/2018-hctf-4.png">
-<meta property="og:updated_time" content="2018-11-12T05:11:40.211Z">
+<meta property="og:updated_time" content="2018-11-18T14:24:09.115Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="2018 HCTF web WriteUp">
-<meta name="twitter:description" content="前言周末肝了两题HCTF，感谢队友们带飞，这里记录一下做的WEB题顺便打个小广告：De1ta长期招 逆向/pwn/密码学/硬件/取证/杂项/etc. 选手，急招二进制和密码选手,有意向的大佬请联系ZGUxdGFAcHJvdG9ubWFpbC5jb20=">
+<meta name="twitter:description" content="前言周末肝了两天HCTF，感谢队友们带飞，这里记录一下做的WEB题顺便打个小广告：De1ta长期招 逆向/pwn/密码学/硬件/取证/杂项/etc. 选手，急招二进制和密码选手,有意向的大佬请联系ZGUxdGFAcHJvdG9ubWFpbC5jb20=">
 <meta name="twitter:image" content="https://www.codemonster.cn/img/2018-hctf-5.png">
   
     <link rel="alternative" href="/atom.xml" title="打代码的怪兽 CodeMonster" type="application/atom+xml">
@@ -213,7 +213,7 @@
     		
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>周末肝了两题HCTF，感谢队友们带飞，这里记录一下做的WEB题<br>顺便打个小广告：De1ta长期招 逆向/pwn/密码学/硬件/取证/杂项/etc. 选手，急招二进制和密码选手,有意向的大佬请联系ZGUxdGFAcHJvdG9ubWFpbC5jb20=</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>周末肝了两天HCTF，感谢队友们带飞，这里记录一下做的WEB题<br>顺便打个小广告：De1ta长期招 逆向/pwn/密码学/硬件/取证/杂项/etc. 选手，急招二进制和密码选手,有意向的大佬请联系ZGUxdGFAcHJvdG9ubWFpbC5jb20=</p>
 <a id="more"></a>
 <h2 id="kzone"><a href="#kzone" class="headerlink" title="kzone"></a>kzone</h2><p>打开发现是一个QQ钓鱼站，主页会跳转到空间<br><a href="http://kzone.2018.hctf.io/www.zip" target="_blank" rel="noopener">http://kzone.2018.hctf.io/www.zip</a> 可以下载到源码<br>install.sql 文件中有admin密码，admin。<br><figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`fish_admin`</span> (<span class="string">`id`</span>, <span class="string">`username`</span>, <span class="string">`password`</span>, <span class="string">`name`</span>, <span class="string">`qq`</span>, <span class="string">`per`</span>) <span class="keyword">VALUES</span></div><div class="line">(<span class="number">1</span>, <span class="string">'admin'</span>, <span class="string">'21232f297a57a5a743894a0e4a801fc3'</span>, <span class="string">'小杰'</span>, <span class="string">'1503816935'</span>, <span class="number">1</span>);</div></pre></td></tr></table></figure></p>
 <p>不过登陆不上去，密码被改了</p>
@@ -460,7 +460,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2018 CodeMonster
+    		&copy; 2019 CodeMonster
         
   			<span id="busuanzi_container_site_uv">
   			  你是本站第<span id="busuanzi_value_site_uv"></span>位访客
@@ -578,31 +578,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">mysql字符截断</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">php</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">python</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">RCE</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">命令执行</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">源码泄露</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">MISC</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">编辑器泄露</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -630,23 +614,15 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">编辑器泄露</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">加固</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">上传</a>
+                <a href="javascript:void(0)" class="js-tag color4">php</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">SQL注入</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">上传</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -655,6 +631,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">盲注</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">加固</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">Crypto</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -674,59 +658,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">Struts2</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">CVE</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">WordPress</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">Arp欺骗</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">kali</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">运维</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">LAMP</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">excel</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">算法</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">递归</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">Crypto</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">SQL</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">apache</a>
+                <a href="javascript:void(0)" class="js-tag color4">RCE</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">https</a>
+                <a href="javascript:void(0)" class="js-tag color3">Struts2</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">流量分析</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -746,7 +690,63 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">流量分析</a>
+                <a href="javascript:void(0)" class="js-tag color2">apache</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">https</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">Arp欺骗</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">kali</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">运维</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">LAMP</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">CVE</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">WordPress</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">python</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">算法</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">递归</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">excel</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">mysql字符截断</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">命令执行</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">源码泄露</a>
               </li>
             
             <div class="clearfix"></div>
@@ -803,6 +803,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           
             <li class="search-li">
               <a href="http://de1ta-team.github.io/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>De1ta</a>
+            </li>
+          
+            <li class="search-li">
+              <a href="https://blog.backcover7.cc/" target="_blank" class="search-title"><i class="icon-quo-left icon"></i>backCover7</a>
             </li>
           
             <li class="search-li">
