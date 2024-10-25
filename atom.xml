@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.codemonster.cn/"/>
-  <updated>2023-04-13T13:31:09.039Z</updated>
+  <updated>2020-05-06T05:40:31.000Z</updated>
   <id>https://www.codemonster.cn/</id>
   
   <author>
@@ -14,60 +14,6 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
-  
-  <entry>
-    <title>丝滑地在大陆使用 ChatGPT</title>
-    <link href="https://www.codemonster.cn/2023/04/13/smooth-access-to-chatgpt/"/>
-    <id>https://www.codemonster.cn/2023/04/13/smooth-access-to-chatgpt/</id>
-    <published>2023-04-13T13:20:59.000Z</published>
-    <updated>2023-04-13T13:31:09.039Z</updated>
-    
-    <content type="html"><![CDATA[<p>来给博客除草了，分享一下最近用 ChatGPT 的一些小技巧</p>
-<a id="more"></a>
-<h2 id="整体架构"><a href="#整体架构" class="headerlink" title="整体架构"></a>整体架构</h2><p>由于某些不可言说的原因，现在我们使用网页版的 ChatGPT，需要两头都上代理，整体架构图如下，思路就是 V2ray 绕过国内封锁，再利用 Warp 绕过 openai 对 VPS 出口 IP 的封锁</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">                    ┌────────────────────────────────┐</span><br><span class="line">                    │  VPS                           │</span><br><span class="line">                    │                                │</span><br><span class="line">┌─────────────┐     │  ┌─────────┐  ┌──────────────┐ │   ┌─────────────────┐</span><br><span class="line">│             │     │  │         │  │              │ │   │                 │</span><br><span class="line">│ V2rayClient ├─────┼──►  V2ray  ├──►  Warp Docker ├─┼───► chat.openai.com │</span><br><span class="line">│             │     │  │         │  │              │ │   │                 │</span><br><span class="line">└─────────────┘     │  └─────┬───┘  └──────────────┘ │   └─────────────────┘</span><br><span class="line">                    │        │                       │</span><br><span class="line">                    │        │                       │</span><br><span class="line">                    └────────┼───────────────────────┘</span><br><span class="line">                             │</span><br><span class="line">                             │</span><br><span class="line">                             └───────────────────────────►  Internet</span><br></pre></td></tr></table></figure>
-<h2 id="软硬件准备"><a href="#软硬件准备" class="headerlink" title="软硬件准备"></a>软硬件准备</h2><ol>
-<li>硬件：<ul>
-<li>某地区 VPS 一台，内存 &gt;= 1G</li>
-</ul>
-</li>
-<li>软件：<ul>
-<li>V2ray</li>
-<li>docker</li>
-<li>nginx（套tls需要）</li>
-</ul>
-</li>
-</ol>
-<h2 id="安装-V2ray"><a href="#安装-V2ray" class="headerlink" title="安装 V2ray"></a>安装 V2ray</h2><p>参考：<a href="https://github.com/v2fly/fhs-install-v2ray/blob/master/README.zh-Hans-CN.md" target="_blank" rel="noopener">https://github.com/v2fly/fhs-install-v2ray/blob/master/README.zh-Hans-CN.md</a></p>
-<p>一键安装<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bash &lt;(curl -L https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;v2fly&#x2F;fhs-install-v2ray&#x2F;master&#x2F;install-release.sh)</span><br></pre></td></tr></table></figure></p>
-<p>使用配置就不过多介绍了，另外还可以视情况来套 vmess+tls+websocket，可以有效防止封 IP。</p>
-<h2 id="启动-Warp"><a href="#启动-Warp" class="headerlink" title="启动 Warp"></a>启动 Warp</h2><p>Cloudflare WARP 是 Cloud­flare 提供的一项基于 Wire­Guard 的网络流量安全及加速服务，能够让你通过连接到 Cloud­flare 的边缘节点实现隐私保护及链路优化。<br>详情可以参考：<a href="https://p3terx.com/archives/use-cloudflare-warp-to-add-extra-ipv4-or-ipv6-network-support-to-vps-servers-for-free.html" target="_blank" rel="noopener">https://p3terx.com/archives/use-cloudflare-warp-to-add-extra-ipv4-or-ipv6-network-support-to-vps-servers-for-free.html</a></p>
-<p>因为要装的东西太多了，我选择直接 docker 启动一个服务，监听 1080 和 8080 端口，分别是 socks5 代理和 http 代理，如果端口冲突就换一个端口</p>
-<p>一键启动：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --name warp -p 127.0.0.1:1080:1080 -p 127.0.0.1:8080:8080 --restart unless-stopped amirdaaee&#x2F;cloudflare-warp:latest</span><br></pre></td></tr></table></figure></p>
-<p>启动后验证下是否成功<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -x &quot;socks5:&#x2F;&#x2F;127.0.0.1:1080&quot; ipinfo.io</span><br></pre></td></tr></table></figure><br>看到返回结果中带有<code>&quot;org&quot;: &quot;ASxxxxx Cloudflare, Inc.&quot;</code>，就说明成功了</p>
-<h2 id="修改V2ray配置"><a href="#修改V2ray配置" class="headerlink" title="修改V2ray配置"></a>修改V2ray配置</h2><p>因为只有个别网站需要套 wrap 访问，所以可以通过修改 V2ray 配置来进行路由分发。</p>
-<p>编辑 V2ray 配置文件，配置文件地址可以执行<code>ps aux|grep v2ray</code>来查看，我的是：/usr/local/etc/v2ray/config.json<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;log&quot;: &#123;</span><br><span class="line">    ...</span><br><span class="line">  &#125;,</span><br><span class="line">  &quot;inbounds&quot;: [</span><br><span class="line">    ...</span><br><span class="line">  ],</span><br><span class="line">  &quot;outbounds&quot;: [</span><br><span class="line">    &#123;</span><br><span class="line">      ...</span><br><span class="line">      &quot;tag&quot;: &quot;direct&quot;</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">      &quot;protocol&quot;: &quot;socks&quot;,</span><br><span class="line">      &quot;settings&quot;: &#123;</span><br><span class="line">        &quot;servers&quot;: [</span><br><span class="line">          &#123;</span><br><span class="line">            &quot;address&quot;: &quot;127.0.0.1&quot;,</span><br><span class="line">            &quot;port&quot;: 1080,</span><br><span class="line">            &quot;users&quot;: []</span><br><span class="line">          &#125;</span><br><span class="line">        ]</span><br><span class="line">      &#125;,</span><br><span class="line">      &quot;tag&quot;: &quot;warp_proxy&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  ],</span><br><span class="line">  &quot;routing&quot;: &#123;</span><br><span class="line">    &quot;rules&quot;: [</span><br><span class="line">        ...</span><br><span class="line">      &#125;,</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;type&quot;: &quot;field&quot;,</span><br><span class="line">        &quot;outboundTag&quot;: &quot;warp_proxy&quot;,</span><br><span class="line">        &quot;domain&quot;: [&quot;chat.openai.com&quot;]</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><br>需要修改两个地方：</p>
-<ol>
-<li>在 routing 里的 rules 列表，新增一条路由规则，将 chat.openai.com 域名打上 warp_proxy 标签</li>
-<li>outbounds 列表中新增一项，处理 warp_proxy 标签的流，转给<code>127.0.0.1:1080</code>的 sockets 处理</li>
-</ol>
-<p>改完配置重启一下 V2ray，然后就能在客户端愉快的使用 chatgpt 网页版咯：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl restart v2ray</span><br></pre></td></tr></table></figure></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;来给博客除草了，分享一下最近用 ChatGPT 的一些小技巧&lt;/p&gt;
-    
-    </summary>
-    
-    
-      <category term="ChatGPT" scheme="https://www.codemonster.cn/tags/ChatGPT/"/>
-    
-      <category term="V2ray" scheme="https://www.codemonster.cn/tags/V2ray/"/>
-    
-      <category term="Wrap" scheme="https://www.codemonster.cn/tags/Wrap/"/>
-    
-  </entry>
   
   <entry>
     <title>2020 De1CTF Animal Crossing WriteUp (En)</title>
@@ -990,6 +936,46 @@
       <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
     
       <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>2017 ISG信息安全技能大赛线上赛 WriteUp</title>
+    <link href="https://www.codemonster.cn/2017/08/31/2017-isg-writeup/"/>
+    <id>https://www.codemonster.cn/2017/08/31/2017-isg-writeup/</id>
+    <published>2017-08-31T15:05:27.000Z</published>
+    <updated>2018-05-04T07:47:50.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="签到"><a href="#签到" class="headerlink" title="签到"></a>签到</h2><p>加群在公告得到一串字符，16进制转字符串得到flag<br><a id="more"></a></p>
+<h2 id="ISGCoinMarket"><a href="#ISGCoinMarket" class="headerlink" title="ISGCoinMarket"></a>ISGCoinMarket</h2><p>很有意思的题，初始给你1元人民币和0.0056个ISG币，你可以发布交易，也可以和别人交易，通过交易得到2000人民币和2000ISG币即可得到flag。</p>
+<p>这里主要是没有限制负数，我的解法是创建4个号</p>
+<p>u1-&gt;u2   把u1的ISG币刷到4000000，汇率为0.0059，可以看作<code>u1低价买入ISG</code></p>
+<p>u3-&gt;u4   把u3的ISG币刷到40000000，人民币为负数，u4则相反</p>
+<p>然后利用u4的人民币去买u1的ISG，汇率位0.0054，可以看作<code>u1高价卖出ISG</code></p>
+<p>一买一卖u1就挣到了足够的钱</p>
+<p><img src="/img/2017isg1.png" alt=""> </p>
+<h2 id="Remix"><a href="#Remix" class="headerlink" title="Remix"></a>Remix</h2><p>可以读取图片并base64解码，并不知道后台逻辑，右键查看源代码提示flag在7827端口（我也不记得是不是这个端口），于是想到SSRF，构造<br><code>?targe=http://localhost:7827</code>,<br>将得到的base64解码即可得到flag</p>
+<h2 id="wmwcms"><a href="#wmwcms" class="headerlink" title="wmwcms"></a>wmwcms</h2><p>robots.txt提示给了个rar，下载下来是网站源码，审计发现连接数据库时存在注入，<br><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">include_once</span> <span class="string">'func.php'</span>;</span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>($_REQUEST[<span class="string">'dsn'</span>]))&#123;</span><br><span class="line">    $dsn = $_REQUEST[<span class="string">'dsn'</span>];</span><br><span class="line">&#125; <span class="keyword">else</span>&#123;</span><br><span class="line">    $dsn = <span class="string">"wmwcms"</span>;</span><br><span class="line">&#125;</span><br><span class="line">$dsn = <span class="string">"mysql:dbname=&#123;$dsn&#125;"</span>;</span><br><span class="line">$username = <span class="string">'wmwcms'</span>;</span><br><span class="line">$password = <span class="string">'%glVYKTkLtQ22'</span>;</span><br><span class="line">$options = <span class="keyword">array</span>(</span><br><span class="line">    PDO::MYSQL_ATTR_INIT_COMMAND =&gt; <span class="string">'SET names utf8'</span>,</span><br><span class="line">    );</span><br><span class="line">$dbh = <span class="keyword">new</span> PDO($dsn, $username, $password, $options);</span><br></pre></td></tr></table></figure><br>第8行的数据库连接可以由用户控制，于是我们在远程服务器搭建相同的数据库、用户密码也相同、表名和字段也相同，然后构造<br><code>dsn=wmwcms;8.8.8.8</code><br>即可让这道题连接到你的服务器，然后使用<code>action=img</code>读取数据库中<code>portrait</code>字段所在位置的文件，即可读取到flag</p>
+<h2 id="BMP-Wannacry-2"><a href="#BMP-Wannacry-2" class="headerlink" title="BMP Wannacry-2"></a>BMP Wannacry-2</h2><p>大佬说是<code>bmp隐写</code>，没做出来，留坑待填</p>
+<p><a href="https://doegox.github.io/ElectronicColoringBook/" target="_blank" rel="noopener">https://doegox.github.io/ElectronicColoringBook/</a></p>
+<h2 id="感想"><a href="#感想" class="headerlink" title="感想"></a>感想</h2><p>这个比赛难度中上，参赛对象为各大企业安全团队，看到了许多大佬，膜</p>
+<p><img src="/img/2017isg2.png" alt=""></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;签到&quot;&gt;&lt;a href=&quot;#签到&quot; class=&quot;headerlink&quot; title=&quot;签到&quot;&gt;&lt;/a&gt;签到&lt;/h2&gt;&lt;p&gt;加群在公告得到一串字符，16进制转字符串得到flag&lt;br&gt;
+    
+    </summary>
+    
+    
+      <category term="CTF" scheme="https://www.codemonster.cn/tags/CTF/"/>
+    
+      <category term="WriteUp" scheme="https://www.codemonster.cn/tags/WriteUp/"/>
+    
+      <category term="审计" scheme="https://www.codemonster.cn/tags/%E5%AE%A1%E8%AE%A1/"/>
+    
+      <category term="注入" scheme="https://www.codemonster.cn/tags/%E6%B3%A8%E5%85%A5/"/>
     
   </entry>
   
